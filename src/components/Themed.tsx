@@ -43,3 +43,15 @@ export function View(props: ViewProps) {
 
   return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />;
 }
+
+export function CardView(props: ViewProps) {
+  const { style, lightColor, darkColor, ...otherProps } = props;
+  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'view');
+  return <DefaultView style={[{ backgroundColor } , style]} {...otherProps} />;
+}
+
+export function AlertText(props: TextProps) {
+  const { style, ...otherProps } = props;
+
+  return <DefaultText style={[{ color: Colors.red[700]  }, style]} {...otherProps} />;
+}
