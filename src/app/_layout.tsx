@@ -6,6 +6,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 
 import { useColorScheme } from '@/components/useColorScheme';
+import AuthProvider from './providers/AuthProvider';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -14,7 +15,7 @@ export {
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
+  initialRouteName: '/',
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -22,7 +23,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    SpaceMono: require('../../assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
   });
 
@@ -49,10 +50,16 @@ function RootLayoutNav() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-      </Stack>
+      <AuthProvider>
+        <Stack>
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          <Stack.Screen name="(client)" options={{ headerShown: false }} />
+          <Stack.Screen name="(employee)" options={{ headerShown: false }} />
+          <Stack.Screen name="(manager)" options={{ headerShown: false }} />
+          <Stack.Screen name="(owner)" options={{ headerShown: false }} />
+          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+        </Stack>
+      </AuthProvider>
     </ThemeProvider>
   );
 }
