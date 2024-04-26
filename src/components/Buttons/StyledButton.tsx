@@ -105,7 +105,7 @@ export default function Button ({
 
 const styles = (Selected?: boolean, colorScheme?: string, pressed?: boolean) =>  StyleSheet.create({
   innerContainer:{
-    borderRadius: 4,
+    borderRadius: 6,
     padding: 12,
     backgroundColor: Selected ? Colors.brand[800] : Colors.brand[500],
     borderColor: Selected ? Colors.brand[800] : Colors.brand[500],

@@ -4,18 +4,18 @@ import { Controller } from 'react-hook-form'
 import {AlertText, View} from '@/components/Themed'
 import Colors from '@/constants/Colors'
 
-export default function CustomInput({
+export default function ValidationInput({
   control, 
   name, 
   rules={}, 
   placeholder, 
-  secureTextEntry
+  secureTextEntry,
 }:{
   control:any, 
   name: string, 
   rules?:{}, 
   placeholder?:string, 
-  secureTextEntry?: boolean
+  secureTextEntry?: boolean,
 }) {
 
   return (
@@ -35,6 +35,7 @@ export default function CustomInput({
               placeholder={placeholder}
               style={styles.input}
               secureTextEntry={secureTextEntry}
+              autoCapitalize='none'
             />
           </View>
           {error && (
@@ -54,7 +55,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.brand[50], 
     borderColor: Colors.brand[700], 
     borderWidth: 1,
-    borderRadius: 4,
+    borderRadius: 6,
     padding: 10,
     minHeight: 45,
     justifyContent:'center',

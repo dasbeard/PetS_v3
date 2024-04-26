@@ -1,9 +1,10 @@
-import { ActivityIndicator, View } from 'react-native'
+import { ActivityIndicator } from 'react-native'
 import React from 'react'
-import { useAuth } from './providers/AuthProvider'
+import { useAuth } from '@/providers/AuthProvider'
 import Colors from '@/constants/Colors';
 import { Link, Redirect } from 'expo-router';
 import Button from '@/components/Buttons/StyledButton';
+import { View } from '@/components/Themed';
 
 export default function RootIndex() {
   const { session, role, loading, logOutUser } = useAuth();
@@ -45,6 +46,8 @@ export default function RootIndex() {
           <Link href={'/(owner)/dashboard'} asChild>
             <Button Text='Owner Dashboard' />
           </Link>
+
+          <Button Text='Logout' onPress={() => logOutUser()} />
 
         </View>
       )
