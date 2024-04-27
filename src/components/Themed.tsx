@@ -53,5 +53,5 @@ export function CardView(props: ViewProps) {
 export function AlertText(props: TextProps) {
   const { style, ...otherProps } = props;
 
-  return <DefaultText style={[{ color: Colors.red[700]  }, style]} {...otherProps} />;
+  return <DefaultText style={[{ color: Colors.red[500] }, style]} {...otherProps} />;
 }

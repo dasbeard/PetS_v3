@@ -16,6 +16,7 @@ type AuthData = {
   role: string | null;
   logOutUser: () => void;
   signInWithEmail: (email:string, password: string) =>  void;
+  createAccount: (email: string, password: string) => void;
 }
 
 const AuthContext = createContext<AuthData>({
@@ -24,7 +25,8 @@ const AuthContext = createContext<AuthData>({
   profile: null,
   role: null,
   logOutUser: () => {},
-  signInWithEmail: () => {}
+  signInWithEmail: () => {},
+  createAccount: () => {},
 });
 
 export default function AuthProvider({ children}: PropsWithChildren) {
@@ -84,16 +86,17 @@ export default function AuthProvider({ children}: PropsWithChildren) {
     setLoading(false);
   }
 
-  const signInWithEmail = async (email: string, password: string) => {
+  const createAccount = async (email: string, password: string) => {
     setLoading(true)
-
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signUp({
+    // const { error } = await supabase.auth.signUp({
       email,
       password
-    })
+    });
 
-    if(error) { 
+    if(error){
       Alert.alert(error.message)
+      console.log({error});
     }
 
     if(data){
@@ -110,12 +113,55 @@ export default function AuthProvider({ children}: PropsWithChildren) {
         const jwt = jwtDecode<JWT>(data.session.access_token)
         setRole(jwt.user_role)
       }
-      setLoading(false);
     }
+
+    setLoading(false)
+  }
+
+  const signInWithEmail = async (email: string, password: string) => {
+    setLoading(true)
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    })
+
+    if(error) { 
+      Alert.alert(error.message)      
+    }
+
+    if(data){
+      if(data.session) {
+        // fetch and set profile       
+        const { data:profile } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', data.session?.user.id)
+        .single();
+        setProfile(profile || null)
+
+        // decode the jwt to get role
+        const jwt = jwtDecode<JWT>(data.session.access_token)
+        setRole(jwt.user_role)
+      }
+    }
+    setLoading(false);
   }
 
   return(
-    <AuthContext.Provider value={{ session, loading, profile, role, logOutUser, signInWithEmail }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider 
+      value={{ 
+        session, 
+        loading, 
+        profile, 
+        role, 
+        logOutUser, 
+        signInWithEmail,
+        createAccount,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
   )
 }
 

@@ -1,13 +1,10 @@
 import React from 'react'
-import { Redirect, Stack, Tabs } from 'expo-router'
+import { Redirect, Slot, Stack, Tabs } from 'expo-router'
 import { useAuth } from '@/providers/AuthProvider'
+import EmployeeHeader from '@/components/Headers/EmployeeHeader'
 
 export default function EmployeeStack() {
   const { role } = useAuth()
-
-  // if( role === 'client' ){
-  //   return <Redirect href={'/'} />
-  // }
 
   switch (role) {
     case '' || null:
@@ -17,9 +14,9 @@ export default function EmployeeStack() {
   }
   
   return (
-    <Tabs>
-      <Tabs.Screen name='dashboard' />
-      <Tabs.Screen name='profile' />
-    </Tabs>
+    <>
+      <EmployeeHeader />
+      <Slot />
+    </>
   )
 }

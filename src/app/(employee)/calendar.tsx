@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-export default function EmployeeDashboard() {
+export default function EmployeeCalendarScreen() {
   return (
     <View>
-      <Text>EmployeeDashboard</Text>
+      <Text>EmployeeCalendarScreen</Text>
     </View>
   )
 }

@@ -1,6 +1,7 @@
 import React from 'react'
-import { Redirect, Tabs } from 'expo-router'
+import { Redirect, Slot, Tabs } from 'expo-router'
 import { useAuth } from '@/providers/AuthProvider'
+import ManagerHeader from '@/components/Headers/ManagerHeader';
 
 export default function ManagerStack() {
   const { role } = useAuth();
@@ -13,10 +14,9 @@ export default function ManagerStack() {
   }
 
   return (
-    <Tabs>
-      <Tabs.Screen name='dashboard' />
-      <Tabs.Screen name='profile' />
-    </Tabs>
-    
+    <>
+      <ManagerHeader />
+      <Slot />
+    </>
   )
 }

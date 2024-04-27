@@ -2,12 +2,17 @@ import { ActivityIndicator } from 'react-native'
 import React from 'react'
 import { useAuth } from '@/providers/AuthProvider'
 import Colors from '@/constants/Colors';
-import { Link, Redirect } from 'expo-router';
+import { Link, Redirect, useRouter } from 'expo-router';
 import Button from '@/components/Buttons/StyledButton';
-import { View } from '@/components/Themed';
+import { Text, View } from '@/components/Themed';
 
 export default function RootIndex() {
   const { session, role, loading, logOutUser } = useAuth();
+  const router = useRouter();
+
+  const ownerNavigation = (userType:string) =>{
+    router.navigate(`/(${userType})/dashboard`)
+  }
 
   if(loading){
     return <ActivityIndicator size={'large'} color={Colors.brand[500]} />
@@ -31,21 +36,14 @@ export default function RootIndex() {
 
       return (
         <View style={{flex:1, justifyContent: 'center', padding: 10}}>
-          <Link href={'/(client)/dashboard'} asChild>
-            <Button Text='Client' />
-          </Link>
+          <Text style={{alignSelf: 'center', marginVertical: 25, fontSize: 20, fontWeight: 'bold', textAlign: 'center'}}>
+            This Screen is only for debugging
+          </Text>
 
-          <Link href={'/(employee)/dashboard'} asChild>
-            <Button Text='Employee' />
-          </Link>
-
-          <Link href={'/(manager)/dashboard'} asChild>
-            <Button Text='Manager' />
-          </Link>
-
-          <Link href={'/(owner)/dashboard'} asChild>
-            <Button Text='Owner Dashboard' />
-          </Link>
+          <Button Text='Client' onPress={() => ownerNavigation('client')} />
+          <Button Text='Employee' onPress={() => ownerNavigation('employee')} />
+          <Button Text='Manager' onPress={() => ownerNavigation('manager')} />
+          <Button Text='Owner Dashboard' onPress={() => ownerNavigation('owner')} />
 
           <Button Text='Logout' onPress={() => logOutUser()} />
 

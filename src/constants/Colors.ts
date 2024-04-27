@@ -30,6 +30,8 @@ export default {
     900: `hsl(${BrandAlt}, 68%, 10%)`,
   },
   
+  placeholderText: `hsl(251, 10%, 70%)`,
+
   light: {
     text: '#000',
     background: `hsl(${BGBase}, 10%, 96%)`,
@@ -67,7 +69,9 @@ export default {
   red: {
     100: `hsl(${red}, 80%, 90%)`,
     300: `hsl(${red}, 80%, 70%)`,
+    400: `hsl(${red}, 80%, 60%)`,
     500: `hsl(${red}, 80%, 50%)`,
+    600: `hsl(${red}, 80%, 40%)`,
     700: `hsl(${red}, 80%, 30%)`,
     900: `hsl(${red}, 80%, 10%)`,
   },
