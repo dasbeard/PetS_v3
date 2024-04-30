@@ -1,10 +1,10 @@
 import { StyleSheet } from 'react-native'
 import { View, Text } from '@/components/Themed'
 
-export default function ClientDashboard() {
+export default function ClientPets() {
   return (
     <View>
-      <Text>ClientDashboard</Text>
+      <Text>ClientPets</Text>
     </View>
   )
 }

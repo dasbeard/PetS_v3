@@ -13,6 +13,7 @@ export default {
     150: `hsl(${Brand}, 66%, 87%)`,
     200: `hsl(${Brand}, 66%, 80%)`,
     300: `hsl(${Brand}, 66%, 70%)`,
+    400: `hsl(${Brand}, 66%, 60%)`,
     500: `hsl(${Brand}, 66%, 50%)`,
     700: `hsl(${Brand}, 66%, 30%)`,
     800: `hsl(${Brand}, 66%, 20%)`,

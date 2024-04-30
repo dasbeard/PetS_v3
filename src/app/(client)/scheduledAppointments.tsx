@@ -1,10 +1,10 @@
 import { StyleSheet } from 'react-native'
 import { View, Text } from '@/components/Themed'
 
-export default function ClientDashboard() {
+export default function ClientScheduledAppointmentsScreen() {
   return (
     <View>
-      <Text>ClientDashboard</Text>
+      <Text>ClientScheduledAppointmentsScreen</Text>
     </View>
   )
 }
