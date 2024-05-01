@@ -38,6 +38,7 @@ export default function AuthProvider({ children}: PropsWithChildren) {
   useEffect(() => {
     const fetchSession = async () => {
       const { data: {session}} = await supabase.auth.getSession();
+      // console.log({session});
       
       setSession(session)
       
@@ -52,8 +53,13 @@ export default function AuthProvider({ children}: PropsWithChildren) {
         setProfile(data || null)
 
         // decode the jwt to get role
-        const jwt = jwtDecode<JWT>(session.access_token)
-        setRole(jwt.user_role)
+        // const jwt = jwtDecode<JWT>(session.access_token)
+        // console.log(jwt.user_role)
+        // setRole(jwt.user_role)
+        
+// ONLY FOR LOCAL AS JWT IS NOT AVAILABLE
+setRole('owner')
+
       }
 
       setLoading(false)
@@ -63,11 +69,6 @@ export default function AuthProvider({ children}: PropsWithChildren) {
     supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
 
-      // if(session){
-      //   // decode the jwt to get role
-      //   const jwt = jwtDecode<JWT>(session.access_token)
-      //   setRole(jwt.user_role)
-      // }
     })
 
   },[])
@@ -141,8 +142,12 @@ export default function AuthProvider({ children}: PropsWithChildren) {
         setProfile(profile || null)
 
         // decode the jwt to get role
-        const jwt = jwtDecode<JWT>(data.session.access_token)
-        setRole(jwt.user_role)
+        // const jwt = jwtDecode<JWT>(data.session.access_token)
+        // setRole(jwt.user_role)
+
+// ONLY FOR LOCAL AS JWT IS NOT AVAILABLE
+setRole('owner')
+
       }
     }
     setLoading(false);

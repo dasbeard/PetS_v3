@@ -1,7 +1,7 @@
 import { View, StyleSheet, Platform, Pressable, SafeAreaView } from 'react-native'
 import React from 'react'
 import { Link } from 'expo-router'
-import { Ionicons, FontAwesome } from '@expo/vector-icons'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 import Colors from '@/constants/Colors'
 
 
@@ -12,7 +12,7 @@ export default function ClientHeader() {
   const colorScheme = useColorScheme(); 
 
   return (
-    <SafeAreaView style={{backgroundColor: colorScheme === 'light' ? Colors.brand[400] :Colors.brand[700] }}>
+    <SafeAreaView style={{backgroundColor: colorScheme === 'light' ? Colors.brand[500] :Colors.brand[700] }}>
       <View style={styles.mainContianer}>
         
         <View style={styles.left}>
@@ -21,13 +21,13 @@ export default function ClientHeader() {
         
         <View style={styles.right}>
           <View style={styles.linkContainer}>
-            <Link href={'/(client)/dashboard'} asChild>
+            <Link href={'/(client)/createEvent'} asChild>
               <Pressable>
                 {({ pressed }) => (
-                  <FontAwesome 
-                  name='calendar-plus-o' 
+                  <MaterialCommunityIcons 
+                  name='plus-circle-outline' 
                   color={Colors.dark.text}
-                  size={22}
+                  size={23}
                   style={{ opacity: pressed ? 0.5 : 1}}
                   />
                   )}
@@ -36,12 +36,12 @@ export default function ClientHeader() {
           </View>
 
           <View style={styles.linkContainer}>
-            <Link href={'/(client)/profile'} asChild>
+            <Link href={'/(client)/messages'} asChild>
               <Pressable>
                 {({ pressed }) => (
-                  <Ionicons
-                    name='person-circle-outline'
-                    size={27}
+                  <MaterialCommunityIcons
+                    name='message-text-outline'
+                    size={23}
                     color={Colors.dark.text}
                     style={{ opacity: pressed ? 0.5 : 1}}
                   />
@@ -59,7 +59,7 @@ export default function ClientHeader() {
 
 const styles = StyleSheet.create({
   mainContianer: {
-    height: Platform.OS === 'web' ? 65 : Platform.OS === 'android' ? 50 : 40,
+    height: Platform.OS === 'web' ? 50 : Platform.OS === 'android' ? 50 : 40,
     marginTop: Platform.OS === 'android' ? 45 : 0,
     marginBottom: 4,
     flexDirection: 'row',
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
 
   },
   left:{
-    marginHorizontal: Platform.OS === 'web' ? 20 : -3,
+    marginHorizontal: Platform.OS === 'web' ? 5 : -3,
     justifyContent: 'center',
   },
   right:{
@@ -76,6 +76,8 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
     flexDirection: 'row',
+    marginRight: Platform.OS === 'web' ? 20 : undefined,
+    gap: Platform.OS === 'web' ? 15 : undefined,
   },
   linkContainer: {
     marginHorizontal: Platform.OS === 'web' ? 10 : 8,

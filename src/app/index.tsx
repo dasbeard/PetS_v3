@@ -49,7 +49,19 @@ export default function RootIndex() {
 
         </View>
       )
-    }
+    } 
+    
   }
+  
+    if (!role || role === undefined){
+      console.log('No Role or Undefined?');
+      
+      return(
+        <View style={{flex:1}} >
+
+          <Button Text='Logout' onPress={() => logOutUser()} />
+        </View>
+      )
+    }
 
 }

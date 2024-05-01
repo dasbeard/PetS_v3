@@ -32,8 +32,8 @@ export default function ClientStack() {
           drawerActiveBackgroundColor: colorScheme === 'light' ? Colors.brand[100]: Colors.brand[300],
           drawerActiveTintColor: Colors.light.text,
           drawerInactiveTintColor: Colors.placeholderText,
-          drawerType: isLargeScreen ? 'permanent' : 'front',
-          drawerStyle: isLargeScreen ? null : {width: 225},
+          // drawerType: isLargeScreen ? 'permanent' : 'front',
+          drawerStyle: isLargeScreen ? {width: 250} : {width: '65%'},
           header: () => <ClientHeader />          
         }}
       >        
@@ -49,23 +49,23 @@ export default function ClientStack() {
         />
 
         <Drawer.Screen 
-          name='profile' 
-          options={{
-            drawerLabel: 'Profile', 
-            title: 'My Profile',
-            drawerIcon: ({ size, color }) => (
-              <Ionicons name='person-circle-outline' size={size} color={color} />
-            )
-          }} 
-        />
-
-        <Drawer.Screen 
           name='scheduledAppointments' 
           options={{
             drawerLabel: 'My Schedule', 
             title: 'Scheduled Events',
             drawerIcon: ({ size, color }) => (
               <Ionicons name='calendar-outline' size={size} color={color} />
+            )
+          }} 
+        />
+
+        <Drawer.Screen 
+          name='profile' 
+          options={{
+            drawerLabel: 'My Profile', 
+            title: 'My Profile',
+            drawerIcon: ({ size, color }) => (
+              <Ionicons name='person-circle-outline' size={size} color={color} />
             )
           }} 
         />
@@ -92,16 +92,15 @@ export default function ClientStack() {
           }} 
         />
 
+        <Drawer.Screen 
+          name='createEvent' 
+          options={{ 
+            drawerItemStyle: {display: 'none'}
+          }} 
+        />
+
       </Drawer>
-
-
     </GestureHandlerRootView>
     
   )
 }
-
-
-// <Tabs>
-//   <Tabs.Screen name='dashboard' />
-//   <Tabs.Screen name='profile' />
-// </Tabs>

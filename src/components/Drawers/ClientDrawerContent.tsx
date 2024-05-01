@@ -1,6 +1,6 @@
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DrawerContentScrollView, DrawerItemList} from '@react-navigation/drawer'
-import { StyleSheet } from 'react-native'
+import { Platform, StyleSheet } from 'react-native'
 import { View } from '../Themed';
 import { useColorScheme } from '../useColorScheme'
 import { useAuth } from '@/providers/AuthProvider';
@@ -18,14 +18,14 @@ export default function ClientDrawerContent(props: any) {
       <DrawerContentScrollView props{...props} 
         scrollEnabled={false}
         contentContainerStyle={{
-          backgroundColor: colorScheme === 'light' ? Colors.brand[100] : Colors.brand[700]
+          backgroundColor: colorScheme === 'light' ? Colors.brand[500] : Colors.brand[700]
         }}
       >
         <View style={[
           styles.header, { 
             borderBottomColor: colorScheme === 'light' ? Colors.placeholderText : Colors.dark.altText }]}
         >
-          <LogoComponent styles={styles.headerImage} />
+          <LogoComponent styles={styles.headerImage} invert={true} />
         </View>
 
         <View style={styles.drawerItems}>
@@ -44,12 +44,14 @@ export default function ClientDrawerContent(props: any) {
 const styles = StyleSheet.create({
   header:{
      paddingBottom: 20,
-     backgroundColor: undefined,
+     backgroundColor: Platform.OS === 'web' ? Colors.brand[500] : undefined,
      borderBottomWidth: 1,
+     width: '100%',
   },
   headerImage:{
-    height: 115, 
+    height: Platform.OS === 'web' ? 100 : 115, 
     aspectRatio: 1,
+    resizeMode: 'contain',
     alignSelf: 'center',
   },
   drawerItems:{
