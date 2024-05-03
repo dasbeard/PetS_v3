@@ -53,3 +53,33 @@ export const useUpdateUserContact = () => {
     }
   })
 };
+
+export const useUpdateUsersAvatar = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    async mutationFn(data: any){
+      const { error, data: updatedAvatar } = await supabase
+        .from('users')
+        .update({
+          avatar_url: data.avatar_url,
+        })
+        .eq('id', data.id)
+        .select()
+        .single();
+      
+      if(error){
+        console.log('Error updateing User Avatar Path: ', error);
+        throw new Error(error.message)
+      }
+      
+      return updatedAvatar;
+    },
+    async onSuccess(_, data) {
+      await queryClient.invalidateQueries({queryKey: ['userProfile', data.id]})
+    },
+    onError(error) {
+      console.log('Error: ', error);
+    }
+  })
+};

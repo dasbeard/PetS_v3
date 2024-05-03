@@ -1,18 +1,16 @@
-import { StyleSheet } from 'react-native'
+import { Alert, StyleSheet } from 'react-native'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { View, Text } from './Themed';
 import ValidationInput from './ValidationInput';
 import Button from './Buttons/StyledButton';
 import Avatar from './Avatar';
-import { useUpdateUserContact } from '@/api/userInfo';
+import { useUpdateUserContact, useUpdateUsersAvatar } from '@/api/userInfo';
+import { supabase } from '@/util/supabase';
 
 export default function UserDetailsComponent({UserData}:any) {
   const { mutate: updateProfile } = useUpdateUserContact();
-
-  // const [ first, setFirst ] = useState<string>(UserData.first_name)
-  // const [ last, setLast ] = useState<string>(UserData.last_name)
-  // const [ emergency, setEmergency ] = useState<string>(UserData.emergency_contact)
+  const { mutate: updateAvatar } = useUpdateUsersAvatar();
 
   const { control, handleSubmit, formState: {isDirty, isSubmitSuccessful}, reset, } = useForm({
     defaultValues:{
@@ -31,9 +29,23 @@ export default function UserDetailsComponent({UserData}:any) {
     })
   }
 
-  const updateAvatar = (url: any) => {
-
-  }
+  const handleUpdateAvatar = async (url: any) => {
+    // check if previous image and remove from storage
+    if(UserData.avatar_url){
+      // delete original 
+      const oldUrl = UserData.avatar_url
+      const {error} = await supabase.storage.from('avatars').remove([oldUrl])      
+      if(error){
+        console.log('Error removing old avatar - id:', oldUrl, {error});
+        Alert.alert(error.message)
+      }
+    }
+    // update value in users profile
+    updateAvatar({
+      id: UserData.id,
+      avatar_url: url
+    })
+  };
 
 
   useEffect(() => {
@@ -55,7 +67,7 @@ export default function UserDetailsComponent({UserData}:any) {
             size={110}
             url={UserData.avatar_url || ''}
             onUpload={(url:string) =>{
-              updateAvatar(url)
+              handleUpdateAvatar(url)
             }}
           />
         </View>
