@@ -12,7 +12,6 @@ interface JWT extends JwtPayload {
 type AuthData = {
   session: Session | null;
   loading: boolean;
-  profile: any;
   role: string | null;
   logOutUser: () => void;
   signInWithEmail: (email:string, password: string) =>  void;
@@ -22,7 +21,6 @@ type AuthData = {
 const AuthContext = createContext<AuthData>({
   session: null,
   loading: true,
-  profile: null,
   role: null,
   logOutUser: () => {},
   signInWithEmail: () => {},
@@ -31,27 +29,16 @@ const AuthContext = createContext<AuthData>({
 
 export default function AuthProvider({ children}: PropsWithChildren) {
   const [ session, setSession ] = useState<Session | null>(null)
-  const [ profile, setProfile ] = useState<any | null>(null)
   const [ loading, setLoading] = useState(true)
   const [ role, setRole ] = useState<string | null>(null);
   
   useEffect(() => {
     const fetchSession = async () => {
       const { data: {session}} = await supabase.auth.getSession();
-      // console.log({session});
       
       setSession(session)
       
       if(session) {
-        // fetch profile
-        const { data } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', session?.user.id)
-        .single();
-        
-        setProfile(data || null)
-
         // decode the jwt to get role
         // const jwt = jwtDecode<JWT>(session.access_token)
         // console.log(jwt.user_role)
@@ -82,7 +69,6 @@ setRole('owner')
     };
 
     setRole(null);
-    setProfile(null);
     setSession(null);
     setLoading(false);
   }
@@ -101,18 +87,10 @@ setRole('owner')
     }
 
     if(data){
-      if(data.session) {
-        // fetch and set profile       
-        const { data:profile } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', data.session?.user.id)
-        .single();
-        setProfile(profile || null)
-
-        // decode the jwt to get role
+      // decode the jwt to get role
+      if( data.session){
         const jwt = jwtDecode<JWT>(data.session.access_token)
-        setRole(jwt.user_role)
+        setRole(jwt.user_role || 'client')
       }
     }
 
@@ -133,21 +111,12 @@ setRole('owner')
 
     if(data){
       if(data.session) {
-        // fetch and set profile       
-        const { data:profile } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', data.session?.user.id)
-        .single();
-        setProfile(profile || null)
-
         // decode the jwt to get role
         // const jwt = jwtDecode<JWT>(data.session.access_token)
         // setRole(jwt.user_role)
 
 // ONLY FOR LOCAL AS JWT IS NOT AVAILABLE
 setRole('owner')
-
       }
     }
     setLoading(false);
@@ -158,7 +127,6 @@ setRole('owner')
       value={{ 
         session, 
         loading, 
-        profile, 
         role, 
         logOutUser, 
         signInWithEmail,

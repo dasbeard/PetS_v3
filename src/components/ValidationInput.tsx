@@ -10,7 +10,7 @@ export default function ValidationInput({
   name, 
   rules={}, 
   placeholder, 
-  secureTextEntry,
+  secureTextEntry,  
 }:{
   control:any, 
   name: string, 
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 6,
     padding: 10,
-    minHeight: 45,
+    minHeight: 38,
     justifyContent:'center',
     marginVertical: 4,
   },

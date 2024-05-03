@@ -48,7 +48,7 @@ export default function Button ({
   
   return (
     <Pressable 
-      style={Disabled ? {opacity: 0.5}: {opacity: 1}}
+      style={ Disabled ? {opacity: 0.5}: {opacity: 1}}
       disabled={Disabled}
       onPress={onPress ? onPress : defaultFunction }
     >

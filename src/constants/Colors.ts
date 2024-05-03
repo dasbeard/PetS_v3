@@ -22,6 +22,7 @@ export default {
   
   brandAlt: {
     100: `hsl(${BrandAlt}, 68%, 90%)`,
+    200: `hsl(${BrandAlt}, 68%, 80%)`,
     300: `hsl(${BrandAlt}, 68%, 70%)`,
     400: `hsl(${BrandAlt}, 68%, 60%)`,
     500: `hsl(${BrandAlt}, 68%, 50%)`,

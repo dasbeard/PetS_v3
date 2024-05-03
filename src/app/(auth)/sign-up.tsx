@@ -8,10 +8,9 @@ import Button from '@/components/Buttons/StyledButton';
 import Spacer from '@/components/Spacer';
 import { useRouter } from 'expo-router';
 import Colors from '@/constants/Colors';
-import { useColorScheme } from '@/components/useColorScheme';
+import LogoComponent from '@/components/LogoComponent';
 
 export default function SignUpScreen() {
-  const colorScheme = useColorScheme();
   const { createAccount } = useAuth();
   const [ loading, setLoading ] = useState<boolean>(false)
   const { control, handleSubmit, watch } = useForm()
@@ -34,17 +33,7 @@ export default function SignUpScreen() {
   return (
     <View style={styles.rootContainer}>
       <View style={styles.imageContainer}>
-        {colorScheme === 'light' ? (
-          <Image
-            source={require( '../../../assets/icons/Logo.png' )}
-            style={styles.image}
-          />
-        ):(
-          <Image
-          source={require( '../../../assets/icons/Logo_Alt.png' )}
-          style={styles.image}
-          />
-        )}      
+        <LogoComponent styles={styles.image} />
       </View>
 
       <View style={styles.container}>

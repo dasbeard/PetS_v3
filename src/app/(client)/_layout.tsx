@@ -10,20 +10,21 @@ import { useWindowDimensions } from 'react-native'
 import ClientHeader from '@/components/Headers/ClientHeader'
 import { StatusBar } from 'expo-status-bar'
 import ClientDrawerContent from '@/components/Drawers/ClientDrawerContent'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export default function ClientStack() {
   const { session } = useAuth()
   const colorScheme = useColorScheme();
   const dimensions = useWindowDimensions();
   const isLargeScreen = dimensions.width >= 768;
-
+  const { bottom } = useSafeAreaInsets();
 
   if(!session){
     return <Redirect href={'/'} />
   }
 
   return (
-    <GestureHandlerRootView style={{flex: 1}}>
+    <GestureHandlerRootView style={{flex: 1, paddingBottom: bottom + 10}}>
       <StatusBar style='light'/>
       <Drawer 
         initialRouteName='dashboard' 

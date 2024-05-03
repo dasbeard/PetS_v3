@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react'
-import { View, Text, Image, StyleSheet, Button, Platform, ActivityIndicator } from 'react-native'
+import { Image, StyleSheet, Platform, ActivityIndicator, Pressable } from 'react-native'
 import * as ImagePicker from 'expo-image-picker'
 import { supabase } from '@/util/supabase'
+import { View, Text } from './Themed'
+import Button from './Buttons/StyledButton'
+import { Ionicons } from '@expo/vector-icons'
+import Colors from '@/constants/Colors'
 
 interface Props {
   size: number
@@ -127,7 +131,7 @@ export default function Avatar ({ url, size = 150, onUpload }: Props) {
   }
 
   return (
-    <View>
+    <View style={styles.avatarContainer}>
       { avatarUrl ? 
       (
         <>
@@ -137,20 +141,32 @@ export default function Avatar ({ url, size = 150, onUpload }: Props) {
           <Image 
             source={{ uri: avatarUrl}}
             accessibilityLabel='Avatar'
-            style={[avatarSize, styles.avatar, styles.image]}
+            style={[avatarSize, styles.avatar, styles.image, {borderRadius: size /2}]}
           />
          )}
           </>
       ) :(
-        <View style={[avatarSize, styles.avatar, styles.noImage]} />
+        <View style={[avatarSize, styles.avatar, styles.noImage, {borderRadius: size /2}]} />
       )}
 
       <View>
-        <Button 
-          title={uploading ? 'Uploading ...' : 'Upload'}
-          onPress={uploadAvatar}
-          disabled={uploading}
-        />
+        <Pressable 
+          onPress={uploadAvatar} 
+          disabled={uploading} 
+          style={[
+            styles.uploadButton,
+            {
+              marginTop: -(size / 4),
+              right: -(size/3),
+            }
+          ]}
+        
+        >
+          <Ionicons 
+            name='cloud-upload-outline' 
+            size={16} 
+          />
+        </Pressable>
       </View>
 
 
@@ -160,8 +176,13 @@ export default function Avatar ({ url, size = 150, onUpload }: Props) {
 
 
 const styles = StyleSheet.create({
+  avatarContainer:{
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   avatar: {
-    borderRadius: 5,
+    // borderRadius: 5,
     overflow: 'hidden',
     maxWidth: '100%',
   },
@@ -173,7 +194,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#333',
     borderWidth: 1,
     borderStyle: 'solid',
-    borderColor: 'rg(200, 200, 200',
-    borderRadius: 5,
+    borderColor: 'rgb(200, 200, 200',
+    // borderRadius: 5,
+  },
+  uploadButton:{
+    backgroundColor: Colors.brandAlt[200],
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
   },
 })
