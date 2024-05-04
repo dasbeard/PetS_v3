@@ -1,18 +1,21 @@
-import { useGetProfile } from '@/api/userInfo';
+import { useGetProfile } from '@/api/users/userInfo';
 import AddressComponent from '@/components/AddressComponent';
-import Avatar from '@/components/Avatar';
-import Button from '@/components/Buttons/StyledButton'
+import HomeInfoComponent from '@/components/HomeInfoComponent';
+import PhoneNumberComponent from '@/components/PhoneNumberComponent';
 import { View, Text } from '@/components/Themed'
 import UserDetailsComponent from '@/components/UserDetailsComponent';
 import { useAuth } from '@/providers/AuthProvider'
-import { useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 
 export default function ClientProfile() {
   const { session } = useAuth();
   const { data: userProfile, error, isLoading } = useGetProfile(session!.user.id);
-  // const [ avatarUrl, setAvatarUrl ] = useState('');
+  const { bottom } = useSafeAreaInsets();
+
+  // console.log('-- Profile: UserProfile --', userProfile);
+  
   
   if(isLoading){
     return <ActivityIndicator />
@@ -23,11 +26,15 @@ export default function ClientProfile() {
   }
 
   return (
-    <ScrollView  style={styles.rootConatiner}>
-      <Text>Client Profile</Text>
+    <ScrollView  style={[styles.rootConatiner, ]}>
+
       <UserDetailsComponent UserData={userProfile} />
 
-      <AddressComponent />
+      {/* <PhoneNumberComponent /> */}
+
+      <AddressComponent sourceId={userProfile?.id || ''} AddressData={userProfile?.addresses}/>
+
+      <HomeInfoComponent userId={userProfile?.id || ''} HomeInfo={userProfile?.home_info || null}/>
 
     </ScrollView>
   )

@@ -46,6 +46,8 @@ export default function RootIndex() {
           <Button Text='Owner Dashboard' onPress={() => ownerNavigation('owner')} />
 
           <Button Text='Logout' onPress={() => logOutUser()} />
+          
+          <Button Text='Disabled' Disabled={true} />
 
         </View>
       )

@@ -1,11 +1,11 @@
 import { Alert, StyleSheet } from 'react-native'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { View, Text } from './Themed';
 import ValidationInput from './ValidationInput';
 import Button from './Buttons/StyledButton';
 import Avatar from './Avatar';
-import { useUpdateUserContact, useUpdateUsersAvatar } from '@/api/userInfo';
+import { useUpdateUserContact, useUpdateUsersAvatar } from '@/api/users/userInfo';
 import { supabase } from '@/util/supabase';
 
 export default function UserDetailsComponent({UserData}:any) {
@@ -14,8 +14,8 @@ export default function UserDetailsComponent({UserData}:any) {
 
   const { control, handleSubmit, formState: {isDirty, isSubmitSuccessful}, reset, } = useForm({
     defaultValues:{
-      firstName: UserData.first_name ,
-      lastName: UserData.last_name ,
+      firstName: UserData.first_name,
+      lastName: UserData.last_name,
       emergencyContact: UserData.emergency_contact,
     }
   });
@@ -116,9 +116,7 @@ const styles = StyleSheet.create({
     // borderWidth: 1,
     // borderColor: 'red',
     flex: 1,
-    minHeight: 270,
-    // height: 280,
-    maxHeight: 300,
+    marginBottom: 15,
   },
   container: {
     flex: 2,

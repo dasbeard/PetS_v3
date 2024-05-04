@@ -56,7 +56,7 @@ export default function Button ({
           <View 
             style={[
               styles(Selected, colorScheme!).innerContainer,
-              Selected ? styles(Selected, colorScheme!, pressed).Selected : InteractiveStyles({pressed:pressed, colorScheme:colorScheme!}).Shadow, 
+              Selected ? styles(Selected, colorScheme!, pressed).Selected : InteractiveStyles({pressed:pressed, colorScheme:colorScheme!, disabled: Disabled}).Shadow, 
               ButtonWidth ? ({ width: ButtonWidth }) : ({width: '100%'}),
               
               BackgroundColor ? ({backgroundColor: BackgroundColor}) : (null),
