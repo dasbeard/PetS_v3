@@ -28,7 +28,7 @@ export default function ValidationInput({
       render={({field: {value, onChange, onBlur}, fieldState: {error}}) => (
         <>
           <View 
-          style={[{borderColor: error ? Colors.red[500] : Colors.brand[700]}, styles.container]}
+            style={[{borderColor: error ? Colors.red[500] : Colors.brand[700]}, styles.container]}
           >
             <TextInput
               value={value}
@@ -43,7 +43,7 @@ export default function ValidationInput({
           </View>
           {error && (
             <View style={styles.alert}>
-              <AlertText style={[{alignSelf: 'stretch', marginBottom: 6}]}>{error.message || 'Erorr'}</AlertText>
+              <AlertText style={[{alignSelf: 'stretch', marginBottom: 6}]}>{error.message || 'Error'}</AlertText>
             </View>
           )}
         </>

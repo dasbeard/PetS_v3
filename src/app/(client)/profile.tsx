@@ -1,7 +1,6 @@
 import { useGetProfile } from '@/api/users/userInfo';
 import AddressComponent from '@/components/AddressComponent';
 import HomeInfoComponent from '@/components/HomeInfoComponent';
-import PhoneNumberComponent from '@/components/PhoneNumberComponent';
 import { View, Text } from '@/components/Themed'
 import UserDetailsComponent from '@/components/UserDetailsComponent';
 import { useAuth } from '@/providers/AuthProvider'
@@ -30,7 +29,6 @@ export default function ClientProfile() {
 
       <UserDetailsComponent UserData={userProfile} />
 
-      {/* <PhoneNumberComponent /> */}
 
       <AddressComponent sourceId={userProfile?.id || ''} AddressData={userProfile?.addresses}/>
 
