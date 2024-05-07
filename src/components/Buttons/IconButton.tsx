@@ -6,39 +6,27 @@ import Colors from "@/constants/Colors";
 import { InteractiveStyles } from '@/constants/Styles';
 import { Ionicons } from '@expo/vector-icons';
 
-export default function Button ({ 
+export default function IconButton ({ 
   Disabled=false, 
-  Text='Click Me',
   onPress,
   Selected=false,
   ButtonWidth,
-  TextColor,
   BackgroundColor,
   BorderColor,
-  BoldText=false,
-  LeftIcon,
-  LeftIconColor,
-  LeftIconSize,
-  RightIcon,
-  RightIconSize,
-  RightIconColor,
+  Icon,
+  IconSize,
+  IconColor,
   styles,
 } : {
   Disabled?: boolean, 
-  Text?: string,
   onPress?: any,
   Selected?: boolean,
   ButtonWidth?: number,
-  TextColor?: string,
   BackgroundColor?: string,
   BorderColor?: string,
-  BoldText?: boolean,
-  LeftIcon?:string,
-  LeftIconSize?:number,
-  LeftIconColor?:string,
-  RightIcon?:string,
-  RightIconSize?:number,
-  RightIconColor?:string,
+  Icon?:string,
+  IconSize?:number,
+  IconColor?:string,
   styles?:{}
 }) {
   
@@ -65,39 +53,11 @@ export default function Button ({
               styles,
             ]}
           >
-            <View style={buttonStyles(Selected, colorScheme!, pressed).textContainer}>
-              
-              {LeftIcon ? (
-                <Ionicons 
-                  name={LeftIcon} 
-                  size={LeftIconSize ? LeftIconSize : 20} 
-                  color={LeftIconColor ? LeftIconColor : (colorScheme === 'light' ? Colors.dark.text : Colors.light.text)} />
-                ):(
-                  null
-                )
-              }
-                            
-              <RootText 
-                style={[
-                  buttonStyles(Selected, colorScheme!, pressed).text, 
-                  TextColor ? ({color: TextColor}) : (null),
-                  BoldText ? {fontWeight: '600'}: {fontWeight:'400'},
-                ]}              
-              >
-                {Text}
-              </RootText>
-              
-              {RightIcon ? (
-                <Ionicons 
-                  name={RightIcon} 
-                  size={RightIconSize ? RightIconSize : 20} 
-                  color={RightIconColor ? RightIconColor : (colorScheme === 'light' ? Colors.dark.text : Colors.light.text)} />
-                ):(
-                  null
-                )
-              }
+            <Ionicons 
+              name={Icon ? Icon : 'code'} 
+              size={IconSize ? IconSize : 16} 
+              color={IconColor ? IconColor : (colorScheme === 'light' ? Colors.dark.text : Colors.light.text)} />
 
-            </View>
           </View>
 
         )}
@@ -108,24 +68,13 @@ export default function Button ({
 const buttonStyles = (Selected?: boolean, colorScheme?: string, pressed?: boolean) =>  StyleSheet.create({
   innerContainer:{
     borderRadius: 6,
-    padding: 12,
+    padding: 8,
     backgroundColor: Selected ? Colors.brand[800] : Colors.brand[500],
     borderWidth:1,
     marginVertical: 5,
     alignSelf: 'center',
-  },
-  text: {
-    overflow: 'hidden',
-    textAlign: 'center',
-    fontSize: 15,
-    color: Colors.dark.text,
-  },
-  textContainer: {
-    backgroundColor: 'rgba(0, 0, 0, 0)',
-    flexDirection: 'row',
-    gap: 15,
-    alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    // height: 38,
   },
 
   Selected:{

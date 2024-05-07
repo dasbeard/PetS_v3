@@ -41,7 +41,10 @@ export default function SignUpScreen() {
         <ValidationInput
           name='email'
           placeholder='name@gmail.com'
-          control={control}        
+          control={control}  
+          InputMode='email'
+          AutoCorrect={false}
+          AutoCapitalize='none'      
           rules={{
             required: 'Email is required',
             pattern:{
@@ -56,6 +59,8 @@ export default function SignUpScreen() {
           name='password'
           placeholder='Password'
           control={control}
+          AutoCorrect={false}
+          AutoCapitalize='none'
           rules={{
             required: 'Password is required', 
             minLength: {
@@ -71,6 +76,8 @@ export default function SignUpScreen() {
           name='confirmPassword'
           placeholder='Confirm Password'
           control={control}
+          AutoCorrect={false}
+          AutoCapitalize='none'
           rules={{
             required: 'Confirm Password is required', 
             validate: (value:string) => value === pwd || 'Passwords do not match',

@@ -41,6 +41,7 @@ export default {
     view: `hsl(${BGBase}, 4%, 95%)`,
     altText: 'hsl(0, 1%, 22%)',
     border: `hsl(${Brand}, 20%, 90%)`,
+    // border: `hsl(251, 20%, 90%)`,
     shadow: '#111'
   },
   dark: {
@@ -49,6 +50,7 @@ export default {
     view: `hsl(${Brand}, 3.5%, 18%)`,
     disabled: `hsl(${Brand}, 4%, 35%)`,
     altText: 'hsl(0, 1%, 30%)',
+    // border: `251, 90%, 8%)`,
     border: `hsl(${Brand}, 90%, 8%)`,
     shadow: '#252525'
   },

@@ -40,20 +40,22 @@ export default function HomeInfoComponent({userId, HomeInfo}: {userId: string, H
 
 
   useEffect(() => {
-    reset({
-      access_parking: HomeInfo?.access_parking,
-      alarm: HomeInfo?.alarm,
-      door_lockbox_code: HomeInfo?.door_lockbox_code,
-      others_with_access: HomeInfo?.others_with_access,
-      house_notes: HomeInfo?.house_notes,
-      trails_walking_route: HomeInfo?.trails_walking_route,
-      pet_supplies: HomeInfo?.pet_supplies,
-      pet_carriers: HomeInfo?.pet_carriers,
-      pet_waste: HomeInfo?.pet_waste,
-      cleaning_supplies: HomeInfo?.cleaning_supplies,
-      trash_recycling: HomeInfo?.trash_recycling,
-      other_notes: HomeInfo?.other_notes,
-    })
+    if(isSubmitSuccessful){
+      reset({
+        access_parking: HomeInfo?.access_parking,
+        alarm: HomeInfo?.alarm,
+        door_lockbox_code: HomeInfo?.door_lockbox_code,
+        others_with_access: HomeInfo?.others_with_access,
+        house_notes: HomeInfo?.house_notes,
+        trails_walking_route: HomeInfo?.trails_walking_route,
+        pet_supplies: HomeInfo?.pet_supplies,
+        pet_carriers: HomeInfo?.pet_carriers,
+        pet_waste: HomeInfo?.pet_waste,
+        cleaning_supplies: HomeInfo?.cleaning_supplies,
+        trash_recycling: HomeInfo?.trash_recycling,
+        other_notes: HomeInfo?.other_notes,
+      })
+    }
   },[HomeInfo])
 
   return (
@@ -63,6 +65,8 @@ export default function HomeInfoComponent({userId, HomeInfo}: {userId: string, H
         name='access_parking'
         placeholder=''
         control={control}
+        MultiLine
+        NumOfLines={2}
       />
       <Text style={styles.label}>Home Alarm Code</Text>
       <ValidationInput
@@ -81,54 +85,71 @@ export default function HomeInfoComponent({userId, HomeInfo}: {userId: string, H
         name='others_with_access'
         placeholder=''
         control={control}
+        MultiLine
       />
       <Text style={styles.label}>Is there a perfered walking route or trail?</Text>
       <ValidationInput
         name='trails_walking_route'
         placeholder=''
         control={control}
+        MultiLine
+        NumOfLines={2}
       />
       <Text style={styles.label}>House Notes</Text>
       <ValidationInput
         name='house_notes'
         placeholder=''
         control={control}
+        MultiLine
+        NumOfLines={2}
       />
       <Text style={styles.label}>Where are the pet supplies located? (i.e. dog leash, extra litter)</Text>
       <ValidationInput
         name='pet_supplies'
         placeholder=''
         control={control}
+        MultiLine
+        NumOfLines={2}
       />
       <Text style={styles.label}>Where are the pet carriers located?</Text>
       <ValidationInput
         name='pet_carriers'
         placeholder=''
         control={control}
+        MultiLine
+        NumOfLines={2}
       />
       <Text style={styles.label}>Where should we place the pet waste?</Text>
       <ValidationInput
         name='pet_waste'
         placeholder=''
         control={control}
+        MultiLine
+        NumOfLines={2}
       />
       <Text style={styles.label}>Where are the cleaning supplies if needed?</Text>
       <ValidationInput
         name='cleaning_supplies'
         placeholder=''
         control={control}
+        MultiLine
+        NumOfLines={2}
       />
       <Text style={styles.label}>Where are the Trash and Recycling bins located?</Text>
       <ValidationInput
         name='trash_recycling'
         placeholder=''
         control={control}
+        MultiLine
+        NumOfLines={2}
       />
       <Text style={styles.label}>Anything else we should be aware of?</Text>
       <ValidationInput
         name='other_notes'
         placeholder=''
         control={control}
+        MultiLine
+        NumOfLines={2}
       />
 
       <Button

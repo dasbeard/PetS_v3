@@ -6,17 +6,17 @@ import Button from './Buttons/StyledButton';
 import { useCreateUsersAddress, useUpdateUsersAddress } from '@/api/users/userInfo';
 import { useEffect } from 'react';
 
-export default function AddressComponent({sourceId, AddressData}: {sourceId: string | null, AddressData:any}) {
+export default function AddressComponent({sourceId, AddressData}: {sourceId: string | null, AddressData:any | null}) {
   const { mutate: createAddress } = useCreateUsersAddress();
   const { mutate: updateAddress } = useUpdateUsersAddress();
 
   const { control, handleSubmit, formState: {isDirty, isSubmitSuccessful}, reset, } = useForm({
     defaultValues:{
-      address: AddressData.address,
-      city: AddressData.city,
-      state: AddressData.state,
-      zipcode: AddressData.zipcode,
-      directions: AddressData.directions,
+      address: AddressData.address || '',
+      city: AddressData.city || '',
+      state: AddressData.state || '',
+      zipcode: AddressData.zipcode || '',
+      directions: AddressData.directions || '',
     }
   });
   
@@ -94,7 +94,14 @@ export default function AddressComponent({sourceId, AddressData}: {sourceId: str
             name='zipcode'
             placeholder='90001'
             control={control}
-            // rules={}
+            InputMode='numeric'
+            rules={{
+              required:'Zipcode is required',
+              minLength:{
+                value: 5,
+                message:'Min length 5 chars'
+              }
+            }}
           />
         </View>
       </View>
@@ -104,6 +111,9 @@ export default function AddressComponent({sourceId, AddressData}: {sourceId: str
         name='directions'
         placeholder='North East Corner of the street, park on side street'
         control={control}
+        MultiLine
+        NumOfLines={2}
+        AutoCorrect
       />
 
       <Button 

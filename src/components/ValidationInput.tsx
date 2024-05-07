@@ -10,13 +10,25 @@ export default function ValidationInput({
   name, 
   rules={}, 
   placeholder, 
-  secureTextEntry,  
+  secureTextEntry,
+  InputMode,
+  KeyboardType,
+  MultiLine = false,
+  NumOfLines = 1,
+  AutoCorrect,
+  AutoCapitalize = 'sentences',
 }:{
   control:any, 
   name: string, 
   rules?:{}, 
   placeholder?:string, 
   secureTextEntry?: boolean,
+  InputMode?: 'decimal' | 'email' | 'none' | 'numeric' | 'search' | 'tel' | 'text' | 'url',
+  KeyboardType?: 'default' | 'number-pad' | 'decimal-pad' | 'numeric' | 'email-address' | 'phone-pad' | 'url',
+  MultiLine?: boolean,
+  NumOfLines?: number,
+  AutoCorrect?:boolean,
+  AutoCapitalize?: 'characters' | 'none' | 'sentences' | 'words'
 }) {
   // const colorScheme = useColorScheme();
 
@@ -25,20 +37,35 @@ export default function ValidationInput({
       control={control}
       name={name}
       rules={rules}
-      render={({field: {value, onChange, onBlur}, fieldState: {error}}) => (
+      render={({field: {value, onChange, onBlur}, fieldState: {error} }) => (
         <>
           <View 
-            style={[{borderColor: error ? Colors.red[500] : Colors.brand[700]}, styles.container]}
+            style={[
+              {
+                borderColor: error ? Colors.red[500] : Colors.brand[700],
+                height: MultiLine ? ( 36 * NumOfLines ) : 38, 
+                // height: 38 * NumOfLines, 
+                // maxHeight: MultiLine ? ( 38 * NumOfLines ) : 38, 
+                maxHeight: 38 * NumOfLines + 4, 
+                paddingVertical: MultiLine ? 2 : undefined,
+              }, 
+              styles.container
+              ]}
           >
             <TextInput
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
               placeholder={placeholder}
-              style={styles.input}
               secureTextEntry={secureTextEntry}
-              autoCapitalize='none'
+              autoCapitalize={AutoCapitalize}
+              autoCorrect={AutoCorrect}
               placeholderTextColor={ Colors.placeholderText }
+              inputMode={InputMode ? InputMode : 'text'}
+              keyboardType={KeyboardType ? KeyboardType : 'default'}            
+              multiline={MultiLine}
+              numberOfLines={NumOfLines ? NumOfLines : 1}
+              style={styles.input}
             />
           </View>
           {error && (
@@ -59,9 +86,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 6,
     padding: 10,
+    // height: 38,
     minHeight: 38,
+    // maxHeight: 38,
     justifyContent:'center',
     marginVertical: 4,
+    flex: 1,
   },
   input:{
 

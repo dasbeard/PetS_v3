@@ -9,9 +9,8 @@ export const InteractiveStyles = ({pressed=false, colorScheme='light', disabled=
     opacity: disabled || pressed ? 0.5 : 1,
     elevation: disabled || pressed ? 1 : 3,
     shadowOffset: disabled ? { height: 0.5, width: 0.5} : {height: pressed ? 0.75 : 2, width: pressed ? 0.75 : 2},
-    
     shadowOpacity: disabled || pressed ? 0.75 : 0.25,
     shadowRadius: disabled || pressed ? 3 : 5,
-    borderColor: colorScheme === 'light' ? Colors.light.border : Colors.dark.border,
+    borderColor: disabled ? (colorScheme === 'light' ? Colors.light.shadow : Colors.dark.shadow) : (colorScheme === 'light' ? Colors.light.border : Colors.dark.border),
   },
 })

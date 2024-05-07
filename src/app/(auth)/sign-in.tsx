@@ -39,7 +39,10 @@ export default function SignInScreen() {
         <ValidationInput
           name='email'
           placeholder='name@gmail.com'
-          control={control}        
+          control={control}       
+          InputMode='email' 
+          AutoCorrect={false}
+          AutoCapitalize='none'
           rules={{
             required: 'Email is required',
             pattern:{
@@ -54,6 +57,9 @@ export default function SignInScreen() {
           name='password'
           placeholder='Password'
           control={control}
+          InputMode='text'
+          AutoCorrect={false}
+          AutoCapitalize='none'
           rules={{
             required: 'Password is required', 
             minLength: {

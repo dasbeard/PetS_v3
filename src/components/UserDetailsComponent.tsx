@@ -12,7 +12,7 @@ export default function UserDetailsComponent({UserData}:any) {
   const { mutate: updateProfile } = useUpdateUserContact();
   const { mutate: updateAvatar } = useUpdateUsersAvatar();
 
-  const { control, handleSubmit, formState: {isDirty, isSubmitSuccessful}, reset, } = useForm({
+  const { control, handleSubmit, formState: {isDirty, isSubmitSuccessful}, reset } = useForm({
     defaultValues:{
       firstName: UserData.first_name,
       lastName: UserData.last_name,
@@ -60,7 +60,6 @@ export default function UserDetailsComponent({UserData}:any) {
 
   return (
     <View style={styles.rootContainer}>
-      {/* <Text>My Info</Text> */}
       <View style={ styles.container}>
         <View style={styles.avatarContainer}>
           <Avatar
@@ -95,17 +94,16 @@ export default function UserDetailsComponent({UserData}:any) {
           name='emergencyContact'
           placeholder='Name and number of emergency contact'
           control={control}
+          MultiLine
+          NumOfLines={2}
         />
       </View>
 
-      <View style={styles.buttonContainer}>
-        <Button 
-          Text='Update My Info' 
-          Disabled={!isDirty} 
-          // Disabled={isLoading} 
-          onPress={handleSubmit(handleUserDetailsUpdate)} 
-        />
-      </View>
+      <Button 
+        Text='Update My Info' 
+        Disabled={!isDirty} 
+        onPress={handleSubmit(handleUserDetailsUpdate)} 
+      />
 
     </View>
   )
@@ -113,13 +111,10 @@ export default function UserDetailsComponent({UserData}:any) {
 
 const styles = StyleSheet.create({
   rootContainer:{
-    // borderWidth: 1,
-    // borderColor: 'red',
     flex: 1,
     marginBottom: 15,
   },
   container: {
-    flex: 2,
     flexDirection: 'row',
     justifyContent: 'center',
     gap: 5
@@ -130,20 +125,12 @@ const styles = StyleSheet.create({
   },
   avatarContainer:{
     flex: 1,
-    // borderWidth: 1,
   },
   nameInputs:{
     flex: 2,
-    // borderWidth: 1,
   },
   emergencyContactContainer:{
-    flex: 1,
-    // borderWidth: 1,
+ 
   },
-  buttonContainer:{
-    flex: .75,
-    justifyContent: 'center',
-  },
-
-
+ 
 })
