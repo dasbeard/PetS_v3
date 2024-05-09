@@ -50,7 +50,7 @@ export default function Button ({
   
   return (
     <Pressable 
-      style={ Disabled ? {opacity: 0.5}: {opacity: 1}}
+      style={ Disabled ? {opacity: 0.7}: {opacity: 1}}
       disabled={Disabled}
       onPress={onPress ? onPress : defaultFunction }
     >
@@ -109,7 +109,8 @@ const buttonStyles = (Selected?: boolean, colorScheme?: string, pressed?: boolea
   innerContainer:{
     borderRadius: 6,
     padding: 12,
-    backgroundColor: Selected ? Colors.brand[800] : Colors.brand[500],
+    // backgroundColor: Selected ? Colors.brand[800] : Colors.brand[500],
+    backgroundColor: Selected ? (colorScheme === 'light' ? Colors.brand[800] : Colors.brand[200] ): ( colorScheme === 'light' ? Colors.brand[500] : Colors.brand[200]),
     borderWidth:1,
     marginVertical: 5,
     alignSelf: 'center',
@@ -118,7 +119,8 @@ const buttonStyles = (Selected?: boolean, colorScheme?: string, pressed?: boolea
     overflow: 'hidden',
     textAlign: 'center',
     fontSize: 15,
-    color: Colors.dark.text,
+    // color: Colors.dark.text,
+    color: (colorScheme === 'light' ? Colors.dark.text : Colors.light.text)
   },
   textContainer: {
     backgroundColor: 'rgba(0, 0, 0, 0)',

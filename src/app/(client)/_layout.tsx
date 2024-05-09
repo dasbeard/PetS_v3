@@ -2,7 +2,6 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { Redirect } from 'expo-router'
 import { Drawer } from 'expo-router/drawer'
 import { useAuth } from '@/providers/AuthProvider'
-
 import Colors from '@/constants/Colors'
 import { useColorScheme } from '@/components/useColorScheme'
 import { FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons'
@@ -11,6 +10,8 @@ import ClientHeader from '@/components/Headers/ClientHeader'
 import { StatusBar } from 'expo-status-bar'
 import ClientDrawerContent from '@/components/Drawers/ClientDrawerContent'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { getHeaderTitle } from '@react-navigation/elements'
+
 
 export default function ClientStack() {
   const { session } = useAuth()
@@ -33,9 +34,13 @@ export default function ClientStack() {
           drawerActiveBackgroundColor: colorScheme === 'light' ? Colors.brand[100]: Colors.brand[300],
           drawerActiveTintColor: Colors.light.text,
           drawerInactiveTintColor: Colors.placeholderText,
-          // drawerType: isLargeScreen ? 'permanent' : 'front',
+          // drawerType: isLargeScreen ? 'permanent' : 'front',       // for web - not fully setup at this time
           drawerStyle: isLargeScreen ? {width: 250} : {width: '65%'},
-          header: () => <ClientHeader />          
+          header: ({route, options}) => {
+            // Get and pass the current screens title to the custom header component
+            const title = getHeaderTitle(options, route.name)
+            return <ClientHeader title={title} /> 
+          }         
         }}
       >        
         <Drawer.Screen 

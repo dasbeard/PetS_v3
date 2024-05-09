@@ -41,7 +41,7 @@ export default function AuthProvider({ children}: PropsWithChildren) {
       if(session) {
         // decode the jwt to get role
         // const jwt = jwtDecode<JWT>(session.access_token)
-        // console.log(jwt.user_role)
+        // // console.log(jwt.user_role)
         // setRole(jwt.user_role)
         
 // ONLY FOR LOCAL AS JWT IS NOT AVAILABLE
@@ -65,6 +65,8 @@ setRole('owner')
 
     const { error } = await supabase.auth.signOut();
     if(error){
+      console.log('Errr', error);
+      
       Alert.alert(error.message)
     };
 

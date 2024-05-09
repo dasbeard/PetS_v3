@@ -35,10 +35,11 @@ export default function IconButton ({
   const defaultFunction = () => {
     console.log('Button Clicked');
   }
+
   
   return (
     <Pressable 
-      style={ Disabled ? {opacity: 0.5}: {opacity: 1}}
+      style={ Disabled ? {opacity: 0.7}: {opacity: 1}}
       disabled={Disabled}
       onPress={onPress ? onPress : defaultFunction }
     >
@@ -57,7 +58,6 @@ export default function IconButton ({
               name={Icon ? Icon : 'code'} 
               size={IconSize ? IconSize : 16} 
               color={IconColor ? IconColor : (colorScheme === 'light' ? Colors.dark.text : Colors.light.text)} />
-
           </View>
 
         )}
@@ -69,12 +69,11 @@ const buttonStyles = (Selected?: boolean, colorScheme?: string, pressed?: boolea
   innerContainer:{
     borderRadius: 6,
     padding: 8,
-    backgroundColor: Selected ? Colors.brand[800] : Colors.brand[500],
+    backgroundColor: Selected ? (colorScheme === 'light' ? Colors.brand[800] : Colors.brand[200] ): ( colorScheme === 'light' ? Colors.brand[500] : Colors.brand[200]),
     borderWidth:1,
     marginVertical: 5,
     alignSelf: 'center',
     justifyContent: 'center',
-    // height: 38,
   },
 
   Selected:{

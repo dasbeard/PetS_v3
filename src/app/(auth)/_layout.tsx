@@ -10,8 +10,21 @@ export default function AuthStack() {
 
   return (
   <Stack>
-    <Stack.Screen name="sign-in" options={{title: 'Sign in', headerShown: false}}/>
-    <Stack.Screen name="sign-up" options={{title: 'Create an account'}}/>
+    <Stack.Screen 
+      name="sign-in" 
+      options={{
+        headerShown: false, 
+        title: 'Sign in', 
+      }}
+    />
+
+    <Stack.Screen 
+      name="sign-up" 
+      options={{
+        title: 'Create an account', 
+        headerTitleAlign: 'center',
+      }}
+    />
   </Stack>
 )
 }

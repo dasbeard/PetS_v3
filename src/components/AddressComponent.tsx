@@ -5,18 +5,19 @@ import { useForm } from 'react-hook-form';
 import Button from './Buttons/StyledButton';
 import { useCreateUsersAddress, useUpdateUsersAddress } from '@/api/users/userInfo';
 import { useEffect } from 'react';
+import { Tables } from '@/database.types';
 
-export default function AddressComponent({sourceId, AddressData}: {sourceId: string | null, AddressData:any | null}) {
+export default function AddressComponent({sourceId, AddressData}: {sourceId: string | null, AddressData: Tables<'addresses'> | null}) {
   const { mutate: createAddress } = useCreateUsersAddress();
   const { mutate: updateAddress } = useUpdateUsersAddress();
 
   const { control, handleSubmit, formState: {isDirty, isSubmitSuccessful}, reset, } = useForm({
     defaultValues:{
-      address: AddressData.address || '',
-      city: AddressData.city || '',
-      state: AddressData.state || '',
-      zipcode: AddressData.zipcode || '',
-      directions: AddressData.directions || '',
+      address: AddressData?.address,
+      city: AddressData?.city,
+      state: AddressData?.state,
+      zipcode: AddressData?.zipcode,
+      directions: AddressData?.directions,
     }
   });
   
@@ -51,17 +52,17 @@ export default function AddressComponent({sourceId, AddressData}: {sourceId: str
   useEffect(() => {
     if(isSubmitSuccessful){
       reset({
-        address: AddressData.address,
-        city: AddressData.city,
-        state: AddressData.state,
-        zipcode: AddressData.zipcode,
-        directions: AddressData.directions,
+        address: AddressData?.address,
+        city: AddressData?.city,
+        state: AddressData?.state,
+        zipcode: AddressData?.zipcode,
+        directions: AddressData?.directions,
       })
     }
   },[AddressData])
 
   return (
-    <View style={styles.rootContainer}>
+     <View style={styles.rootContainer}> 
       <Text style={styles.label}>Address</Text>
       <ValidationInput
         name='address'
@@ -131,7 +132,7 @@ const styles = StyleSheet.create({
   rootContainer:{
     // borderWidth: 1,
     // borderColor: 'red',
-    flex: 1,
+    flexGrow: 1,
     marginBottom: 15,
   },
   container: {

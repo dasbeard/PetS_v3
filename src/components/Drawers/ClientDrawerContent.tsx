@@ -25,7 +25,7 @@ export default function ClientDrawerContent(props: any) {
           styles.header, { 
             borderBottomColor: colorScheme === 'light' ? Colors.placeholderText : Colors.dark.altText }]}
         >
-          <LogoComponent styles={styles.headerImage} invert={true} />
+          <LogoComponent styles={styles.headerImage} Dark />
         </View>
 
         <View style={styles.drawerItems}>

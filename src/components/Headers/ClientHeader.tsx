@@ -1,23 +1,35 @@
-import { View, StyleSheet, Platform, Pressable, SafeAreaView } from 'react-native'
+import { View, Text, StyleSheet, Platform, Pressable, SafeAreaView, Keyboard } from 'react-native'
 import React from 'react'
-import { Link } from 'expo-router'
-import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { Link, useNavigation } from 'expo-router'
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
 import Colors from '@/constants/Colors'
-
-
 import { useColorScheme } from '@/components/useColorScheme';
-import { DrawerToggleButton } from '@react-navigation/drawer'
+import { DrawerActions } from '@react-navigation/native'
+import { TouchableOpacity } from 'react-native-gesture-handler'
 
-export default function ClientHeader() {
+
+export default function ClientHeader( {title}: any) {
   const colorScheme = useColorScheme(); 
+  const navigation = useNavigation()
+
+  const toggleDrawer = () => {
+    Keyboard.dismiss();
+    navigation.dispatch(DrawerActions.toggleDrawer());
+  }
 
   return (
     <SafeAreaView style={{backgroundColor: colorScheme === 'light' ? Colors.brand[500] :Colors.brand[700] }}>
       <View style={styles.mainContianer}>
         
         <View style={styles.left}>
-          <DrawerToggleButton tintColor={Colors.dark.text}  />
+          
+          <TouchableOpacity onPress={toggleDrawer} style={{paddingLeft: 8}}>
+            <Ionicons name='menu-sharp' size={23} color={Colors.dark.text} />
+          </TouchableOpacity>
+          
         </View>
+
+        <Text style={styles.title}>{title}</Text>
         
         <View style={styles.right}>
           <View style={styles.linkContainer}>
@@ -68,9 +80,19 @@ const styles = StyleSheet.create({
 
   },
   left:{
+    flex: 1,
     marginHorizontal: Platform.OS === 'web' ? 5 : -3,
     justifyContent: 'center',
   },
+
+  title:{
+    flexGrow: 1,
+    alignSelf: 'center',
+    textAlign: 'center',
+    fontSize: 18,
+    color: Colors.dark.text
+  },
+
   right:{
     flex: 1,
     justifyContent: 'flex-end',

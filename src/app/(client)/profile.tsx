@@ -7,8 +7,10 @@ import UserDetailsComponent from '@/components/UserDetailsComponent';
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
 import { useAuth } from '@/providers/AuthProvider'
-import { ActivityIndicator, ScrollView, StyleSheet } from 'react-native'
+import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { KeyboardAwareScrollView } from '@pietile-native-kit/keyboard-aware-scrollview'
 
 
 export default function ClientProfile() {
@@ -29,24 +31,31 @@ export default function ClientProfile() {
   }
 
   return (
-    <ScrollView  style={[styles.rootConatiner, {backgroundColor: colorScheme === 'light' ? Colors.light.background : Colors.dark.background  } ]}>
+    // <ScrollView  style={styles({colorScheme:colorScheme!}).rootConatiner}>
+    <KeyboardAwareScrollView 
+      extraHeight={36}
+      style={styles({colorScheme:colorScheme!}).rootConatiner}
+    >
 
       <UserDetailsComponent UserData={userProfile} />
 
       <PhoneSection userId={userProfile?.id || ''} PhoneNumberData={userProfile?.phone_numbers } />
 
-      {/* <AddressComponent sourceId={userProfile?.id || ''} AddressData={userProfile?.addresses || null}/> */}
+      <AddressComponent sourceId={userProfile?.id || ''} AddressData={userProfile?.addresses || null}/>
 
       <HomeInfoComponent userId={userProfile?.id || ''} HomeInfo={userProfile?.home_info || null}/>
 
-    </ScrollView>
+    {/* </ScrollView> */}
+    </KeyboardAwareScrollView>
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const styles = ( {colorScheme}:{colorScheme?:string} ) =>  StyleSheet.create({
   rootConatiner: {
     flex: 1,
     padding: 10,
-
+    backgroundColor: colorScheme === 'light' ? Colors.light.background : Colors.dark.background  
   },
 })

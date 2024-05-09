@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Image, ScrollView } from 'react-native'
+import { Pressable, StyleSheet, Image, ScrollView, KeyboardAvoidingView, Platform } from 'react-native'
 import { useState } from 'react'
 import { View, Text } from '@/components/Themed'
 import { useAuth } from '@/providers/AuthProvider'
@@ -9,8 +9,10 @@ import Spacer from '@/components/Spacer';
 import { useRouter } from 'expo-router';
 import Colors from '@/constants/Colors';
 import LogoComponent from '@/components/LogoComponent';
+import { useColorScheme } from '@/components/useColorScheme';
 
 export default function SignInScreen() {
+  const colorScheme = useColorScheme();
   const { signInWithEmail } = useAuth();
   const [ loading, setLoading ] = useState<boolean>(false)
   const { control, handleSubmit } = useForm()
@@ -29,9 +31,15 @@ export default function SignInScreen() {
   }
 
   return (
-    <View style={styles.rootContainer}>
+    // <View style={styles.rootContainer}>
+    <KeyboardAvoidingView
+      style={[styles.rootContainer, {backgroundColor: colorScheme === 'light' ? Colors.light.background : Colors.dark.background}]}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 65 : undefined}
+    >
+
       <View style={styles.imageContainer}>
-        <LogoComponent styles={styles.image}/>
+        <LogoComponent styles={styles.image} />
       </View>
 
       <View style={styles.container}>
@@ -80,7 +88,8 @@ export default function SignInScreen() {
           <Text style={styles.textButton}>Create an account</Text>
         </Pressable>
       </View>
-    </View>
+    {/* </View> */}
+    </KeyboardAvoidingView>
   )
 }
 
