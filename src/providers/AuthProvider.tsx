@@ -89,6 +89,20 @@ setRole('owner')
     }
 
     if(data){
+
+      //  Create storate bucket with id
+      // const { data: bucketData, error: bucketError } = await supabase.storage.createBucket(`avatars`)
+      // const { data: bucketData, error: bucketError } = await supabase.storage.createBucket(`${data.user?.id.toString()!}`, {
+      //   public: true,
+      //   allowedMimeTypes: ['image/*'],
+      //   fileSizeLimit: '1MB',
+      // })
+
+      // if(bucketError){
+      //   console.log('Error creating bucket:', {bucketError});
+        
+      // }
+
       // decode the jwt to get role
       if( data.session){
         const jwt = jwtDecode<JWT>(data.session.access_token)

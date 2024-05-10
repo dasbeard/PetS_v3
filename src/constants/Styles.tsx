@@ -5,8 +5,8 @@ export const InteractiveStyles = ({pressed=false, colorScheme='light', disabled=
   // export const InteractiveStyles = ({pressed=false, colorScheme='light'}:{pressed?: boolean, colorScheme?: string}) => StyleSheet.create({
   
   Shadow:{
-    shadowColor: colorScheme === 'light' ? Colors.light.shadow : Colors.dark.shadow,
     opacity: disabled || pressed ? 0.5 : 1,
+    shadowColor: colorScheme === 'light' ? Colors.light.shadow : Colors.dark.shadow,
     elevation: disabled || pressed ? 1 : 3,
     shadowOffset: disabled ? { height: 0.5, width: 0.5} : {height: pressed ? 0.75 : 2, width: pressed ? 0.75 : 2},
     shadowOpacity: disabled || pressed ? 0.75 : 0.25,

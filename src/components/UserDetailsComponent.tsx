@@ -60,9 +60,11 @@ export default function UserDetailsComponent({UserData}:any) {
 
   return (
     <View style={styles.rootContainer}>
+      <Text>UserID: {UserData.id}</Text>
       <View style={ styles.container}>
         <View style={styles.avatarContainer}>
           <Avatar
+            userId={UserData.id}
             size={110}
             url={UserData.avatar_url || ''}
             onUpload={(url:string) =>{

@@ -38,7 +38,7 @@ export default {
     text: '#000',
     background: `hsl(${BGBase}, 10%, 96%)`,
     disabled: `hsl(${BGBase}, 3.5%, 70%)`,
-    view: `hsl(${BGBase}, 4%, 95%)`,
+    view: `hsl(${BGBase}, 4%, 94%)`,
     altText: 'hsl(0, 1%, 22%)',
     border: `hsl(${Brand}, 20%, 90%)`,
     shadow: '#111'

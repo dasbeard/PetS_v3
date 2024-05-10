@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react'
 import { Image, StyleSheet, Platform, ActivityIndicator, Pressable } from 'react-native'
 import * as ImagePicker from 'expo-image-picker'
 import { supabase } from '@/util/supabase'
-import { View, Text } from './Themed'
-import Button from './Buttons/StyledButton'
+import { View } from './Themed'
 import { Ionicons } from '@expo/vector-icons'
 import Colors from '@/constants/Colors'
 
@@ -11,10 +10,11 @@ interface Props {
   size: number
   url: string | null
   onUpload: (filepath: string) => void
+  userId: string 
 }
 
 
-export default function Avatar ({ url, size = 150, onUpload }: Props) {
+export default function Avatar ({ url, size = 150, onUpload, userId }: Props) {
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [loadingImage, setLoadingImage] = useState(false) 
@@ -33,6 +33,7 @@ export default function Avatar ({ url, size = 150, onUpload }: Props) {
     try{
       setLoadingImage(true)
       const {data, error} = await supabase.storage.from('avatars').download(path)
+      // const {data, error} = await supabase.storage.from('avatars').download(path)
 
       if (error) throw error
 
@@ -43,7 +44,7 @@ export default function Avatar ({ url, size = 150, onUpload }: Props) {
       }
     } catch (error) {
       if( error instanceof Error) {
-        console.log('Error downloading image:', error.message);
+        console.log('Error downloading image:', {error});
       }
     } finally {
       setLoadingImage(false)
@@ -89,7 +90,7 @@ export default function Avatar ({ url, size = 150, onUpload }: Props) {
 
           const { error: uploadError } = await supabase.storage
             .from('avatars')
-            .upload(filePath, blob)
+            .upload(`${userId}/${filePath}`, blob)
 
           if (uploadError) {
             throw uploadError
@@ -107,7 +108,7 @@ export default function Avatar ({ url, size = 150, onUpload }: Props) {
 
           const { data, error: uploadError } = await supabase.storage
             .from('avatars')
-            .upload(path, arrayBuffer, {
+            .upload(`${userId}/${path}`, arrayBuffer, {
               contentType: image.mimeType ?? 'image/jpeg',
             })
             
@@ -120,8 +121,12 @@ export default function Avatar ({ url, size = 150, onUpload }: Props) {
 
       } catch (error) {
         if(error instanceof Error){
+          console.log('1111', {error});
+          
           alert(error.message)
         } else {
+          console.log('2222', {error});
+
           throw error
         }
       } finally {

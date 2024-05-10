@@ -4,18 +4,18 @@ import { supabase } from '@/util/supabase';
 
 type RemoteImageProps = {
   path?: string | null;
-  fallback?: string;
+  fallback: string;
 } & Omit<ComponentProps<typeof Image>, 'source'>;
 
 const RemoteImage = ({ path, fallback, ...imageProps }: RemoteImageProps) => {
-  const [image, setImage] = useState(''); 
+  const [image, setImage] = useState('');
 
   useEffect(() => {
     if (!path) return;
     (async () => {
       setImage('');
       const { data, error } = await supabase.storage
-        .from('avatars')
+        .from('product-images')
         .download(path);
 
       if (error) {
@@ -33,11 +33,10 @@ const RemoteImage = ({ path, fallback, ...imageProps }: RemoteImageProps) => {
   }, [path]);
 
   if (!image) {
-    return <Image source={ require( '@assets/icons/Paws_Icon.png' )} {...imageProps} />;
-  } else {
-    return <Image source={{ uri: image  }} {...imageProps} />;
+    
   }
 
+  return <Image source={{ uri: image || fallback }} {...imageProps} />;
 };
 
 export default RemoteImage;
