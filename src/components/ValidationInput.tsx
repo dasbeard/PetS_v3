@@ -41,15 +41,14 @@ export default function ValidationInput({
         <>
           <View 
             style={[
+              styles.container,
               {
                 borderColor: error ? Colors.red[500] : Colors.brand[700],
-                height: MultiLine ? ( 36 * NumOfLines ) : 38, 
-                // height: 38 * NumOfLines, 
-                // maxHeight: MultiLine ? ( 38 * NumOfLines ) : 38, 
-                maxHeight: 38 * NumOfLines + 4, 
+                height: MultiLine ? ( 38 * NumOfLines ) : 40, 
+                maxHeight: 36 * NumOfLines + 4, 
                 paddingVertical: MultiLine ? 2 : undefined,
+
               }, 
-              styles.container
               ]}
           >
             <TextInput
@@ -65,7 +64,10 @@ export default function ValidationInput({
               keyboardType={KeyboardType ? KeyboardType : 'default'}            
               multiline={MultiLine}
               numberOfLines={NumOfLines ? NumOfLines : 1}
-              style={styles.input}
+              style={{
+                textAlignVertical: MultiLine ? 'top' : 'auto', 
+                height: MultiLine ? '85%' : 'auto', 
+              }}
             />
           </View>
           {error && (
@@ -87,15 +89,13 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     padding: 10,
     // height: 38,
-    minHeight: 38,
+    minHeight: 40,
     // maxHeight: 38,
     justifyContent:'center',
     marginVertical: 4,
     flex: 1,
   },
-  input:{
 
-  },
   alert:{
     marginTop: -2
   },

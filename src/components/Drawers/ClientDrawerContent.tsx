@@ -8,14 +8,16 @@ import Colors from '@/constants/Colors'
 import Button from '../Buttons/StyledButton';
 import LogoComponent from '../LogoComponent';
 
-export default function ClientDrawerContent(props: any) {
+
+export default function ClientDrawerContent(props: any ) {
   const colorScheme = useColorScheme();
   const { bottom } = useSafeAreaInsets(); 
   const { logOutUser } = useAuth();
 
   return (
     <View style={{flex: 1}}>
-      <DrawerContentScrollView props{...props} 
+      <DrawerContentScrollView 
+        {...props} 
         scrollEnabled={false}
         contentContainerStyle={{
           backgroundColor: colorScheme === 'light' ? Colors.brand[500] : Colors.brand[700]
@@ -29,8 +31,12 @@ export default function ClientDrawerContent(props: any) {
         </View>
 
         <View style={styles.drawerItems}>
-          <DrawerItemList props{...props} />
+           <DrawerItemList 
+            {...props}           
+          />
+
         </View>
+
       </DrawerContentScrollView>
 
       <View style={[styles.footer, {paddingBottom: 20 + bottom}]}>

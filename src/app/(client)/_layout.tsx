@@ -27,6 +27,25 @@ export default function ClientStack() {
   return (
     <GestureHandlerRootView style={{flex: 1, paddingBottom: bottom + 10}}>
       <StatusBar style='light'/>
+
+      {/* <Drawer 
+        initialRouteName='dashboard' 
+        drawerContent={ClientDrawerContent}
+        screenOptions={{
+          drawerActiveBackgroundColor: colorScheme === 'light' ? Colors.brand[100]: Colors.brand[300],
+          drawerActiveTintColor: Colors.light.text,
+          drawerInactiveTintColor: Colors.placeholderText,
+          // drawerType: isLargeScreen ? 'permanent' : 'front',       // for web - not fully setup at this time
+          drawerStyle: isLargeScreen ? {width: 250} : {width: '65%'},
+          header: ({route, options}) => {
+            // Get and pass the current screens title to the custom header component
+            const title = getHeaderTitle(options, route.name)
+            return <ClientHeader title={title} /> 
+          }         
+        }}
+      />    */}
+
+
       <Drawer 
         initialRouteName='dashboard' 
         drawerContent={ClientDrawerContent}
@@ -98,7 +117,9 @@ export default function ClientStack() {
           }} 
         />
 
-        {/* Screens not in drawer */}
+
+
+        {/* Hidden Screens */}
 
         <Drawer.Screen 
           name='createEvent' 
@@ -106,16 +127,35 @@ export default function ClientStack() {
             drawerItemStyle: {display: 'none'}
           }} 
         />
+        <Drawer.Screen 
+          name='(events)/editEvent' 
+          options={{ 
+            drawerItemStyle: {display: 'none'}
+          }} 
+        />
+        <Drawer.Screen 
+          name='(events)/[eventID]' 
+          options={{ 
+            drawerItemStyle: {display: 'none'}
+          }} 
+        />
 
         <Drawer.Screen 
-          name='[petID]'
+          name='(pets)/[petID]' 
           options={{ 
-            title:'Add A Pet',
+            drawerItemStyle: {display: 'none'}
+          }} 
+        />
+        <Drawer.Screen 
+          name='(pets)/editPet' 
+          options={{ 
             drawerItemStyle: {display: 'none'}
           }} 
         />
 
       </Drawer>
+
+
     </GestureHandlerRootView>
     
   )
