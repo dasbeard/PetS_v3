@@ -21,7 +21,6 @@ export default function ClientProfile() {
 
   // console.log('-- Profile: UserProfile --', userProfile);
   
-  
   if(isLoading){
     return <ActivityIndicator />
   }
@@ -31,7 +30,6 @@ export default function ClientProfile() {
   }
 
   return (
-    // <ScrollView  style={styles({colorScheme:colorScheme!}).rootConatiner}>
     <KeyboardAwareScrollView 
       extraHeight={36}
       style={styles({colorScheme:colorScheme!}).rootConatiner}
@@ -44,8 +42,7 @@ export default function ClientProfile() {
       <AddressComponent sourceId={userProfile?.id || ''} AddressData={userProfile?.addresses || null}/>
 
       <HomeInfoComponent userId={userProfile?.id || ''} HomeInfo={userProfile?.home_info || null}/>
-
-    {/* </ScrollView> */}
+      
     </KeyboardAwareScrollView>
   )
 }

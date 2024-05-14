@@ -33,7 +33,7 @@ const RemoteImage = ({ path, fallback, ...imageProps }: RemoteImageProps) => {
   }, [path]);
 
   if (!image) {
-    return <Image source={ require( '@assets/icons/Paws_Icon.png' )} {...imageProps} />;
+    return <Image source={ require( '@assets/icons/Paw_Icon.png' )} {...imageProps} />;
   } else {
     return <Image source={{ uri: image  }} {...imageProps} />;
   }

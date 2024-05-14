@@ -1,31 +1,39 @@
-import { Image, StyleSheet } from 'react-native'
+import { Image, Pressable, StyleSheet } from 'react-native'
 import { View, Text, CardView } from './Themed';
 import React from 'react'
 import RemoteImage from './RemoteImage'
 import { useColorScheme } from './useColorScheme';
 import Colors from '@/constants/Colors';
 import { InteractiveStyles } from '@/constants/Styles';
+import { Link } from 'expo-router';
+import { Tables, TablesInsert } from '@/database.types';
 
 
-export default function PetCard({PetData}:any) {
+export default function PetCard({PetData} : { PetData:any}) {
   const colorScheme = useColorScheme();
 
 
   
 
   return (
-    <CardView style={[shadow({colorScheme: colorScheme!}).shadow, styles.rootContainer, ]}>
-      <CardView style={[styles.imageContainer, shadow({colorScheme: colorScheme!}).shadow ]}>
-        <RemoteImage style={[styles.image]} path={'1714704722356.jpg'}  />
-        {/* <RemoteImage style={styles.image} path={null}  /> */}
-      </CardView>
+    <Link href={`/(client)/${PetData?.id}`} asChild>
+      <Pressable>
+        {({ pressed }) => (
 
-      <CardView style={styles.textContainer}>
-        <Text style={styles.name}>Name Goes Here</Text>
-        <Text style={styles.age}>4 yrs old</Text>
-      </CardView>
-      
-    </CardView>
+          <CardView style={[shadow({colorScheme: colorScheme!}).shadow, styles.rootContainer, ]}>
+            <CardView style={[styles.imageContainer, shadow({colorScheme: colorScheme!}).shadow ]}>
+              <RemoteImage style={[styles.image]} path={null}  />
+            </CardView>
+
+            <CardView style={styles.textContainer}>
+              <Text style={styles.name}>{PetData?.name}</Text>
+              <Text style={styles.age}>{PetData?.age} old</Text>
+            </CardView>
+            
+          </CardView>
+        )}
+      </Pressable>
+    </Link>
   )
 }
 
@@ -45,7 +53,7 @@ const styles= StyleSheet.create({
   rootContainer:{
     flex: 1,
     flexDirection: 'row',
-    padding: 10,
+    padding: 18,
     borderRadius: 12,
     maxHeight: 145,
     marginVertical: 6,

@@ -98,9 +98,19 @@ export default function ClientStack() {
           }} 
         />
 
+        {/* Screens not in drawer */}
+
         <Drawer.Screen 
           name='createEvent' 
           options={{ 
+            drawerItemStyle: {display: 'none'}
+          }} 
+        />
+
+        <Drawer.Screen 
+          name='[petID]'
+          options={{ 
+            title:'Add A Pet',
             drawerItemStyle: {display: 'none'}
           }} 
         />

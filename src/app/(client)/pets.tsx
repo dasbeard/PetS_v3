@@ -4,25 +4,35 @@ import PetCard from '@/components/PetCard'
 import { useColorScheme } from '@/components/useColorScheme'
 import Colors from '@/constants/Colors';
 import { FlashList } from '@shopify/flash-list';
+import Button from '@/components/Buttons/StyledButton';
+import { useRouter } from 'expo-router';
+import { Tables, TablesInsert } from '@/database.types';
 
-export const testData =[
+export const testData = [
   {
-    id: 123,
-    name: 'Name 1',
-    age: 2,
-    image: '',
+    age: 4,
+    id: 25489,
+    name: 'Frank',
   },
   {
-    id: 234,
-    name: 'Name 2',
     age: 3,
-    image: '',
+    id: 956475,
+    name: 'Fido',
   },
 ]
 
+
 export default function ClientPets() {
   const colorScheme = useColorScheme();
+  const router = useRouter();
 
+  const AddPetButton = () => {
+    return(
+      <View style={{paddingHorizontal: 12}}>
+        <Button Text='Add A Pet' onPress={() => router.push('/(client)/addNewPet') } />
+      </View>
+    )
+  }
 
 
   return (
@@ -31,6 +41,7 @@ export default function ClientPets() {
         data={testData}
         renderItem={({ item }) => <PetCard PetData={item} /> }
         estimatedItemSize={145}
+        ListFooterComponent={ <AddPetButton /> }
       />
       
     </View>
