@@ -29,14 +29,14 @@ export default function ClientPets() {
   const AddPetButton = () => {
     return(
       <View style={{paddingHorizontal: 12}}>
-        <Button Text='Add A Pet' onPress={() => router.push('/(client)/addNewPet') } />
+        <Button Text='Add A Pet' onPress={() => router.navigate(`/(client)/(pets)/${null}`) } />
       </View>
     )
   }
 
 
   return (
-    <View style={styles({colorScheme:colorScheme!}).rootContainer}>
+    <View style={styles.rootContainer}>
       <FlashList 
         data={testData}
         renderItem={({ item }) => <PetCard PetData={item} /> }
@@ -48,7 +48,7 @@ export default function ClientPets() {
   )
 }
 
-const styles = ( {colorScheme}:{colorScheme?:string} ) =>  StyleSheet.create({
+const styles = StyleSheet.create({
   rootContainer:{
     // borderWidth: 1,
     // borderColor: 'red',

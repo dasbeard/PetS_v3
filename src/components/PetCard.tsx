@@ -1,26 +1,30 @@
-import { Image, Pressable, StyleSheet } from 'react-native'
+import { Pressable, StyleSheet } from 'react-native'
 import { View, Text, CardView } from './Themed';
 import React from 'react'
 import RemoteImage from './RemoteImage'
 import { useColorScheme } from './useColorScheme';
 import Colors from '@/constants/Colors';
-import { InteractiveStyles } from '@/constants/Styles';
 import { Link } from 'expo-router';
-import { Tables, TablesInsert } from '@/database.types';
+import { InteractiveStyles } from '@/constants/Styles';
+
+export type QuickPetDataProps = {
+  id: number,
+  name: string,
+  age: number | string,
+}
 
 
-export default function PetCard({PetData} : { PetData:any}) {
+export default function PetCard({PetData} : { PetData: QuickPetDataProps}) {
   const colorScheme = useColorScheme();
 
 
-  
 
   return (
-    <Link href={`/(client)/${PetData?.id}`} asChild>
+    <Link href={`/(client)/(pets)/${PetData?.id}`} asChild>
       <Pressable>
         {({ pressed }) => (
 
-          <CardView style={[shadow({colorScheme: colorScheme!}).shadow, styles.rootContainer, ]}>
+          <CardView style={[InteractiveStyles({pressed: pressed, colorScheme: colorScheme!}).Shadow, styles.rootContainer ]}>
             <CardView style={[styles.imageContainer, shadow({colorScheme: colorScheme!}).shadow ]}>
               <RemoteImage style={[styles.image]} path={null}  />
             </CardView>

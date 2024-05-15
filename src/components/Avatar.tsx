@@ -5,6 +5,8 @@ import { supabase } from '@/util/supabase'
 import { View } from './Themed'
 import { Ionicons } from '@expo/vector-icons'
 import Colors from '@/constants/Colors'
+import RemoteImage from './RemoteImage'
+import { useColorScheme } from './useColorScheme'
 
 interface Props {
   size: number
@@ -19,7 +21,7 @@ export default function Avatar ({ url, size = 150, onUpload, userId }: Props) {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [loadingImage, setLoadingImage] = useState(false) 
   const avatarSize = { height: size, width: size }
-  
+  const colorScheme = useColorScheme();  
 
   useEffect(() => {
     if(url) downloadImage(url)
@@ -146,12 +148,23 @@ export default function Avatar ({ url, size = 150, onUpload, userId }: Props) {
           <Image 
             source={{ uri: avatarUrl}}
             accessibilityLabel='Avatar'
-            style={[avatarSize, styles.avatar, styles.image, {borderRadius: size /2}]}
+            style={[avatarSize, styles.avatar, styles.image,  {borderRadius: size /2}]}
           />
          )}
           </>
       ) :(
-        <View style={[avatarSize, styles.avatar, styles.noImage, {borderRadius: size /2}]} />
+        <View style={
+          [
+            styles.avatar, 
+            styles.noImage, 
+            shadow({colorScheme: colorScheme!}).shadow, 
+            {
+              borderRadius: size /2,
+              // height: avatarSize.height/2,
+            }
+          ]}>
+          <RemoteImage path={null} style={[avatarSize, styles.avatar, styles.noImage, {borderRadius: size /2 }]} />
+        </View>
       )}
 
       <View>
@@ -179,6 +192,18 @@ export default function Avatar ({ url, size = 150, onUpload, userId }: Props) {
   )
 }
 
+const shadow = ({colorScheme}:{colorScheme?:string}) => StyleSheet.create({
+  shadow:{ 
+    shadowColor: colorScheme === 'light' ? Colors.light.shadow : Colors.dark.shadow,
+    borderColor: colorScheme === 'light' ? 'rgba(0,0,0, 0.1)' : 'rgba(251,251,251,0.21)',
+    backgroundColor: colorScheme === 'light' ? 'rgba(0,0,0, 0.1)' : 'rgba(251,251,251,0.21)',
+    elevation: 1,
+    shadowOffset:  {height: 2, width: 2},
+    shadowOpacity: 0.25,
+    shadowRadius:  1.5,
+  }
+})
+
 
 const styles = StyleSheet.create({
   avatarContainer:{
@@ -196,10 +221,11 @@ const styles = StyleSheet.create({
     paddingTop: 0,
   },
   noImage: {
-    backgroundColor: '#333',
+    // backgroundColor: '#333',
+    // backgroundColor: 'rgba(0,0,0, 0.1)',
     borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: 'rgb(200, 200, 200',
+    // borderStyle: 'solid',
+    // borderColor: 'rgb(200, 200, 200',
     // borderRadius: 5,
   },
   uploadButton:{

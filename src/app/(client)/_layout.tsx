@@ -143,12 +143,7 @@ export default function ClientStack() {
         <Drawer.Screen 
           name='(pets)/[petID]' 
           options={{ 
-            drawerItemStyle: {display: 'none'}
-          }} 
-        />
-        <Drawer.Screen 
-          name='(pets)/editPet' 
-          options={{ 
+            title: 'Pet Details',
             drawerItemStyle: {display: 'none'}
           }} 
         />
