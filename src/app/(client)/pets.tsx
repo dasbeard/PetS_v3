@@ -7,24 +7,32 @@ import { FlashList } from '@shopify/flash-list';
 import Button from '@/components/Buttons/StyledButton';
 import { useRouter } from 'expo-router';
 import { Tables, TablesInsert } from '@/database.types';
+import { useGetUsersPetList } from '@/api/pets';
+import { useAuth } from '@/providers/AuthProvider';
 
-export const testData = [
-  {
-    age: 4,
-    id: 25489,
-    name: 'Frank',
-  },
-  {
-    age: 3,
-    id: 956475,
-    name: 'Fido',
-  },
-]
+// export const testData = [
+//   {
+//     age: 4,
+//     id: 25489,
+//     name: 'Frank',
+//   },
+//   {
+//     age: 3,
+//     id: 956475,
+//     name: 'Fido',
+//   },
+// ]
 
 
 export default function ClientPets() {
   const colorScheme = useColorScheme();
+  const { session } = useAuth();
   const router = useRouter();
+  const { data: PetList, error, isLoading } = useGetUsersPetList( session?.user.id! );
+
+// console.log({PetList});
+// console.log(session?.user.id);
+
 
   const AddPetButton = () => {
     return(
@@ -38,7 +46,7 @@ export default function ClientPets() {
   return (
     <View style={styles.rootContainer}>
       <FlashList 
-        data={testData}
+        data={PetList}
         renderItem={({ item }) => <PetCard PetData={item} /> }
         estimatedItemSize={145}
         ListFooterComponent={ <AddPetButton /> }

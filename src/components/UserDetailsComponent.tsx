@@ -64,7 +64,7 @@ export default function UserDetailsComponent({UserData}:any) {
       <View style={ styles.container}>
         <View style={styles.avatarContainer}>
           <Avatar
-            userId={UserData.id}
+            StorageBucket={UserData.id}
             size={110}
             url={UserData.avatar_url || ''}
             onUpload={(url:string) =>{

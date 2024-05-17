@@ -4,24 +4,43 @@ import React from 'react'
 import RemoteImage from './RemoteImage'
 import { useColorScheme } from './useColorScheme';
 import Colors from '@/constants/Colors';
-import { Link } from 'expo-router';
+import { Link, useNavigation, useRouter } from 'expo-router';
 import { InteractiveStyles } from '@/constants/Styles';
 
 export type QuickPetDataProps = {
-  id: number,
-  name: string,
-  age: number | string,
+  id?: number,
+  name?: string | null,
+  age?: any | null, 
+  photo_url?: string | null,
+  type?: string | null,
 }
 
 
 export default function PetCard({PetData} : { PetData: QuickPetDataProps}) {
   const colorScheme = useColorScheme();
+  const nav = useNavigation();
+  const router = useRouter();
 
+  const handleSelection = () => {
+    // router.setParams({test: 'testing'})
+    // router.navigate(`/(client)/(pets)/${PetData.id}`)
+
+
+  }
 
 
   return (
-    <Link href={`/(client)/(pets)/${PetData?.id}`} asChild>
-      <Pressable>
+    // <Link href={`/(client)/(pets)/${PetData?.id}`} asChild>
+    <Link 
+    href={`/(client)/(pets)/${PetData?.id}`} 
+      // href={{
+      //   pathname: `/(client)/(pets)/petLoading`,
+      //   params: { id: PetData.id! }
+      // }}
+
+      asChild
+    >
+      <Pressable >
         {({ pressed }) => (
 
           <CardView style={[InteractiveStyles({pressed: pressed, colorScheme: colorScheme!}).Shadow, styles.rootContainer ]}>

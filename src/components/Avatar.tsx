@@ -12,11 +12,11 @@ interface Props {
   size: number
   url: string | null
   onUpload: (filepath: string) => void
-  userId: string 
+  StorageBucket: string 
 }
 
 
-export default function Avatar ({ url, size = 150, onUpload, userId }: Props) {
+export default function Avatar ({ url, size = 150, onUpload, StorageBucket }: Props) {
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [loadingImage, setLoadingImage] = useState(false) 
@@ -92,7 +92,7 @@ export default function Avatar ({ url, size = 150, onUpload, userId }: Props) {
 
           const { error: uploadError } = await supabase.storage
             .from('avatars')
-            .upload(`${userId}/${filePath}`, blob)
+            .upload(`${StorageBucket}/${filePath}`, blob)
 
           if (uploadError) {
             throw uploadError
@@ -110,7 +110,7 @@ export default function Avatar ({ url, size = 150, onUpload, userId }: Props) {
 
           const { data, error: uploadError } = await supabase.storage
             .from('avatars')
-            .upload(`${userId}/${path}`, arrayBuffer, {
+            .upload(`${StorageBucket}/${path}`, arrayBuffer, {
               contentType: image.mimeType ?? 'image/jpeg',
             })
             
