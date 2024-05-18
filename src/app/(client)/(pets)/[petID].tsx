@@ -1,11 +1,9 @@
-import { ActivityIndicator, Alert, Platform, Pressable, StyleSheet } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import BackHeader from '@/components/Headers/BackHeader'
+import { ActivityIndicator, Alert, Platform, Pressable, StyleSheet, TouchableOpacity } from 'react-native'
+import React, { useEffect, useState, useMemo } from 'react'
 import { KeyboardAwareScrollView } from '@pietile-native-kit/keyboard-aware-scrollview'
 import { useColorScheme } from '@/components/useColorScheme'
 import Colors from '@/constants/Colors'
 import { View, Text } from '@/components/Themed'
-import PetDetailsComponent from '@/components/PetDetailsComponent'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import Avatar from '@/components/Avatar'
 import { useAuth } from '@/providers/AuthProvider'
@@ -15,7 +13,7 @@ import { FontAwesome6 } from '@expo/vector-icons'
 import Button from '@/components/Buttons/StyledButton'
 import { useGetPet, useInsertPet, useUpdatePetPhoto, useUpdatePetProfile } from '@/api/pets'
 import { supabase } from '@/util/supabase'
-import { Tables, TablesInsert } from '@/database.types'
+import RadioButton, { ButtonDataProps } from '@/components/RadioButton'
 
 
 
@@ -23,23 +21,45 @@ export default function Pet({ PetID, PetData }: {PetID?:number, PetData?: any}) 
   const colorScheme = useColorScheme();
   const { petID: petIDString  } = useLocalSearchParams();
   const petID = parseFloat(typeof petIDString === 'string' ? petIDString : petIDString[0])
-  
-  
-
   const { session } = useAuth();
   const router = useRouter();
-
-
-  const [ petPhotoUrl, setPetPhotoUrl ] = useState<string | null>(null)
-  // const [ petProfile, setPetProfile ] = useState<TablesInsert<'pets'> | null>(null)
-
-  const  { data: petProfile, error, isLoading, isFetching, isFetched } = useGetPet(petID);
-  const { mutate: updatePhotoUrl } = useUpdatePetPhoto();
-  const { mutate: updatePetProfile } = useUpdatePetProfile();
-  const { mutate: insertPet } = useInsertPet();
   
   const storageBucket = session?.user.id + '/pets';
 
+  const [ isSpayed, setIsSpayed ] = useState<boolean | null>(null)
+  const [ petType, setPetType ] = useState<string | null>(null)
+  const [ petPhotoUrl, setPetPhotoUrl ] = useState<string | null>(null)
+
+  const  { data: petProfile, error, isLoading, isFetching, isFetched } = useGetPet(petID);
+  const { mutate: updatePhotoUrl } = useUpdatePetPhoto();
+  // const { mutate: updatePetProfile } = useUpdatePetProfile();
+  const { mutate: insertPet } = useInsertPet();
+  
+  const radioPetTypes: ButtonDataProps[] = useMemo(() => ([
+    {
+      key: 'petType1',
+      label: 'Cat',
+      value:'cat',
+    },
+    {
+      key: 'petType2',
+      label:'Dog',
+      value:'dog',
+    },
+  ]),[]);
+  
+  const radioSpayed: ButtonDataProps[] = useMemo(() => ([
+    {
+      key: 'spayed1',
+      label: 'Yes',
+      value: true,
+    },
+    {
+      key: 'spayed2',
+      label:'No',
+      value: false,
+    },
+  ]),[]);
 
 
   const { control, handleSubmit, formState:{ isDirty, isSubmitSuccessful}, reset } = useForm({
@@ -51,8 +71,8 @@ export default function Pet({ PetID, PetData }: {PetID?:number, PetData?: any}) 
       age: petProfile?.age,
       gender: petProfile?.gender,
       weight: petProfile?.weight,
-      spayed_neutered: petProfile?.spayed_neutered,
-      pet_stays: petProfile?.pet_stays,
+      // spayed_neutered: petProfile?.spayed_neutered,
+      // pet_stays: petProfile?.pet_stays,
       dietary_needs: petProfile?.dietary_needs,
       feeding_food_brand: petProfile?.feeding_food_brand,
       personality: petProfile?.personality,
@@ -178,6 +198,7 @@ export default function Pet({ PetID, PetData }: {PetID?:number, PetData?: any}) 
   }
 
 
+
   // useEffect(() => {
   //   // const setData = async () => {
   //   //   if(getPetProfile){
@@ -216,7 +237,6 @@ export default function Pet({ PetID, PetData }: {PetID?:number, PetData?: any}) 
 useEffect(() => {
   reset(petProfile) 
 },[isFetched])
-
 
 
   if(isLoading || isFetching){
@@ -286,23 +306,43 @@ useEffect(() => {
           />
 
         
-          <Text style={styles.label}>Dog or Cat?</Text>
-          <ValidationInput
-            name='type'
-            placeholder='Cat'
-            control={control}
-            rules={{required:'Pet type is required'}}
-          />
+          {/* <Text style={styles.label}>Dog or Cat?</Text> */}
+          <View style={styles.radioContainer}>
+            { radioPetTypes.map((item) => {
+              return(
+                <RadioButton 
+                  ButtonData={item} 
+                  OnPress={() => setPetType(typeof item.value === 'boolean' ? (item.value ? 'Yes' : 'No' ) : item.value)} 
+                  SelectedValue={petType || ''} 
+                />
+              )
+            })}
+          </View>
+
+
         </View>
       </View>
       
       <Text style={styles.label}>Are they spayed/neutered?</Text>
-      <ValidationInput
+
+      <View style={styles.radioContainer}>
+        { radioSpayed.map((item) => {
+          return (
+            <RadioButton 
+              ButtonData={item} 
+              OnPress={ () => setIsSpayed(typeof item.value === 'boolean' ? item.value : null) } 
+              SelectedValue={isSpayed}
+            />
+          )
+        })}
+      </View>
+      
+      {/* <ValidationInput
         name='spayed_neutered'
         placeholder='Yes'
         control={control}
         rules={{required:'Spayed or Neutered is required'}}
-      />
+      /> */}
       
       <Text style={styles.label}>Where does your pet stay primarily?</Text>
       <ValidationInput
@@ -435,6 +475,9 @@ const styles = StyleSheet.create({
     marginTop: 7,
     marginBottom: 2,
   },
+  radioContainer: {
+    flexDirection: 'row',
+  }
 })
 
 const headerStyles = StyleSheet.create({
