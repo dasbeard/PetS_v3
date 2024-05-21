@@ -3,7 +3,7 @@ import { Controller } from 'react-hook-form'
 import {AlertText, View, Text} from '@/components/Themed'
 import Colors from '@/constants/Colors'
 
-// import { useColorScheme } from './useColorScheme'
+import { useColorScheme } from './useColorScheme'
 
 export default function CustomInput({
   Value,
@@ -30,7 +30,7 @@ export default function CustomInput({
   OnChange?: any,
   RightText?: string,
 }) {
-  // const colorScheme = useColorScheme();
+  const colorScheme = useColorScheme();
 
   return (
     <>
@@ -41,6 +41,7 @@ export default function CustomInput({
             height: MultiLine ? ( 38 * NumOfLines ) : 40, 
             maxHeight: 36 * NumOfLines + 4, 
             paddingVertical: MultiLine ? 2 : undefined,
+            backgroundColor: colorScheme === 'light' ? Colors.brand[50] : Colors.brand[100]
           }, 
           ]}
       >
@@ -62,7 +63,7 @@ export default function CustomInput({
           }}
         />
         { RightText && 
-        <Text>{RightText}</Text>
+        <Text style={{color: Colors.light.text}}>{RightText}</Text>
         }
       </View>
     </>
@@ -72,7 +73,6 @@ export default function CustomInput({
 const styles = StyleSheet.create({
   container:{
     color: Colors.brand[900],
-    backgroundColor: Colors.brand[50], 
     borderWidth: 1,
     borderRadius: 6,
     padding: 10,

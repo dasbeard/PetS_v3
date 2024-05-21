@@ -3,7 +3,7 @@ import { Controller } from 'react-hook-form'
 import {AlertText, View} from '@/components/Themed'
 import Colors from '@/constants/Colors'
 
-// import { useColorScheme } from './useColorScheme'
+import { useColorScheme } from './useColorScheme'
 
 export default function ValidationInput({
   control, 
@@ -30,7 +30,7 @@ export default function ValidationInput({
   AutoCorrect?:boolean,
   AutoCapitalize?: 'characters' | 'none' | 'sentences' | 'words'
 }) {
-  // const colorScheme = useColorScheme();
+  const colorScheme = useColorScheme();
 
   return (
     <Controller
@@ -47,7 +47,7 @@ export default function ValidationInput({
                 height: MultiLine ? ( 38 * NumOfLines ) : 40, 
                 maxHeight: 36 * NumOfLines + 4, 
                 paddingVertical: MultiLine ? 2 : undefined,
-
+                backgroundColor: colorScheme === 'light' ? Colors.brand[50] : Colors.brand[100]
               }, 
               ]}
           >

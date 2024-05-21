@@ -13,8 +13,9 @@ import { FontAwesome6 } from '@expo/vector-icons'
 import Button from '@/components/Buttons/StyledButton'
 import { useGetPet, useInsertPet, useUpdatePetPhoto, useUpdatePetProfile } from '@/api/pets'
 import { supabase } from '@/util/supabase'
-import RadioButton, { ButtonDataProps } from '@/components/RadioButton'
+import RadioButton, { ButtonDataProps } from '@/components/Buttons/RadioButton'
 import CustomInput from '@/components/CustomInput'
+import { Dropdown } from 'react-native-element-dropdown'
 
 
 
@@ -29,6 +30,7 @@ export default function Pet() {
 
   const [ isSpayed, setIsSpayed ] = useState<boolean | null>(null)
   const [ petType, setPetType ] = useState<string | null>(null)
+  const [ petLocation, setPetLocation ] = useState<string | null>(null)
   const [ petPhotoUrl, setPetPhotoUrl ] = useState<string | null>(null)
   const [ allowSave, setAllowSave ] = useState(false)
 
@@ -63,6 +65,20 @@ export default function Pet() {
     },
   ]),[]);
 
+  const petLocationsArray = [
+    {
+      label: 'Indoor only',
+      value: 'Indoor only'
+    },
+    {
+      label: 'Outdoor only',
+      value: 'Outdoor only',
+    },
+    {
+      label:'Indoor and Outdoor',
+      value: 'Indoor and Outdoor',
+    }
+  ]
 
   const { control, handleSubmit, formState:{ isDirty, isSubmitSuccessful}, reset } = useForm({
     defaultValues: {
@@ -125,30 +141,18 @@ export default function Pet() {
   }
 
   const handlePetTypeChange = ( petType: any ) => {
-    // Failsafe - should not be hit
-    if(petType === null) return;
-
-    // Set the state with the new value
     setPetType(petType)
-
-    // Validate how allowSave should be set
-    petType === petProfile?.type
-      ? ( setAllowSave(false))
-      : ( isSpayed ? setAllowSave(true) : setAllowSave(false))
-
+    isSpayed != null && petLocation ? setAllowSave(true) : setAllowSave(false)
   }
 
   const handlePetSpayedChange = ( spayed: any ) => {
-    // Failsafe - should not be hit
-    if(spayed === null) return;
-
-    // Set the state to the new value
     setIsSpayed(spayed)
+    petType && petLocation ? setAllowSave(true) : setAllowSave(false)
+  }
 
-    // Validate how allowSave should be set
-    spayed === petProfile?.spayed_neutered 
-      ? ( setAllowSave(false) )
-      : ( petType ? setAllowSave(true) : setAllowSave(false) );
+  const handlePetLocationChange = ( petLocation: string ) => {
+    setPetLocation(petLocation)
+    petType && isSpayed != null ? setAllowSave(true) : setAllowSave(false)
   }
 
   const handleSavePetData = (data: any) => {
@@ -231,53 +235,21 @@ export default function Pet() {
   }
 
 
-
-  // useEffect(() => {
-  //   // const setData = async () => {
-  //   //   if(getPetProfile){
-
-  //   //     setPetProfile({
-  //   //       age: getPetProfile?.age ,
-  //   //       name: getPetProfile?.name,
-  //   //       type: getPetProfile?.type,
-  //   //       color: getPetProfile?.color,
-  //   //       breed: getPetProfile?.breed,
-  //   //       gender: getPetProfile?.gender,
-  //   //       weight: getPetProfile?.weight,
-  //   //       spayed_neutered: getPetProfile?.spayed_neutered,
-  //   //       pet_stays: getPetProfile?.pet_stays,
-  //   //       dietary_needs: getPetProfile?.dietary_needs,
-  //   //       feeding_food_brand: getPetProfile?.feeding_food_brand,
-  //   //       personality: getPetProfile?.personality,
-  //   //       medical_needs: getPetProfile?.medical_needs,
-  //   //       other_needs: getPetProfile?.other_needs,
-  //   //       notes: getPetProfile?.notes,
-  //   //       routine: getPetProfile?.routine,
-  //   //       special_needs: getPetProfile?.special_needs,
-  //   //       photo_url: getPetProfile?.photo_url,
-  //   //     })
-  //   //   }
-  //   // }
-
-  //   // console.log({getPetProfile});
-    
-  //   // setData()
-
-
-  // },[petProfile])
-
-
 useEffect(() => {
   //  Set the default inputs for react-hook-form
   reset(petProfile) 
 
-  // Set the values for the radio buttons in state
+  // Set the values for the radio buttons and dropdown in state
   if(petProfile?.type){
     setPetType(petProfile?.type)
   }
   if(petProfile?.spayed_neutered){
     setIsSpayed(petProfile?.spayed_neutered)
   }
+  if(petProfile?.pet_stays){
+    setPetLocation(petProfile?.pet_stays)
+  }
+
 
 },[isFetched])
 
@@ -297,11 +269,12 @@ useEffect(() => {
   return (
     <>
       <Stack.Screen options={{ title: 'petName' }} />
-
-      {/* <Text> Allow Save? { allowSave ? 'yes' : 'no' } :</Text>
+{/* 
+      <Text> Allow Save? { allowSave ? 'yes' : 'no' } :</Text>
       <Text> Is Dirty? { isDirty ? 'yes' : 'no' } :</Text>
       <Text> Spayed: { isSpayed ? 'Y' : 'N' } :</Text>
-      <Text> PetType: { petType } :</Text> */}
+      <Text> PetType: { petType } :</Text>
+      <Text> PetLocation: { petLocation } :</Text> */}
 
 
       <View style={[headerStyles.container, {borderColor: colorScheme === 'light' ? 'rgba(0, 0, 0, 0.1)' : 'rgba(251, 251, 251, 0.1)'}]}>
@@ -394,12 +367,25 @@ useEffect(() => {
       </View>
 
       <Text style={styles.label}>Where does your pet stay primarily?</Text>
-      <ValidationInput
+      {/* <ValidationInput
         name='pet_stays'
         placeholder='Indoor only'
         control={control}
         rules={{required:'Pet local is required'}}
+      /> */}
+      <Dropdown
+        placeholder='My pet stays...'
+        data={petLocationsArray}
+        labelField='label'
+        valueField='value'
+        onChange={({value}) => handlePetLocationChange(value)}
+        value={petLocation}
+        style={[styles.dropdown, { backgroundColor: colorScheme === 'light' ? Colors.brand[50] : Colors.brand[100] }]}
+        placeholderStyle={styles.placeholderStyle}
+        selectedTextStyle={styles.selectedTextStyle}
+        maxHeight={180}
       />
+
 
       <Text style={styles.label}>What color is your pet?</Text>
       <ValidationInput
@@ -533,7 +519,21 @@ const styles = StyleSheet.create({
   },
   radioContainer: {
     flexDirection: 'row',
-  }
+  },
+  dropdown:{
+    color: Colors.brand[900],
+    backgroundColor: Colors.brand[50], 
+    borderWidth: 1,
+    borderRadius: 6,
+    padding: 10,
+    height: 42,
+  },
+  placeholderStyle:{
+    fontSize: 15,
+  },
+  selectedTextStyle:{
+    fontSize: 15,
+  },
 })
 
 const headerStyles = StyleSheet.create({

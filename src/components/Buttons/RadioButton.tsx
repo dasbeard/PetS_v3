@@ -1,6 +1,8 @@
 import { StyleSheet, TouchableOpacity } from 'react-native'
-import { View, Text } from './Themed'
+import { View, Text } from '../Themed'
 import Colors from '@/constants/Colors'
+import { useColorScheme } from '../useColorScheme';
+
 
 export type ButtonDataProps = {
   key: string,
@@ -20,13 +22,31 @@ export default function RadioButton(
     OnPress?: any,
   }) {
 
+    const colorScheme = useColorScheme();
+
   return (
     <View key={ButtonData.key} style={styles.rootContainer}>
       <Text style={styles.label}>{ButtonData.label}</Text>
       
-        <TouchableOpacity onPress={OnPress} style={styles.container}>
+        <TouchableOpacity 
+          onPress={OnPress} 
+          style={[styles.container,
+            {
+              borderColor:( colorScheme === 'light' ? Colors.brand[500] : Colors.brand[200])
+            }
+          ]}>
 
-          { SelectedValue === ButtonData.value && <View style={styles.innerContainer} />}
+          { SelectedValue === ButtonData.value && 
+            <View 
+              style={[
+                styles.innerContainer,
+                {
+                  backgroundColor:( colorScheme === 'light' ? Colors.brand[500] : Colors.brand[200]),
+                  borderColor:( colorScheme === 'light' ? Colors.brand[500] : Colors.brand[200]),
+                }
+              ]} 
+            />
+          }
           
         </TouchableOpacity>
     </View>  
@@ -58,11 +78,9 @@ const styles = StyleSheet.create({
   },
   innerContainer:{
     borderWidth: 1,
-    borderColor: Colors.brand[500],
-    // margin: 10,
+    // borderColor: Colors.brand[500],
 
     alignSelf: 'center',
-    backgroundColor: Colors.brand[500],
 
     height: '100%',
     width: '100%',
