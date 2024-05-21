@@ -6,6 +6,7 @@ import { useColorScheme } from './useColorScheme';
 import Colors from '@/constants/Colors';
 import { Link, useNavigation, useRouter } from 'expo-router';
 import { InteractiveStyles } from '@/constants/Styles';
+import dayjs from 'dayjs';
 
 export type QuickPetDataProps = {
   id?: number,
@@ -18,15 +19,7 @@ export type QuickPetDataProps = {
 
 export default function PetCard({PetData} : { PetData: QuickPetDataProps}) {
   const colorScheme = useColorScheme();
-  const nav = useNavigation();
-  const router = useRouter();
-
-  const handleSelection = () => {
-    // router.setParams({test: 'testing'})
-    // router.navigate(`/(client)/(pets)/${PetData.id}`)
-
-
-  }
+  const petAgeInt = dayjs().diff(PetData.age, 'years')
 
 
   return (
@@ -41,7 +34,7 @@ export default function PetCard({PetData} : { PetData: QuickPetDataProps}) {
 
             <CardView style={styles.textContainer}>
               <Text style={styles.name}>{PetData?.name}</Text>
-              <Text style={styles.age}>{PetData?.age} old</Text>
+              <Text style={styles.age}>{petAgeInt} years old</Text>
             </CardView>
             
           </CardView>

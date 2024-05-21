@@ -58,6 +58,7 @@ export default function CustomInput({
           multiline={MultiLine}
           numberOfLines={NumOfLines ? NumOfLines : 1}
           style={{
+            flex: 1,
             textAlignVertical: MultiLine ? 'top' : 'auto', 
             height: MultiLine ? '85%' : 'auto', 
           }}

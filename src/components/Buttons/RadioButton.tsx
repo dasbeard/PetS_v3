@@ -20,9 +20,10 @@ export default function RadioButton(
     ButtonData: ButtonDataProps, 
     SelectedValue: string | boolean | null, 
     OnPress?: any,
-  }) {
-
-    const colorScheme = useColorScheme();
+  }) 
+{
+  const colorScheme = useColorScheme();
+ 
 
   return (
     <View key={ButtonData.key} style={styles.rootContainer}>

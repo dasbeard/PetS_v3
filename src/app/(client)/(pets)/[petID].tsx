@@ -16,27 +16,35 @@ import { supabase } from '@/util/supabase'
 import RadioButton, { ButtonDataProps } from '@/components/Buttons/RadioButton'
 import CustomInput from '@/components/CustomInput'
 import { Dropdown } from 'react-native-element-dropdown'
+import dayjs, { Dayjs } from 'dayjs'
+import Spacer from '@/components/Spacer'
 
-
+type Pet_Locaitons = "Indoor only" | "Outdoor only" | "Indoor and Outdoor"
 
 export default function Pet() {
   const colorScheme = useColorScheme();
   const { petID: petIDString  } = useLocalSearchParams();
   const petID = parseFloat(typeof petIDString === 'string' ? petIDString : petIDString[0])
+  const isUpdating = !!petID;
   const { session } = useAuth();
   const router = useRouter();
-  
+
+  const TodayStamp = dayjs().startOf('day');
   const storageBucket = session?.user.id + '/pets';
 
   const [ isSpayed, setIsSpayed ] = useState<boolean | null>(null)
   const [ petType, setPetType ] = useState<string | null>(null)
-  const [ petLocation, setPetLocation ] = useState<string | null>(null)
+  const [ petLocation, setPetLocation ] = useState<Pet_Locaitons | null>(null)
+  const [ petGender, setPetGender ] = useState<string | null>(null)
+  const [ petWeight, setPetWeight ] = useState<number | null>(null)
   const [ petPhotoUrl, setPetPhotoUrl ] = useState<string | null>(null)
   const [ allowSave, setAllowSave ] = useState(false)
+  const [ petAgeInt, setPetAgeInt ] = useState<number | null>(null)
+  const [ petAgeDate, setPetAgeDate ] = useState<Dayjs | null>(null)
 
-  const  { data: petProfile, error, isLoading, isFetching, isFetched } = useGetPet(petID);
+  const { data: petProfile, error, isLoading, isFetching, isFetched } = useGetPet(petID);
   const { mutate: updatePhotoUrl } = useUpdatePetPhoto();
-  // const { mutate: updatePetProfile } = useUpdatePetProfile();
+  const { mutate: updatePetProfile } = useUpdatePetProfile();
   const { mutate: insertPet } = useInsertPet();
   
   const radioPetTypes: ButtonDataProps[] = useMemo(() => ([
@@ -65,20 +73,31 @@ export default function Pet() {
     },
   ]),[]);
 
-  const petLocationsArray = [
+  const petLocationsArray = useMemo(() => ([
+      {
+        label: 'Indoor only',
+        value: 'Indoor only'
+      },
+      {
+        label: 'Outdoor only',
+        value: 'Outdoor only',
+      },
+      {
+        label:'Indoor and Outdoor',
+        value: 'Indoor and Outdoor',
+      }
+  ]),[])
+
+  const petGenderArray = useMemo(() => ([
     {
-      label: 'Indoor only',
-      value: 'Indoor only'
+      label: 'Male',
+      value: 'Male'
     },
     {
-      label: 'Outdoor only',
-      value: 'Outdoor only',
+      label: 'Female',
+      value: 'Female',
     },
-    {
-      label:'Indoor and Outdoor',
-      value: 'Indoor and Outdoor',
-    }
-  ]
+  ]),[])
 
   const { control, handleSubmit, formState:{ isDirty, isSubmitSuccessful}, reset } = useForm({
     defaultValues: {
@@ -102,9 +121,10 @@ export default function Pet() {
       photo_url: petProfile?.photo_url,
     }
   });
-
  
   const handleUpdateAvatar = async (url: string) => {
+    setPetPhotoUrl(url)
+    
     // Check if there is a record
     // if(!isUpdating){
     //   // no record yet - keep url in state
@@ -150,73 +170,101 @@ export default function Pet() {
     petType && petLocation ? setAllowSave(true) : setAllowSave(false)
   }
 
-  const handlePetLocationChange = ( petLocation: string ) => {
+  const handlePetLocationChange = ( petLocation: Pet_Locaitons ) => {
     setPetLocation(petLocation)
     petType && isSpayed != null ? setAllowSave(true) : setAllowSave(false)
   }
 
+  const handlePetGenderChange = ( petGender: string ) => {
+    setPetGender(petGender)
+    petType && isSpayed != null ? setAllowSave(true) : setAllowSave(false)
+  }
+
+  const handleSetAge = (ageInt: number) => {
+    // get current date and set age to current date - ageInt in years
+    setPetAgeInt(ageInt)
+    const ageDate = TodayStamp.subtract(ageInt, 'year')
+    setPetAgeDate(ageDate)    
+    petType && isSpayed != null ? setAllowSave(true) : setAllowSave(false)
+  }
+
+  const handleSetPetWeight = (weight: number) => {
+    setPetWeight(weight)
+    petType && isSpayed != null ? setAllowSave(true) : setAllowSave(false)
+  }
+
+  const calculatePetAge = (petDate: any) => {
+    // Calculate and return age as int from date 
+    const ageInt = TodayStamp.diff(petDate, 'years')
+    return(ageInt)
+  }
+
+
+
   const handleSavePetData = (data: any) => {
 
-    // Check if non hook form inputs are valid
-    if(!allowSave) return
+    if(isUpdating){
+      console.log('updating');
+      
+      // Update pet profile
+      updatePetProfile(
+        {
+          name: data.name,
+          type: petType,
+          color: data.color,
+          breed: data.breed,
+          age: petAgeDate,
+          gender: petGender,
+          weight: petWeight,
+          spayed_neutered: isSpayed,
+          pet_stays: petLocation,
+          dietary_needs: data.dietary_needs,
+          feeding_food_brand: data.feeding_food_brand,
+          personality: data.personality,
+          medical_needs: data.medical_needs,
+          other_needs: data.other_needs,
+          notes: data.notes,
+          routine: data.routine,
+          special_needs: data.special_needs,
+          photo_url: data.photo_url,
+          pet_id: petID,
+        },
+        {
+          onSuccess: () =>{
+            // Reset all feilds ?
 
-    // if(isUpdating){
-    //   // Update pet profile
-    //   updatePetProfile(
-    //     {
-    //       name: data.name,
-    //       type: data.type,
-    //       color: data.color,
-    //       breed: data.breed,
-    //       age: data.age,
-    //       gender: data.gender,
-    //       weight: data.weight,
-    //       spayed_neutered: data.spayed_neutered,
-    //       pet_stays: data.pet_stays,
-    //       dietary_needs: data.dietary_needs,
-    //       feeding_food_brand: data.feeding_food_brand,
-    //       personality: data.personality,
-    //       medical_needs: data.medical_needs,
-    //       other_needs: data.other_needs,
-    //       notes: data.notes,
-    //       routine: data.routine,
-    //       special_needs: data.special_needs,
-    //       photo_url: data.photo_url,
-    //       pet_id: petID,
-    //     },
-    //     {
-    //       onSuccess: () =>{
-    //         // Reset all feilds ?
+            // Reset AllowSave
+            setAllowSave(false)
 
-    //         // move back to pet list
-    //         handleNavigateBack();
-    //       }
-    //     }
-    //   )
-    // } else {
+            // move back to pet list?
+            // handleNavigateBack();
+          }
+        }
+      )
+    } else {
+      console.log('Inserting new pet');
 
       // Create new record
       insertPet(
         {
           name: data.name,
-          type: data.type,
-          // spayed_neutered: data.spayed_neutered,
-          spayed_neutered: true,
-          pet_stays: data.pet_stays,
-          
-          // color: data.color,
-          // breed: data.breed,
-          // age: data.age,
-          // gender: data.gender,
-          // weight: data.weight,
-          // dietary_needs: data.dietary_needs,
-          // feeding_food_brand: data.feeding_food_brand,
-          // personality: data.personality,
-          // medical_needs: data.medical_needs,
-          // other_needs: data.other_needs,
-          // notes: data.notes,
-          // routine: data.routine,
-          // special_needs: data.special_needs,
+          type: petType,
+          spayed_neutered: isSpayed,
+          pet_stays: petLocation,
+          gender: petGender,
+          weight: petWeight,
+          // age: petAgeDate,
+
+          color: data.color,
+          breed: data.breed,
+          dietary_needs: data.dietary_needs,
+          feeding_food_brand: data.feeding_food_brand,
+          personality: data.personality,
+          medical_needs: data.medical_needs,
+          other_needs: data.other_needs,
+          notes: data.notes,
+          routine: data.routine,
+          special_needs: data.special_needs,
           photo_url: petPhotoUrl,
           owner_id: session?.user.id
         },
@@ -229,33 +277,48 @@ export default function Pet() {
           }
         }
       )
-    // }
-
+    }
 
   }
 
 
-useEffect(() => {
-  //  Set the default inputs for react-hook-form
-  reset(petProfile) 
+  useEffect(() => {
+    //  Set the default inputs for react-hook-form
+    reset(petProfile) 
 
-  // Set the values for the radio buttons and dropdown in state
-  if(petProfile?.type){
-    setPetType(petProfile?.type)
-  }
-  if(petProfile?.spayed_neutered){
-    setIsSpayed(petProfile?.spayed_neutered)
-  }
-  if(petProfile?.pet_stays){
-    setPetLocation(petProfile?.pet_stays)
-  }
+    // Set the values for the radio buttons and dropdown in state
+    if(petProfile?.type){
+      setPetType(petProfile?.type)
+    }
+    if(petProfile?.pet_stays){
+      setPetLocation(petProfile?.pet_stays)
+    }
+    if(petProfile?.spayed_neutered != null){
+      setIsSpayed(petProfile?.spayed_neutered)
+    }
+    if(petProfile?.gender){
+      setPetGender(petProfile?.gender)
+    }
+    if(petProfile?.weight){
+      setPetWeight(petProfile?.weight)
+    }
+    if(petProfile?.age){
+      const age = calculatePetAge(petProfile.age)
+      setPetAgeInt(age)
+    }
+    if(petProfile?.photo_url){
+      setPetPhotoUrl(petProfile?.photo_url)
+    }
 
-
-},[isFetched])
-
-
+    
+  },[isFetched])
+  
   if(isLoading || isFetching){
-    return <ActivityIndicator />
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems:'center'}}>
+        <ActivityIndicator size='large' color={Colors.brand[500]} />
+      </View>
+    )
   }
 
   if(error){
@@ -268,13 +331,15 @@ useEffect(() => {
 
   return (
     <>
-      <Stack.Screen options={{ title: 'petName' }} />
-{/* 
-      <Text> Allow Save? { allowSave ? 'yes' : 'no' } :</Text>
+      <Stack.Screen options={{ title: petProfile?.name || 'Pet Name' }} />
+
+      {/* <Text> Allow Save? { allowSave ? 'yes' : 'no' } :</Text>
       <Text> Is Dirty? { isDirty ? 'yes' : 'no' } :</Text>
       <Text> Spayed: { isSpayed ? 'Y' : 'N' } :</Text>
       <Text> PetType: { petType } :</Text>
-      <Text> PetLocation: { petLocation } :</Text> */}
+      <Text> PetLocation: { petLocation } :</Text> 
+      <Text>{petID}</Text>
+      */}
 
 
       <View style={[headerStyles.container, {borderColor: colorScheme === 'light' ? 'rgba(0, 0, 0, 0.1)' : 'rgba(251, 251, 251, 0.1)'}]}>
@@ -298,9 +363,6 @@ useEffect(() => {
         </View>
 
       </View>
-
-
-      <Text>{petID}</Text>
 
       <KeyboardAwareScrollView
         extraHeight={36}
@@ -349,42 +411,44 @@ useEffect(() => {
         </View>
       </View>
       
-      <Text style={styles.label}>Are they spayed/neutered?</Text>
 
-      <View style={styles.radioContainer}>
-        { radioSpayed.map((item) => {
-          return (
-            <RadioButton 
-              ButtonData={item} 
-              key={item.key}
-              // OnPress={ () => setIsSpayed(typeof item.value === 'boolean' ? item.value : null) } 
-              OnPress={ () => handlePetSpayedChange(item.value)}
+      
+      <View style={styles.smallRow}>
 
-              SelectedValue={isSpayed}
-            />
-          )
-        })}
+        <View style={styles.smallColumn}>
+
+          <Text style={styles.label}>Spayed or Neutered?</Text>
+          <View style={styles.radioContainer}>
+            { radioSpayed.map((item) => {
+              return (
+                <RadioButton 
+                  ButtonData={item} 
+                  key={item.key}
+                  OnPress={ () => handlePetSpayedChange(item.value)}
+                  SelectedValue={isSpayed}
+                />
+              )
+            })}
+          </View>
+        </View>
+
+        <View style={styles.smallColumn}>
+          <Text style={[styles.label, {marginBottom: 12}]}>They primarily stay</Text>
+          <Dropdown
+            placeholder='My pet stays...'
+            data={petLocationsArray}
+            labelField='label'
+            valueField='value'
+            onChange={(item) => handlePetLocationChange(item.value as Pet_Locaitons)}
+            value={petLocation}
+            style={[styles.dropdown, { backgroundColor: colorScheme === 'light' ? Colors.brand[50] : Colors.brand[100] }]}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.selectedTextStyle}
+            maxHeight={180}
+          />
+        </View>
       </View>
 
-      <Text style={styles.label}>Where does your pet stay primarily?</Text>
-      {/* <ValidationInput
-        name='pet_stays'
-        placeholder='Indoor only'
-        control={control}
-        rules={{required:'Pet local is required'}}
-      /> */}
-      <Dropdown
-        placeholder='My pet stays...'
-        data={petLocationsArray}
-        labelField='label'
-        valueField='value'
-        onChange={({value}) => handlePetLocationChange(value)}
-        value={petLocation}
-        style={[styles.dropdown, { backgroundColor: colorScheme === 'light' ? Colors.brand[50] : Colors.brand[100] }]}
-        placeholderStyle={styles.placeholderStyle}
-        selectedTextStyle={styles.selectedTextStyle}
-        maxHeight={180}
-      />
 
 
       <Text style={styles.label}>What color is your pet?</Text>
@@ -392,7 +456,6 @@ useEffect(() => {
         name='color'
         placeholder='Black with white spots'
         control={control}
-        // rules={{required:'Pet color is required'}}
       />
       
       <Text style={styles.label}>What breed is your pet?</Text>
@@ -400,54 +463,58 @@ useEffect(() => {
         name='breed'
         placeholder='Siamese'
         control={control}
-        // rules={{required:'Pet color is required'}}
       />
       
+
+
+
+
       <Text style={styles.label}>How old is your pet?</Text>
-      {/* <ValidationInput
-        name='age'
-        placeholder='6'
-        control={control}
-        InputMode='numeric'
-        // rules={{required:'Pet color is required'}}
-      /> */}
       <CustomInput
         Placeholder='5'
         InputMode='numeric'
         RightText='years old'
-        // value={}
+        Value={petAgeInt?.toString()}
+        OnChange={(value: number) => handleSetAge(value)}
       />
-      
+
       <Text style={styles.label}>What gender is your pet?</Text>
-      <ValidationInput
-        name='gender'
-        placeholder='Male'
-        control={control}
-        // rules={{required:'Pet color is required'}}
+      <Dropdown
+        placeholder='Gender...'
+        data={petGenderArray}
+        labelField='label'
+        valueField='value'
+        onChange={({value}) => handlePetGenderChange(value)}
+        value={petGender}
+        style={[styles.dropdown, { backgroundColor: colorScheme === 'light' ? Colors.brand[50] : Colors.brand[100] }]}
+        placeholderStyle={styles.placeholderStyle}
+        selectedTextStyle={styles.selectedTextStyle}
+        maxHeight={130}
       />
-      
+
       <Text style={styles.label}>About how much does your pet weigh?</Text>
-      <ValidationInput
-        name='weight'
-        placeholder='8 lbs'
-        control={control}
-        // rules={{required:'Pet color is required'}}
-      />
-      
-      <Text style={styles.label}>Do they have any dietary needs?</Text>
-      <ValidationInput
-        name='dietary_needs'
-        placeholder='Wet food only'
-        control={control}
-        // rules={{required:'Pet local is required'}}
+      <CustomInput
+        Placeholder='6'
+        InputMode='numeric'
+        RightText='lbs'
+        Value={petWeight?.toString()}
+        OnChange={(value: number) => handleSetPetWeight(value)}
       />
       
       <Text style={styles.label}>What brand of feed do they eat?</Text>
       <ValidationInput
         name='feeding_food_brand'
-        placeholder=''
+        placeholder='Purina'
         control={control}
-        // rules={{required:'Pet local is required'}}
+      />
+
+      <Text style={styles.label}>Do they have any dietary needs?</Text>
+      <ValidationInput
+        name='dietary_needs'
+        placeholder='Wet food only'
+        control={control}
+        MultiLine
+        NumOfLines={1.5}
       />
       
       <Text style={styles.label}>What kind of personality do they have?</Text>
@@ -455,7 +522,8 @@ useEffect(() => {
         name='personality'
         placeholder='Skittish at first, but very affectionate'
         control={control}
-        // rules={{required:'Pet local is required'}}
+        MultiLine
+        NumOfLines={1.5}
       />      
 
       <Text style={styles.label}>Do they have a specific routine?</Text>
@@ -463,7 +531,8 @@ useEffect(() => {
         name='routine'
         placeholder=''
         control={control}
-        // rules={{required:'Pet local is required'}}
+        MultiLine
+        NumOfLines={1.5}
       />
 
       <Text style={styles.label}>Do they have any medical concerns/needs?</Text>
@@ -471,15 +540,17 @@ useEffect(() => {
         name='medical_needs'
         placeholder=''
         control={control}
-        // rules={{required:'Pet local is required'}}
+        MultiLine
+        NumOfLines={1.5}
       />
 
       <Text style={styles.label}>Are there any other special needs we should be aware of?</Text>
       <ValidationInput
         name='special_needs'
         placeholder=''
-        control={control}
-        // rules={{required:'Pet local is required'}}
+        control={control}        
+        MultiLine
+        NumOfLines={1.5}
       />
 
       <Text style={styles.label}>Any other notes you would like to share with us?</Text>
@@ -487,8 +558,11 @@ useEffect(() => {
         name='notes'
         placeholder=''
         control={control}
-        // rules={{required:'Pet local is required'}}
+        MultiLine
+        NumOfLines={1.5}
       />
+
+      <Spacer Size={10} />
 
       </KeyboardAwareScrollView>
     </>
@@ -534,6 +608,13 @@ const styles = StyleSheet.create({
   selectedTextStyle:{
     fontSize: 15,
   },
+  smallRow:{
+    flexDirection: 'row',
+  },
+  smallColumn:{
+    flex: 1,
+  },
+
 })
 
 const headerStyles = StyleSheet.create({
