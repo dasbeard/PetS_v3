@@ -26,7 +26,6 @@ export default function RadioButton(
       
         <TouchableOpacity onPress={OnPress} style={styles.container}>
 
-        {/* <View style={styles.innerContainer} /> */}
           { SelectedValue === ButtonData.value && <View style={styles.innerContainer} />}
           
         </TouchableOpacity>

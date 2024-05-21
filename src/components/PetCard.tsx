@@ -30,16 +30,7 @@ export default function PetCard({PetData} : { PetData: QuickPetDataProps}) {
 
 
   return (
-    // <Link href={`/(client)/(pets)/${PetData?.id}`} asChild>
-    <Link 
-    href={`/(client)/(pets)/${PetData?.id}`} 
-      // href={{
-      //   pathname: `/(client)/(pets)/petLoading`,
-      //   params: { id: PetData.id! }
-      // }}
-
-      asChild
-    >
+    <Link href={`/(client)/(pets)/${PetData?.id}`} asChild >
       <Pressable >
         {({ pressed }) => (
 

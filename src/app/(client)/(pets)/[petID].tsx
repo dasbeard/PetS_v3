@@ -7,17 +7,18 @@ import { View, Text } from '@/components/Themed'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import Avatar from '@/components/Avatar'
 import { useAuth } from '@/providers/AuthProvider'
-import { useForm } from 'react-hook-form';
+import { set, useForm } from 'react-hook-form';
 import ValidationInput from '@/components/ValidationInput'
 import { FontAwesome6 } from '@expo/vector-icons'
 import Button from '@/components/Buttons/StyledButton'
 import { useGetPet, useInsertPet, useUpdatePetPhoto, useUpdatePetProfile } from '@/api/pets'
 import { supabase } from '@/util/supabase'
 import RadioButton, { ButtonDataProps } from '@/components/RadioButton'
+import CustomInput from '@/components/CustomInput'
 
 
 
-export default function Pet({ PetID, PetData }: {PetID?:number, PetData?: any}) {
+export default function Pet() {
   const colorScheme = useColorScheme();
   const { petID: petIDString  } = useLocalSearchParams();
   const petID = parseFloat(typeof petIDString === 'string' ? petIDString : petIDString[0])
@@ -29,6 +30,7 @@ export default function Pet({ PetID, PetData }: {PetID?:number, PetData?: any}) 
   const [ isSpayed, setIsSpayed ] = useState<boolean | null>(null)
   const [ petType, setPetType ] = useState<string | null>(null)
   const [ petPhotoUrl, setPetPhotoUrl ] = useState<string | null>(null)
+  const [ allowSave, setAllowSave ] = useState(false)
 
   const  { data: petProfile, error, isLoading, isFetching, isFetched } = useGetPet(petID);
   const { mutate: updatePhotoUrl } = useUpdatePetPhoto();
@@ -65,10 +67,10 @@ export default function Pet({ PetID, PetData }: {PetID?:number, PetData?: any}) 
   const { control, handleSubmit, formState:{ isDirty, isSubmitSuccessful}, reset } = useForm({
     defaultValues: {
       name: petProfile?.name,
-      type: petProfile?.type,
+      // type: petProfile?.type,
       color: petProfile?.color,
       breed: petProfile?.breed,
-      age: petProfile?.age,
+      // age: petProfile?.age,
       gender: petProfile?.gender,
       weight: petProfile?.weight,
       // spayed_neutered: petProfile?.spayed_neutered,
@@ -122,7 +124,38 @@ export default function Pet({ PetID, PetData }: {PetID?:number, PetData?: any}) 
     router.navigate('(client)/pets')
   }
 
+  const handlePetTypeChange = ( petType: any ) => {
+    // Failsafe - should not be hit
+    if(petType === null) return;
+
+    // Set the state with the new value
+    setPetType(petType)
+
+    // Validate how allowSave should be set
+    petType === petProfile?.type
+      ? ( setAllowSave(false))
+      : ( isSpayed ? setAllowSave(true) : setAllowSave(false))
+
+  }
+
+  const handlePetSpayedChange = ( spayed: any ) => {
+    // Failsafe - should not be hit
+    if(spayed === null) return;
+
+    // Set the state to the new value
+    setIsSpayed(spayed)
+
+    // Validate how allowSave should be set
+    spayed === petProfile?.spayed_neutered 
+      ? ( setAllowSave(false) )
+      : ( petType ? setAllowSave(true) : setAllowSave(false) );
+  }
+
   const handleSavePetData = (data: any) => {
+
+    // Check if non hook form inputs are valid
+    if(!allowSave) return
+
     // if(isUpdating){
     //   // Update pet profile
     //   updatePetProfile(
@@ -235,7 +268,17 @@ export default function Pet({ PetID, PetData }: {PetID?:number, PetData?: any}) 
 
 
 useEffect(() => {
+  //  Set the default inputs for react-hook-form
   reset(petProfile) 
+
+  // Set the values for the radio buttons in state
+  if(petProfile?.type){
+    setPetType(petProfile?.type)
+  }
+  if(petProfile?.spayed_neutered){
+    setIsSpayed(petProfile?.spayed_neutered)
+  }
+
 },[isFetched])
 
 
@@ -248,9 +291,18 @@ useEffect(() => {
   }
   
 
+
+
+
   return (
     <>
       <Stack.Screen options={{ title: 'petName' }} />
+
+      {/* <Text> Allow Save? { allowSave ? 'yes' : 'no' } :</Text>
+      <Text> Is Dirty? { isDirty ? 'yes' : 'no' } :</Text>
+      <Text> Spayed: { isSpayed ? 'Y' : 'N' } :</Text>
+      <Text> PetType: { petType } :</Text> */}
+
 
       <View style={[headerStyles.container, {borderColor: colorScheme === 'light' ? 'rgba(0, 0, 0, 0.1)' : 'rgba(251, 251, 251, 0.1)'}]}>
        
@@ -268,7 +320,7 @@ useEffect(() => {
           <Button 
             Text={'Update'} 
             onPress={handleSubmit(handleSavePetData)}  
-            Disabled={ !isDirty }
+            Disabled={ !allowSave && !isDirty  }
           />
         </View>
 
@@ -312,7 +364,8 @@ useEffect(() => {
               return(
                 <RadioButton 
                   ButtonData={item} 
-                  OnPress={() => setPetType(typeof item.value === 'boolean' ? (item.value ? 'Yes' : 'No' ) : item.value)} 
+                  key={item.key}
+                  OnPress={ () => handlePetTypeChange(item.value)}
                   SelectedValue={petType || ''} 
                 />
               )
@@ -330,20 +383,16 @@ useEffect(() => {
           return (
             <RadioButton 
               ButtonData={item} 
-              OnPress={ () => setIsSpayed(typeof item.value === 'boolean' ? item.value : null) } 
+              key={item.key}
+              // OnPress={ () => setIsSpayed(typeof item.value === 'boolean' ? item.value : null) } 
+              OnPress={ () => handlePetSpayedChange(item.value)}
+
               SelectedValue={isSpayed}
             />
           )
         })}
       </View>
-      
-      {/* <ValidationInput
-        name='spayed_neutered'
-        placeholder='Yes'
-        control={control}
-        rules={{required:'Spayed or Neutered is required'}}
-      /> */}
-      
+
       <Text style={styles.label}>Where does your pet stay primarily?</Text>
       <ValidationInput
         name='pet_stays'
@@ -369,11 +418,18 @@ useEffect(() => {
       />
       
       <Text style={styles.label}>How old is your pet?</Text>
-      <ValidationInput
+      {/* <ValidationInput
         name='age'
         placeholder='6'
         control={control}
+        InputMode='numeric'
         // rules={{required:'Pet color is required'}}
+      /> */}
+      <CustomInput
+        Placeholder='5'
+        InputMode='numeric'
+        RightText='years old'
+        // value={}
       />
       
       <Text style={styles.label}>What gender is your pet?</Text>
