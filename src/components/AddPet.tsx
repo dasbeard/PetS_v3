@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { View, Text } from './Themed'
 import { BottomSheetTextInput} from '@gorhom/bottom-sheet';
 import Colors from '@/constants/Colors';
@@ -12,6 +12,7 @@ import Avatar from './Avatar';
 import { supabase } from '@/util/supabase';
 import Button from './Buttons/StyledButton';
 import { useQuickInsertPet } from '@/api/pets';
+import { router } from 'expo-router';
 
 export default function AddPet({UserID, ResetData}:{UserID:string, ResetData: boolean}) {
   const colorScheme = useColorScheme();
@@ -67,29 +68,29 @@ export default function AddPet({UserID, ResetData}:{UserID:string, ResetData: bo
     }
 ]),[])
 
-  function handlePetTypeSelected(type: any) {
+  const handlePetTypeSelected = useCallback( ( type: any ) => {
     setPetType(type)
     // Validate input fields
     if((isSpayed != null) && (petLocation != null) && (petName != null || '' )){
       setDisableSave(false)
     }
-  } 
+  },[])
 
-  const handlePetSpayedSelection = ( spayed: any ) => {
+  const handlePetSpayedSelection = useCallback( ( spayed: any ) => {
     setIsSpayed(spayed)
     // Validate input fields
     if((petLocation != null) && (petType != null) && (petName != null || '' )){
       setDisableSave(false)
     }
-  }
+  },[])
 
-  const handlePetLocationChange = ( petLocation: Pet_Locaitons ) => {
+  const handlePetLocationChange = useCallback( ( petLocation: Pet_Locaitons ) => {
     setPetLocation(petLocation)
     // Validate input fields
     if((isSpayed != null) && (petType != null) && (petName != null || '' )){
       setDisableSave(false)
     }
-  }
+  },[])
 
   const handlePetNameChange = (name: string) => {
 
@@ -147,9 +148,12 @@ export default function AddPet({UserID, ResetData}:{UserID:string, ResetData: bo
       //  reset state
       resetInputs()
       // Close BottomSheet
+      router.navigate(`/(client)/(pets)/${newPetData.id}`)
     }
   },[isSuccess])
 
+  console.log('called');
+  
 
 // NOTE: When saving new pet - DELETE UserID/Temp folder in storage bucket
 

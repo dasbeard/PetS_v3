@@ -11,7 +11,7 @@ export const useGetProfile = (id:string) => {
           .from('users')
           .select('id, first_name, last_name, avatar_url, emergency_contact, addresses(*), home_info(*), phone_numbers(*)')
           .eq('id', id)
-          .order('id', {foreignTable: 'phone_numbers'})
+          .order('id', {ascending: false, referencedTable: 'phone_numbers'})
           .single()
       if(error){
         console.log('Error retreiving profile: ', error);

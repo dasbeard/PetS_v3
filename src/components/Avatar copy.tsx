@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Image, StyleSheet, Platform, ActivityIndicator, Pressable } from 'react-native'
 import * as ImagePicker from 'expo-image-picker'
 import { supabase } from '@/util/supabase'
@@ -24,14 +24,9 @@ export default function Avatar ({ url, size = 150, onUpload, StorageBucket }: Pr
   const colorScheme = useColorScheme();  
 
   useEffect(() => {
-    console.log('got url', url);
-    
-    if(url) {
-      console.log('Gettting image from url');
-      downloadImage(url)
-    }
-
+    if(url) downloadImage(url)
   },[url])
+
 
   // Set loading for images to download -UX
   const downloadImage = async (path: string) => {
@@ -62,84 +57,85 @@ export default function Avatar ({ url, size = 150, onUpload, StorageBucket }: Pr
   const uploadAvatar = async () => {
     const currentPlatform = Platform.OS
 
-    try {
-      setUploading(true)
+      // For use on mobile devices
+      try {
+        setUploading(true)
 
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsMultipleSelection: false,
-        allowsEditing: true,
-        quality: 1,
-        exif: false,
-      })
+        const result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          allowsMultipleSelection: false,
+          allowsEditing: true,
+          quality: 1,
+          exif: false,
+        })
 
-      if (result.canceled || !result.assets || result.assets.length === 0) {
-        console.log('User cancelled image picker');
-        return
-      }
-
-      
-      const image = result.assets[0]
-      // console.log('Got Image:', image);
-      
-      if (!image.uri) {
-        throw new Error('No image uri!') // should not happen, but just in case.
-      }
-
-      if (currentPlatform === 'web') {
-        //  for use on web
-        const webImage = await fetch(image.uri)
-        const blob = await webImage.blob();
-        const fileExt = image.fileName?.split('.').pop()?.toLowerCase() ?? 'jpeg'
-        const fileName = `${Math.random()}.${fileExt}`
-        const filePath = `${fileName}`
-
-        const { error: uploadError } = await supabase.storage
-          .from('avatars')
-          .upload(`${StorageBucket}/${filePath}`, blob)
-
-        if (uploadError) {
-          throw uploadError
+        if (result.canceled || !result.assets || result.assets.length === 0) {
+          console.log('User cancelled image picker');
+          return
         }
-        onUpload(filePath)
 
-      } else {
-        // For Mobile devices
-        const arrayBuffer = await fetch(image.uri).then((res) => res.arrayBuffer())
+        
+        const image = result.assets[0]
+        // console.log('Got Image:', image);
+        
+        if (!image.uri) {
+          throw new Error('No image uri!') // should not happen, but just in case.
+        }
 
-        const fileExt = image.uri?.split('.').pop()?.toLowerCase() ?? 'jpeg'
-        const path = `${Date.now()}.${fileExt}`
+        if (currentPlatform === 'web') {
+          //  for use on web
+          const webImage = await fetch(image.uri)
+          const blob = await webImage.blob();
+          const fileExt = image.fileName?.split('.').pop()?.toLowerCase() ?? 'jpeg'
+          const fileName = `${Math.random()}.${fileExt}`
+          const filePath = `${fileName}`
 
+          const { error: uploadError } = await supabase.storage
+            .from('avatars')
+            .upload(`${StorageBucket}/${filePath}`, blob)
 
-
-        const { data, error: uploadError } = await supabase.storage
-          .from('avatars')
-          .upload(`${StorageBucket}/${path}`, arrayBuffer, {
-            contentType: image.mimeType ?? 'image/jpeg',
-          })
-          
           if (uploadError) {
             throw uploadError
           }
-          
-        onUpload(data.path)
-      }
+          onUpload(filePath)
 
-    } catch (error) {
-      if(error instanceof Error){
-        console.log({error});
-        
-        alert(error.message)
-      } else {
-        console.log({error});
+        } else {
+          // For Mobile devices
+          const arrayBuffer = await fetch(image.uri).then((res) => res.arrayBuffer())
 
-        throw error
-      }
-    } finally {
-      setUploading(false)
-    }
-  }
+          const fileExt = image.uri?.split('.').pop()?.toLowerCase() ?? 'jpeg'
+          const path = `${Date.now()}.${fileExt}`
   
+  
+
+          const { data, error: uploadError } = await supabase.storage
+            .from('avatars')
+            .upload(`${StorageBucket}/${path}`, arrayBuffer, {
+              contentType: image.mimeType ?? 'image/jpeg',
+            })
+            
+            if (uploadError) {
+              throw uploadError
+            }
+            
+          onUpload(data.path)
+        }
+
+      } catch (error) {
+        if(error instanceof Error){
+          console.log('1111', {error});
+          
+          alert(error.message)
+        } else {
+          console.log('2222', {error});
+
+          throw error
+        }
+      } finally {
+        setUploading(false)
+      }
+    
+  }
 
   return (
     <View style={styles.avatarContainer}>
@@ -207,6 +203,7 @@ const shadow = ({colorScheme}:{colorScheme?:string}) => StyleSheet.create({
     shadowRadius:  1.5,
   }
 })
+
 
 const styles = StyleSheet.create({
   avatarContainer:{

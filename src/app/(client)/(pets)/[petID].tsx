@@ -11,7 +11,7 @@ import { set, useForm } from 'react-hook-form';
 import ValidationInput from '@/components/ValidationInput'
 import { FontAwesome6 } from '@expo/vector-icons'
 import Button from '@/components/Buttons/StyledButton'
-import { useGetPet, useInsertPet, useUpdatePetPhoto, useUpdatePetProfile } from '@/api/pets'
+import { useDeletePet, useGetPet, useInsertPet, useUpdatePetPhoto, useUpdatePetProfile } from '@/api/pets'
 import { supabase } from '@/util/supabase'
 import RadioButton, { ButtonDataProps } from '@/components/Buttons/RadioButton'
 import CustomInput from '@/components/CustomInput'
@@ -51,7 +51,10 @@ export default function Pet() {
   const { mutate: updatePhotoUrl } = useUpdatePetPhoto();
   const { mutate: updatePetProfile } = useUpdatePetProfile();
   const { mutate: insertPet } = useInsertPet();
-  
+  const { mutate: deletePet } = useDeletePet();
+  // console.log('petProfile', {petProfile});
+
+
   const radioPetTypes: ButtonDataProps[] = useMemo(() => ([
     {
       key: 'petType1',
@@ -289,6 +292,34 @@ export default function Pet() {
 
   }
 
+  const onDelete = () => {
+    // RQ - delete pet
+    deletePet({
+      petID: petID,
+      imagePath: petPhotoUrl || petProfile?.photo_url,
+    },
+    {
+      onSuccess: () => {
+        // reset screen
+        // navigate back to pets
+        router.navigate('/(client)/pets')
+      }
+    })
+
+  }
+
+  const confirmDelete = () => {
+    Alert.alert("Confirm", `Are you sure you want to delete ${petProfile?.name}?`,[
+      {
+        text: 'Cancel'
+      },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: onDelete
+      }
+    ])  }
+
 
   useEffect(() => {
     //  Set the default inputs for react-hook-form
@@ -317,14 +348,13 @@ export default function Pet() {
     if(petProfile?.photo_url){
       setPetPhotoUrl(petProfile?.photo_url)
     }
-
     
   },[isFetched])
   
   if(isLoading || isFetching){
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems:'center'}}>
-        <ActivityIndicator size='large' color={Colors.brand[500]} />
+        {/* <ActivityIndicator size='large' color={Colors.brand[500]} /> */}
       </View>
     )
   }
@@ -335,12 +365,9 @@ export default function Pet() {
   
 
 
-
-
   return (
     <>
       <Stack.Screen options={{ title: petProfile?.name || 'Pet Name' }} />
-
       {/* <Text> Allow Save? { allowSave ? 'yes' : 'no' } :</Text>
       <Text> Is Dirty? { isDirty ? 'yes' : 'no' } :</Text>
       <Text> Spayed: { isSpayed ? 'Y' : 'N' } :</Text>
@@ -377,202 +404,210 @@ export default function Pet() {
         style={[styles.rootContainer, { backgroundColor: colorScheme === 'light' ? Colors.light.background : Colors.dark.background  }]}
       >
       
-      <View style={styles.avatarname}>
+        <View style={styles.avatarname}>
 
-        <View style={styles.avatarContainer}>
-          <Avatar 
-            size={150}
-            url={petPhotoUrl}
-            onUpload={(url:string) =>{
-              handleUpdateAvatar(url)
-            }}
-            StorageBucket={storageBucket}
-          />
+          <View style={styles.avatarContainer}>
+            <Avatar 
+              size={150}
+              url={ petProfile?.photo_url ||  null}
+              onUpload={(url:string) =>{
+                handleUpdateAvatar(url)
+              }}
+              StorageBucket={storageBucket}
+            />
+          </View>
+
+          <View style={styles.container}>
+
+            <Text style={styles.label}>Pets Name</Text>
+            <ValidationInput
+              name='name'
+              placeholder='Frank'
+              control={control}
+              rules={{required:'Pet name is required'}}
+            />
+
+          
+            {/* <Text style={styles.label}>Dog or Cat?</Text> */}
+            <View style={styles.radioContainer}>
+              { radioPetTypes.map((item) => {
+                return(
+                  <RadioButton 
+                    ButtonData={item} 
+                    key={item.key}
+                    OnPress={ () => handlePetTypeChange(item.value)}
+                    SelectedValue={petType || ''} 
+                  />
+                )
+              })}
+            </View>
+
+
+          </View>
+        </View>
+      
+        <View style={styles.smallRow}>
+
+          <View style={styles.smallColumn}>
+
+            <Text style={styles.label}>Spayed or Neutered?</Text>
+            <View style={styles.radioContainer}>
+              { radioSpayed.map((item) => {
+                return (
+                  <RadioButton 
+                    ButtonData={item} 
+                    key={item.key}
+                    OnPress={ () => handlePetSpayedChange(item.value)}
+                    SelectedValue={isSpayed}
+                  />
+                )
+              })}
+            </View>
+          </View>
+
+          <View style={styles.smallColumn}>
+            <Text style={[styles.label, {marginBottom: 12}]}>They primarily stay</Text>
+            <Dropdown
+              placeholder='My pet stays...'
+              data={petLocationsArray}
+              labelField='label'
+              valueField='value'
+              onChange={(item) => handlePetLocationChange(item.value as Pet_Locaitons)}
+              value={petLocation}
+              style={[styles.dropdown, { backgroundColor: colorScheme === 'light' ? Colors.brand[50] : Colors.brand[100] }]}
+              placeholderStyle={styles.placeholderStyle}
+              selectedTextStyle={styles.selectedTextStyle}
+              maxHeight={180}
+            />
+          </View>
         </View>
 
-        <View style={styles.container}>
 
-          <Text style={styles.label}>Pets Name</Text>
-          <ValidationInput
-            name='name'
-            placeholder='Frank'
-            control={control}
-            rules={{required:'Pet name is required'}}
-          />
 
+        <Text style={styles.label}>What color is your pet?</Text>
+        <ValidationInput
+          name='color'
+          placeholder='Black with white spots'
+          control={control}
+        />
         
-          {/* <Text style={styles.label}>Dog or Cat?</Text> */}
-          <View style={styles.radioContainer}>
-            { radioPetTypes.map((item) => {
-              return(
-                <RadioButton 
-                  ButtonData={item} 
-                  key={item.key}
-                  OnPress={ () => handlePetTypeChange(item.value)}
-                  SelectedValue={petType || ''} 
-                />
-              )
-            })}
-          </View>
+        <Text style={styles.label}>What breed is your pet?</Text>
+        <ValidationInput
+          name='breed'
+          placeholder='Siamese'
+          control={control}
+        />
+        
 
 
-        </View>
-      </View>
-      
 
-      
-      <View style={styles.smallRow}>
 
-        <View style={styles.smallColumn}>
+        <Text style={styles.label}>How old is your pet?</Text>
+        <CustomInput
+          Placeholder='5'
+          InputMode='numeric'
+          RightText='years old'
+          Value={petAgeInt?.toString()}
+          OnChange={(value: number) => handleSetAge(value)}
+        />
 
-          <Text style={styles.label}>Spayed or Neutered?</Text>
-          <View style={styles.radioContainer}>
-            { radioSpayed.map((item) => {
-              return (
-                <RadioButton 
-                  ButtonData={item} 
-                  key={item.key}
-                  OnPress={ () => handlePetSpayedChange(item.value)}
-                  SelectedValue={isSpayed}
-                />
-              )
-            })}
-          </View>
-        </View>
+        <Text style={styles.label}>What gender is your pet?</Text>
+        <Dropdown
+          placeholder='Gender...'
+          data={petGenderArray}
+          labelField='label'
+          valueField='value'
+          onChange={({value}) => handlePetGenderChange(value)}
+          value={petGender}
+          style={[styles.dropdown, { backgroundColor: colorScheme === 'light' ? Colors.brand[50] : Colors.brand[100] }]}
+          placeholderStyle={styles.placeholderStyle}
+          selectedTextStyle={styles.selectedTextStyle}
+          maxHeight={130}
+        />
 
-        <View style={styles.smallColumn}>
-          <Text style={[styles.label, {marginBottom: 12}]}>They primarily stay</Text>
-          <Dropdown
-            placeholder='My pet stays...'
-            data={petLocationsArray}
-            labelField='label'
-            valueField='value'
-            onChange={(item) => handlePetLocationChange(item.value as Pet_Locaitons)}
-            value={petLocation}
-            style={[styles.dropdown, { backgroundColor: colorScheme === 'light' ? Colors.brand[50] : Colors.brand[100] }]}
-            placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
-            maxHeight={180}
+        <Text style={styles.label}>About how much does your pet weigh?</Text>
+        <CustomInput
+          Placeholder='6'
+          InputMode='numeric'
+          RightText='lbs'
+          Value={petWeight?.toString()}
+          OnChange={(value: number) => handleSetPetWeight(value)}
+        />
+        
+        <Text style={styles.label}>What brand of feed do they eat?</Text>
+        <ValidationInput
+          name='feeding_food_brand'
+          placeholder='Purina'
+          control={control}
+        />
+
+        <Text style={styles.label}>Do they have any dietary needs?</Text>
+        <ValidationInput
+          name='dietary_needs'
+          placeholder='Wet food only'
+          control={control}
+          MultiLine
+          NumOfLines={1.5}
+        />
+        
+        <Text style={styles.label}>What kind of personality do they have?</Text>
+        <ValidationInput
+          name='personality'
+          placeholder='Skittish at first, but very affectionate'
+          control={control}
+          MultiLine
+          NumOfLines={1.5}
+        />      
+
+        <Text style={styles.label}>Do they have a specific routine?</Text>
+        <ValidationInput
+          name='routine'
+          placeholder=''
+          control={control}
+          MultiLine
+          NumOfLines={1.5}
+        />
+
+        <Text style={styles.label}>Do they have any medical concerns/needs?</Text>
+        <ValidationInput
+          name='medical_needs'
+          placeholder=''
+          control={control}
+          MultiLine
+          NumOfLines={1.5}
+        />
+
+        <Text style={styles.label}>Are there any other special needs we should be aware of?</Text>
+        <ValidationInput
+          name='special_needs'
+          placeholder=''
+          control={control}        
+          MultiLine
+          NumOfLines={1.5}
+        />
+
+        <Text style={styles.label}>Any other notes you would like to share with us?</Text>
+        <ValidationInput
+          name='notes'
+          placeholder=''
+          control={control}
+          MultiLine
+          NumOfLines={1.5}
+        />
+
+
+        <View style={styles.deleteButton}> 
+          <Button 
+            Text='Delete' 
+            BorderColor={Colors.red[300]} 
+            BackgroundColor={Colors.red[400]} 
+            TextColor={Colors.light.text} 
+            BoldText 
+            onPress={confirmDelete}
           />
         </View>
-      </View>
-
-
-
-      <Text style={styles.label}>What color is your pet?</Text>
-      <ValidationInput
-        name='color'
-        placeholder='Black with white spots'
-        control={control}
-      />
-      
-      <Text style={styles.label}>What breed is your pet?</Text>
-      <ValidationInput
-        name='breed'
-        placeholder='Siamese'
-        control={control}
-      />
-      
-
-
-
-
-      <Text style={styles.label}>How old is your pet?</Text>
-      <CustomInput
-        Placeholder='5'
-        InputMode='numeric'
-        RightText='years old'
-        Value={petAgeInt?.toString()}
-        OnChange={(value: number) => handleSetAge(value)}
-      />
-
-      <Text style={styles.label}>What gender is your pet?</Text>
-      <Dropdown
-        placeholder='Gender...'
-        data={petGenderArray}
-        labelField='label'
-        valueField='value'
-        onChange={({value}) => handlePetGenderChange(value)}
-        value={petGender}
-        style={[styles.dropdown, { backgroundColor: colorScheme === 'light' ? Colors.brand[50] : Colors.brand[100] }]}
-        placeholderStyle={styles.placeholderStyle}
-        selectedTextStyle={styles.selectedTextStyle}
-        maxHeight={130}
-      />
-
-      <Text style={styles.label}>About how much does your pet weigh?</Text>
-      <CustomInput
-        Placeholder='6'
-        InputMode='numeric'
-        RightText='lbs'
-        Value={petWeight?.toString()}
-        OnChange={(value: number) => handleSetPetWeight(value)}
-      />
-      
-      <Text style={styles.label}>What brand of feed do they eat?</Text>
-      <ValidationInput
-        name='feeding_food_brand'
-        placeholder='Purina'
-        control={control}
-      />
-
-      <Text style={styles.label}>Do they have any dietary needs?</Text>
-      <ValidationInput
-        name='dietary_needs'
-        placeholder='Wet food only'
-        control={control}
-        MultiLine
-        NumOfLines={1.5}
-      />
-      
-      <Text style={styles.label}>What kind of personality do they have?</Text>
-      <ValidationInput
-        name='personality'
-        placeholder='Skittish at first, but very affectionate'
-        control={control}
-        MultiLine
-        NumOfLines={1.5}
-      />      
-
-      <Text style={styles.label}>Do they have a specific routine?</Text>
-      <ValidationInput
-        name='routine'
-        placeholder=''
-        control={control}
-        MultiLine
-        NumOfLines={1.5}
-      />
-
-      <Text style={styles.label}>Do they have any medical concerns/needs?</Text>
-      <ValidationInput
-        name='medical_needs'
-        placeholder=''
-        control={control}
-        MultiLine
-        NumOfLines={1.5}
-      />
-
-      <Text style={styles.label}>Are there any other special needs we should be aware of?</Text>
-      <ValidationInput
-        name='special_needs'
-        placeholder=''
-        control={control}        
-        MultiLine
-        NumOfLines={1.5}
-      />
-
-      <Text style={styles.label}>Any other notes you would like to share with us?</Text>
-      <ValidationInput
-        name='notes'
-        placeholder=''
-        control={control}
-        MultiLine
-        NumOfLines={1.5}
-      />
-
-      <Spacer Size={10} />
-
       </KeyboardAwareScrollView>
+
     </>
   )
 }
@@ -622,7 +657,11 @@ const styles = StyleSheet.create({
   smallColumn:{
     flex: 1,
   },
+  deleteButton:{
+    marginTop: 10,
+    marginBottom: 18,
 
+  },
 })
 
 const headerStyles = StyleSheet.create({

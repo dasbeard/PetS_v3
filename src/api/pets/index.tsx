@@ -11,6 +11,8 @@ export const useGetUsersPetList = (userId: string) => {
           .from('pets')
           .select('id, age, name, photo_url, type')
           .eq('owner_id', userId)
+          .order('id', {ascending: true})
+
       if(error){
         console.log('Error retreiving users pet list: ', error);
         throw new Error(error.message)
@@ -87,6 +89,8 @@ export const useQuickInsertPet = () => {
 
   return useMutation({
     async mutationFn(data: any){
+      console.log('index', {data});
+      
       const { data: newPet, error} = await supabase
         .from('pets')
         .upsert({
@@ -107,10 +111,10 @@ export const useQuickInsertPet = () => {
       return newPet
     },
     async onSuccess(data, newPetData){
-      console.log('onSuccess data:', {data});
+      // console.log('onSuccess data:', {data});
       
       await queryClient.invalidateQueries({queryKey: ['petList']})
-      return newPetData
+      // return newPetData
     },
     onError(error){
       console.log('Error: ', error);
@@ -197,6 +201,38 @@ export const useUpdatePetPhoto = () => {
     }
   })
 };
+
+export const useDeletePet = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    async mutationFn(data:any) {
+
+      // delete image
+      const { error: storageError } = await supabase
+        .storage
+        .from('avatars')
+        .remove([data.imagePath])
+
+      const {error: petsError } = await supabase
+        .from('pets')
+        .delete()
+        .eq('id', data.petID);
+
+      if (storageError) {
+        throw new Error(storageError.message);
+      }
+      if (petsError) {
+        throw new Error(petsError.message);
+      }
+
+    },
+    async onSuccess() {
+      await queryClient.invalidateQueries({queryKey: ['petList']});  
+    },
+  })
+};
+
 
 // export const useCreateUsersAddress = () => {
 //   const queryClient = useQueryClient();
