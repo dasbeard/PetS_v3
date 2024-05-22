@@ -6,22 +6,11 @@ import Colors from '@/constants/Colors';
 import { FlashList } from '@shopify/flash-list';
 import Button from '@/components/Buttons/StyledButton';
 import { useRouter } from 'expo-router';
-import { Tables, TablesInsert } from '@/database.types';
 import { useGetUsersPetList } from '@/api/pets';
 import { useAuth } from '@/providers/AuthProvider';
-
-// export const testData = [
-//   {
-//     age: 4,
-//     id: 25489,
-//     name: 'Frank',
-//   },
-//   {
-//     age: 3,
-//     id: 956475,
-//     name: 'Fido',
-//   },
-// ]
+import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
+import { useCallback, useMemo, useRef } from 'react';
+import AddPet from '@/components/AddPet';
 
 
 export default function ClientPets() {
@@ -33,14 +22,41 @@ export default function ClientPets() {
 // console.log({PetList});
 // console.log(session?.user.id);
 
-
+  const handleAddPet = () => {
+    // router.push(`/(client)/(pets)/${undefined}`)
+    // console.log('calling');
+    bottomSheetRef.current?.snapToIndex(0)
+    
+  }
+ 
   const AddPetButton = () => {
     return(
       <View style={{paddingHorizontal: 12}}>
-        <Button Text='Add A Pet' onPress={() => router.navigate(`/(client)/(pets)/${null}`) } />
+
+        <Button Text='Add A Pet' onPress={handleAddPet} />
       </View>
     )
   }
+
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const snapPoints = useMemo(() => ['60%'], []);
+  const renderBackdrop = useCallback(
+		(props:any) => (
+			<BottomSheetBackdrop
+				{...props}
+				disappearsOnIndex={-1}
+				appearsOnIndex={0}
+			/>
+		),
+		[]
+	);
+
+  const handleSheetChanges = useCallback((index: number) => {
+    console.log('handleSheetChanges', index);
+
+  }, []);
+
+
 
 
   return (
@@ -52,24 +68,38 @@ export default function ClientPets() {
         ListFooterComponent={ <AddPetButton /> }
       />
       
+
+      <BottomSheet
+        ref={bottomSheetRef}
+        onChange={handleSheetChanges}
+        enablePanDownToClose
+        index={-1}
+        snapPoints={snapPoints}
+        backgroundStyle={{backgroundColor: colorScheme === 'light' ? Colors.light.background : Colors.dark.background}}
+        backdropComponent={renderBackdrop}
+        
+      >
+        <BottomSheetView style={styles.contentContainer}>
+          
+          <AddPet UserID={session?.user.id!} ResetData={true} />
+
+        </BottomSheetView>
+
+      </BottomSheet>
+
     </View>
   )
 }
 
 const styles = StyleSheet.create({
   rootContainer:{
-    // borderWidth: 1,
-    // borderColor: 'red',
     flex: 1,
-    // backgroundColor: colorScheme === 'light' ? Colors.light.background : Colors.dark.background  ,
-    // padding: 22,
   },
-  // container: {
-  //   flexDirection: 'row',
-  //   gap: 8
-  // },
-  // label:{
-  //   marginTop: 7,
-  //   marginBottom: 2,
-  // },
+  contentContainer: {
+    flex: 1,
+    paddingHorizontal: 12,
+    // alignItems: 'center',
+    // backgroundColor: 'red',
+  },
+
 })

@@ -19,7 +19,7 @@ import { Dropdown } from 'react-native-element-dropdown'
 import dayjs, { Dayjs } from 'dayjs'
 import Spacer from '@/components/Spacer'
 
-type Pet_Locaitons = "Indoor only" | "Outdoor only" | "Indoor and Outdoor"
+export type Pet_Locaitons = "Indoor only" | "Outdoor only" | "Indoor and Outdoor"
 
 export default function Pet() {
   const colorScheme = useColorScheme();
@@ -28,6 +28,11 @@ export default function Pet() {
   const isUpdating = !!petID;
   const { session } = useAuth();
   const router = useRouter();
+
+  // console.log({petIDString});
+  // console.log({petID});
+  // console.log({isUpdating});
+  
 
   const TodayStamp = dayjs().startOf('day');
   const storageBucket = session?.user.id + '/pets';
@@ -40,7 +45,7 @@ export default function Pet() {
   const [ petPhotoUrl, setPetPhotoUrl ] = useState<string | null>(null)
   const [ allowSave, setAllowSave ] = useState(false)
   const [ petAgeInt, setPetAgeInt ] = useState<number | null>(null)
-  const [ petAgeDate, setPetAgeDate ] = useState<Dayjs | null>(null)
+  const [ petAgeDate, setPetAgeDate ] = useState<string | null>(null)
 
   const { data: petProfile, error, isLoading, isFetching, isFetched } = useGetPet(petID);
   const { mutate: updatePhotoUrl } = useUpdatePetPhoto();
@@ -184,7 +189,7 @@ export default function Pet() {
     // get current date and set age to current date - ageInt in years
     setPetAgeInt(ageInt)
     const ageDate = TodayStamp.subtract(ageInt, 'year')
-    setPetAgeDate(ageDate)    
+    setPetAgeDate(ageDate.toString())    
     petType && isSpayed != null ? setAllowSave(true) : setAllowSave(false)
   }
 
@@ -226,7 +231,8 @@ export default function Pet() {
           notes: data.notes,
           routine: data.routine,
           special_needs: data.special_needs,
-          photo_url: data.photo_url,
+          // photo_url: data.photo_url,
+          photo_url: petPhotoUrl,
           pet_id: petID,
         },
         {
@@ -249,14 +255,13 @@ export default function Pet() {
         {
           name: data.name,
           type: petType,
-          spayed_neutered: isSpayed,
-          pet_stays: petLocation,
-          gender: petGender,
-          weight: petWeight,
-          // age: petAgeDate,
-
           color: data.color,
           breed: data.breed,
+          age: petAgeDate,
+          gender: petGender,
+          weight: petWeight,
+          spayed_neutered: isSpayed,
+          pet_stays: petLocation,
           dietary_needs: data.dietary_needs,
           feeding_food_brand: data.feeding_food_brand,
           personality: data.personality,
@@ -271,6 +276,9 @@ export default function Pet() {
         {
           onSuccess: () => {
             // Reset all feilds ?
+            
+            // Reset AllowSave
+            setAllowSave(false)
 
             // move back to pet list
             handleNavigateBack();
@@ -322,7 +330,7 @@ export default function Pet() {
   }
 
   if(error){
-    return <Text>Fail to fetch products</Text>
+    return <Text>Fail to fetch pet details</Text>
   }
   
 

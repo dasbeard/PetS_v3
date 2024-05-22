@@ -29,12 +29,14 @@ export default function PetCard({PetData} : { PetData: QuickPetDataProps}) {
 
           <CardView style={[InteractiveStyles({pressed: pressed, colorScheme: colorScheme!}).Shadow, styles.rootContainer ]}>
             <CardView style={[styles.imageContainer, shadow({colorScheme: colorScheme!}).shadow ]}>
-              <RemoteImage style={[styles.image]} path={null}  />
+              <RemoteImage style={[styles.image]} path={PetData.photo_url}  />
             </CardView>
 
             <CardView style={styles.textContainer}>
               <Text style={styles.name}>{PetData?.name}</Text>
-              <Text style={styles.age}>{petAgeInt} years old</Text>
+              { PetData.age &&
+                <Text style={styles.age}>{petAgeInt} years old</Text>
+              }
             </CardView>
             
           </CardView>

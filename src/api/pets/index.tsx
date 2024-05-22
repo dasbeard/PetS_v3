@@ -82,6 +82,41 @@ export const useInsertPet = () => {
   })
 };
 
+export const useQuickInsertPet = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    async mutationFn(data: any){
+      const { data: newPet, error} = await supabase
+        .from('pets')
+        .upsert({
+          name: data.name,
+          type: data.type,
+          spayed_neutered: data.spayed_neutered,
+          pet_stays: data.pet_stays,
+          photo_url: data.photo_url,
+          owner_id: data.owner_id
+        })
+        .select()
+        .single()
+
+      if(error){
+        throw new Error(error.message)
+      }
+
+      return newPet
+    },
+    async onSuccess(data, newPetData){
+      console.log('onSuccess data:', {data});
+      
+      await queryClient.invalidateQueries({queryKey: ['petList']})
+      return newPetData
+    },
+    onError(error){
+      console.log('Error: ', error);
+    }
+  })
+}
 
 export const useUpdatePetProfile = () => {
   const queryClient = useQueryClient();
