@@ -89,8 +89,21 @@ export const useQuickInsertPet = () => {
 
   return useMutation({
     async mutationFn(data: any){
-      console.log('index', {data});
+      // console.log('index', {data});
       
+      // Check if pet photo and move from /temp to /pets
+      if(data.photo_url){
+
+        // if(data?.petPhotoUrl){
+          const NewPhotoUrl = data.owner_id + '/pets/' + data.photo_url
+
+          const { data: storageData, error } = await supabase.storage
+          .from(`avatars`)
+          .move(`${data.owner_id + '/temp/' + data.photo_url}`, `${NewPhotoUrl}`)
+        data = {...data, photo_url: NewPhotoUrl}
+      }
+
+
       const { data: newPet, error} = await supabase
         .from('pets')
         .upsert({
@@ -111,10 +124,9 @@ export const useQuickInsertPet = () => {
       return newPet
     },
     async onSuccess(data, newPetData){
-      // console.log('onSuccess data:', {data});
       
       await queryClient.invalidateQueries({queryKey: ['petList']})
-      // return newPetData
+      return newPetData
     },
     onError(error){
       console.log('Error: ', error);

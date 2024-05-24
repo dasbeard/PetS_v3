@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { StyleSheet, View as RNView } from 'react-native'
+import React, { Ref, forwardRef, useCallback, useEffect, useMemo, useState } from 'react'
 import { View, Text } from './Themed'
 import { BottomSheetTextInput} from '@gorhom/bottom-sheet';
 import Colors from '@/constants/Colors';
@@ -14,9 +14,24 @@ import Button from './Buttons/StyledButton';
 import { useQuickInsertPet } from '@/api/pets';
 import { router } from 'expo-router';
 
-export default function AddPet({UserID, ResetData}:{UserID:string, ResetData: boolean}) {
+type PetProps = {
+  name?: string,
+  type?: string,
+  spayed_neutered?: boolean,
+  pet_stays?: string,
+  photo_url?: string,
+}
+interface AddPetProps {
+  UserID: string;
+  petName: string | null;
+  setPetName: (petName:string) => void
+}
+
+// function AddPet({UserID, }:{UserID:string }) {
+const AddPet = forwardRef<RNView, AddPetProps>(({UserID, petName, setPetName }, ref) => { 
+
   const colorScheme = useColorScheme();
-  const [ petName, setPetName ] = useState<string | null>(null)
+  // const [ petName, setPetName ] = useState<string | null>(null)
   const [ petType, setPetType ] = useState<string | null>(null)
   const [ petLocation, setPetLocation ] = useState<string | null>(null)
   const [ petPhotoUrl, setPetPhotoUrl ] = useState<string | null>(null)
@@ -96,40 +111,43 @@ export default function AddPet({UserID, ResetData}:{UserID:string, ResetData: bo
 
     setPetName(name)
     
-    if(name.trim() === ''){
-      setDisableSave(true)
-      return
-    }
+    // if(name.trim() === ''){
+    //   setDisableSave(true)
+    //   return
+    // }
     
-    // Validate input fields
-    if((isSpayed != null) && (petType != null) && (petLocation != null)){
-      setDisableSave(false)
-    }
+    // // Validate input fields
+    // if((isSpayed != null) && (petType != null) && (petLocation != null)){
+    //   setDisableSave(false)
+    // }
   }
 
   const handleSavePet = async ()=>{
+
+
+
     // move image to users pets folder
 
     // Parse the fielname from the the photoUrl
-    let newFileName;
-    if(petPhotoUrl){
-      const position = petPhotoUrl.lastIndexOf("/");
-      newFileName = storageBucket + '/' + petPhotoUrl.substring(position+1)
+    // let newFileName;
+    // if(petPhotoUrl){
+    //   const position = petPhotoUrl.lastIndexOf("/");
+    //   newFileName = storageBucket + '/' + petPhotoUrl.substring(position+1)
       
-      const { data, error } = await supabase.storage
-      .from(`avatars`)
-      .move(`${petPhotoUrl}`, `${newFileName}`)
-    }  
+    //   const { data, error } = await supabase.storage
+    //   .from(`avatars`)
+    //   .move(`${petPhotoUrl}`, `${newFileName}`)
+    // }  
 
-    // Call mutate addPet to save data
-    InsertPet({
-      name: petName,
-      type: petType,
-      spayed_neutered: isSpayed,
-      pet_stays: petLocation,
-      photo_url: newFileName,
-      owner_id: UserID
-    })
+    // // Call mutate addPet to save data
+    // InsertPet({
+    //   name: petName,
+    //   type: petType,
+    //   spayed_neutered: isSpayed,
+    //   pet_stays: petLocation,
+    //   photo_url: newFileName,
+    //   owner_id: UserID
+    // })
 
     // Close and reset bottomsheet and Navigate to pet handled in useEffect?
   }
@@ -139,7 +157,7 @@ export default function AddPet({UserID, ResetData}:{UserID:string, ResetData: bo
     setPetPhotoUrl(null)
     setPetType(null)
     setIsSpayed(null)
-    setPetName(null)
+    // setPetName(null)
   }
 
   useEffect(() => {
@@ -153,13 +171,16 @@ export default function AddPet({UserID, ResetData}:{UserID:string, ResetData: bo
   },[isSuccess])
 
   console.log('called');
-  
 
 // NOTE: When saving new pet - DELETE UserID/Temp folder in storage bucket
 
   
   return (
-    <View style={styles.container}>
+    <RNView 
+      ref={ref}
+      style={styles.container} 
+    >
+
       <View style={styles.header}>
         <Text style={styles.headerText}>Add a Pet</Text>
       </View>
@@ -247,9 +268,11 @@ export default function AddPet({UserID, ResetData}:{UserID:string, ResetData: bo
       
       <Spacer Size={4} />
 
-    </View>
+    </RNView>
   )
 }
+
+)
 
 const styles = StyleSheet.create({
   container:{
@@ -322,3 +345,6 @@ const styles = StyleSheet.create({
     // flex: 1,
   },
 })
+
+
+export default AddPet

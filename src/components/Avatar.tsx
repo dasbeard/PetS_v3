@@ -24,9 +24,9 @@ export default function Avatar ({ url, size = 150, onUpload, StorageBucket }: Pr
   const colorScheme = useColorScheme();  
 
   useEffect(() => {
-    console.log('got url', url);
+    // console.log('got url', url);
     
-    if(url) {
+    if(url && url != '') {
       console.log('Gettting image from url');
       downloadImage(url)
     }
@@ -213,6 +213,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0)',
   },
   avatar: {
     // borderRadius: 5,

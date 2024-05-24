@@ -64,6 +64,7 @@ export default function ValidationInput({
               keyboardType={KeyboardType ? KeyboardType : 'default'}            
               multiline={MultiLine}
               numberOfLines={NumOfLines ? NumOfLines : 1}
+              // returnKeyType={'next'}
               style={{
                 textAlignVertical: MultiLine ? 'top' : 'auto', 
                 height: MultiLine ? '85%' : 'auto', 
@@ -84,7 +85,7 @@ export default function ValidationInput({
 const styles = StyleSheet.create({
   container:{
     color: Colors.brand[900],
-    backgroundColor: Colors.brand[50], 
+    // backgroundColor: Colors.brand[50], 
     borderWidth: 1,
     borderRadius: 6,
     padding: 10,

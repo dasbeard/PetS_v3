@@ -71,7 +71,7 @@ export default function ClientHeader( {title}: any) {
 
 const styles = StyleSheet.create({
   mainContianer: {
-    height: Platform.OS === 'web' ? 50 : Platform.OS === 'android' ? 50 : 40,
+    height: Platform.OS === 'web' ? 50 : Platform.OS === 'android' ? 38 : 40,
     marginTop: Platform.OS === 'android' ? 45 : 0,
     marginBottom: 4,
     flexDirection: 'row',

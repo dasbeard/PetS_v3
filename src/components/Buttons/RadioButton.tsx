@@ -61,7 +61,8 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     gap: 4,
     marginHorizontal: 8,
-    paddingHorizontal: 4
+    paddingHorizontal: 4,
+    backgroundColor: 'rgba(0,0,0,0)'
   },
   container:{
     borderWidth: 1,
