@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Image, StyleSheet, Platform, ActivityIndicator, Pressable } from 'react-native'
 import * as ImagePicker from 'expo-image-picker'
 import { supabase } from '@/util/supabase'
@@ -7,10 +7,11 @@ import { Ionicons } from '@expo/vector-icons'
 import Colors from '@/constants/Colors'
 import RemoteImage from './RemoteImage'
 import { useColorScheme } from './useColorScheme'
+import { SelectAndUploadImage } from '@/util/upload'
 
 interface Props {
-  size: number
   url: string | null
+  size?: number
   onUpload: (filepath: string) => void
   StorageBucket: string 
 }
@@ -23,160 +24,90 @@ export default function Avatar ({ url, size = 150, onUpload, StorageBucket }: Pr
   const avatarSize = { height: size, width: size }
   const colorScheme = useColorScheme();  
 
-  useEffect(() => {
-    if(url) downloadImage(url)
-  },[url])
-
-
-  // Set loading for images to download -UX
-  const downloadImage = async (path: string) => {
-    // console.log('path/url', path);
+  useEffect(() => {  
+    if ( url === '' || !url) {
+      return
+    } 
     
-    try{
+    (async () => {
       setLoadingImage(true)
-      const {data, error} = await supabase.storage.from('avatars').download(path)
-      // const {data, error} = await supabase.storage.from('avatars').download(path)
-
-      if (error) throw error
-
-      const fr = new FileReader()
-      fr.readAsDataURL(data)
-      fr.onload= () => {
-        setAvatarUrl(fr.result as string)
+      setAvatarUrl('');
+      const { data, error } = await supabase.storage
+        .from('avatars')
+        .download(url);
+  
+      if (error) {
+        console.log(error);
       }
-    } catch (error) {
-      if( error instanceof Error) {
-        console.log('Error downloading image:', {error});
+  
+      if (data) {
+        const fr = new FileReader();
+        fr.readAsDataURL(data);
+        fr.onload = () => {
+          setAvatarUrl(fr.result as string);
+        };
       }
-    } finally {
       setLoadingImage(false)
-    }
-  }
+    })()
 
-    
+  }, [url]);
+
+
+
   const uploadAvatar = async () => {
-    const currentPlatform = Platform.OS
+    setUploading(true)
 
-      // For use on mobile devices
-      try {
-        setUploading(true)
+    const result = await SelectAndUploadImage({RootBucket: 'avatars', FolderName: StorageBucket});    
+    if( result?.error){
+      console.log('Error uploading Avatar image', result.error);
+    }
 
-        const result = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.Images,
-          allowsMultipleSelection: false,
-          allowsEditing: true,
-          quality: 1,
-          exif: false,
-        })
+    if(result?.imagePath){
+      onUpload(result.imagePath)
+      setAvatarUrl(result.imagePath)
+    }
 
-        if (result.canceled || !result.assets || result.assets.length === 0) {
-          console.log('User cancelled image picker');
-          return
-        }
 
-        
-        const image = result.assets[0]
-        // console.log('Got Image:', image);
-        
-        if (!image.uri) {
-          throw new Error('No image uri!') // should not happen, but just in case.
-        }
-
-        if (currentPlatform === 'web') {
-          //  for use on web
-          const webImage = await fetch(image.uri)
-          const blob = await webImage.blob();
-          const fileExt = image.fileName?.split('.').pop()?.toLowerCase() ?? 'jpeg'
-          const fileName = `${Math.random()}.${fileExt}`
-          const filePath = `${fileName}`
-
-          const { error: uploadError } = await supabase.storage
-            .from('avatars')
-            .upload(`${StorageBucket}/${filePath}`, blob)
-
-          if (uploadError) {
-            throw uploadError
-          }
-          onUpload(filePath)
-
-        } else {
-          // For Mobile devices
-          const arrayBuffer = await fetch(image.uri).then((res) => res.arrayBuffer())
-
-          const fileExt = image.uri?.split('.').pop()?.toLowerCase() ?? 'jpeg'
-          const path = `${Date.now()}.${fileExt}`
-  
-  
-
-          const { data, error: uploadError } = await supabase.storage
-            .from('avatars')
-            .upload(`${StorageBucket}/${path}`, arrayBuffer, {
-              contentType: image.mimeType ?? 'image/jpeg',
-            })
-            
-            if (uploadError) {
-              throw uploadError
-            }
-            
-          onUpload(data.path)
-        }
-
-      } catch (error) {
-        if(error instanceof Error){
-          console.log('1111', {error});
-          
-          alert(error.message)
-        } else {
-          console.log('2222', {error});
-
-          throw error
-        }
-      } finally {
-        setUploading(false)
-      }
-    
+    setTimeout(() => {
+      setUploading(false)
+    }, 50);
   }
+
 
   return (
+    
     <View style={styles.avatarContainer}>
-      { avatarUrl ? 
-      (
-        <>
-        {loadingImage ? (
-          <ActivityIndicator style={avatarSize} />
-        ) : (
-          <Image 
-            source={{ uri: avatarUrl}}
-            accessibilityLabel='Avatar'
-            style={[avatarSize, styles.avatar, styles.image,  {borderRadius: size /2}]}
+      <View style={[shadow({colorScheme:colorScheme!}).shadow, { borderRadius: size / 2 }]}> 
+
+      {
+        avatarUrl 
+        ?
+          ( loadingImage 
+            ? <ActivityIndicator size={'large'} color={Colors.brand[500]} />
+            : <Image
+                source={{ uri: avatarUrl}}
+                style={[avatarSize, styles.avatar, styles.image, { borderRadius: size / 2 }]} 
+              />
+          )
+        :
+          <RemoteImage 
+            path={null} 
+            style={[avatarSize, styles.avatar, styles.image, { borderRadius: size / 2 }]} 
           />
-         )}
-          </>
-      ) :(
-        <View style={
-          [
-            styles.avatar, 
-            styles.noImage, 
-            shadow({colorScheme: colorScheme!}).shadow, 
-            {
-              borderRadius: size /2,
-              // height: avatarSize.height/2,
-            }
-          ]}>
-          <RemoteImage path={null} style={[avatarSize, styles.avatar, styles.noImage, {borderRadius: size /2 }]} />
-        </View>
-      )}
+      }
+      </View>
 
       <View>
         <Pressable 
           onPress={uploadAvatar} 
           disabled={uploading} 
           style={[
-            styles.uploadButton,
             {
               marginTop: -(size / 4),
               right: -(size/3),
-            }
+              backgroundColor: uploading ? Colors.brand[100] : Colors.brandAlt[200],
+            },
+            styles.uploadButton,
           ]}
         
         >
@@ -187,20 +118,21 @@ export default function Avatar ({ url, size = 150, onUpload, StorageBucket }: Pr
         </Pressable>
       </View>
 
-
-    </View>
+    </View>      
   )
 }
 
 const shadow = ({colorScheme}:{colorScheme?:string}) => StyleSheet.create({
   shadow:{ 
+    margin: 0,
+    padding:0,
     shadowColor: colorScheme === 'light' ? Colors.light.shadow : Colors.dark.shadow,
     borderColor: colorScheme === 'light' ? 'rgba(0,0,0, 0.1)' : 'rgba(251,251,251,0.21)',
-    backgroundColor: colorScheme === 'light' ? 'rgba(0,0,0, 0.1)' : 'rgba(251,251,251,0.21)',
+    borderWidth: 1,
     elevation: 1,
-    shadowOffset:  {height: 2, width: 2},
-    shadowOpacity: 0.25,
-    shadowRadius:  1.5,
+    shadowOffset:  {height: 0.5, width: 0.5},
+    shadowOpacity: 0.15,
+    shadowRadius:  1,
   }
 })
 
@@ -212,24 +144,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   avatar: {
-    // borderRadius: 5,
+    borderWidth: 1,
+    borderColor: Colors.placeholderText,
     overflow: 'hidden',
     maxWidth: '100%',
+    // margin: 4,
   },
   image: {
     objectFit: 'cover',
-    paddingTop: 0,
-  },
-  noImage: {
-    // backgroundColor: '#333',
-    // backgroundColor: 'rgba(0,0,0, 0.1)',
-    borderWidth: 1,
-    // borderStyle: 'solid',
-    // borderColor: 'rgb(200, 200, 200',
-    // borderRadius: 5,
   },
   uploadButton:{
-    backgroundColor: Colors.brandAlt[200],
+    // backgroundColor: Colors.brandAlt[200],
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 8,

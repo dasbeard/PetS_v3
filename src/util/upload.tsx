@@ -3,7 +3,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { supabase } from "./supabase";
 
 // This will detect if coming from web or moblie device and upload to the selected bucket/ folder path
-// Returns the path to the uploaded image
+// Returns the path to the uploaded image or null
 
 export async function SelectAndUploadImage(
   {
@@ -30,8 +30,8 @@ export async function SelectAndUploadImage(
 
     // Check if user cancels image selection
     if( selectionResult.canceled || !selectionResult.assets || selectionResult.assets.length === 0){
-      console.log('User cancelled image selection');
-      return
+      // console.log('User cancelled image selection');
+      return (null)
     }
 
     const image = selectionResult.assets[0]
@@ -62,7 +62,7 @@ export async function SelectAndUploadImage(
       }
 
       // return the path to the uploaded image
-      return (uploadResponse.path)
+      return {imagePath:uploadResponse.path! as string} 
     
     } else {
       // Uplading from desktop
@@ -85,12 +85,12 @@ export async function SelectAndUploadImage(
       }
 
       // return the path to the uploaded image
-      return (uploadResponse.path)
+      return {imagePath:uploadResponse.path! as string}
     }
     
   } catch (error) {
-    if(error ||error instanceof Error){
-      console.log('Error uploading image:', {Error});
+    if(error || error instanceof Error){
+      console.log('Error uploading image:', {error});
       return {error}
     }    
   }

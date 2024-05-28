@@ -29,7 +29,10 @@ export default function UserDetailsComponent({UserData}:any) {
     })
   }
 
-  const handleUpdateAvatar = async (url: any) => {
+  const handleUpdateAvatar = async (url: string | null) => {
+    // check if anything returned - Avatar returns null if canceled
+    if(!url) return
+
     // check if previous image and remove from storage
     if(UserData.avatar_url){
       // delete original 
@@ -48,7 +51,7 @@ export default function UserDetailsComponent({UserData}:any) {
   };
 
 
-  useEffect(() => {
+  useEffect(() => {   
     if(isSubmitSuccessful){
       reset({
         firstName: UserData.first_name ,
@@ -66,7 +69,7 @@ export default function UserDetailsComponent({UserData}:any) {
           <Avatar
             StorageBucket={UserData.id}
             size={110}
-            url={UserData.avatar_url || ''}
+            url={UserData.avatar_url}
             onUpload={(url:string) =>{
               handleUpdateAvatar(url)
             }}
