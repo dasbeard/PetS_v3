@@ -25,14 +25,9 @@ export default function Pet() {
   const colorScheme = useColorScheme();
   const { petID: petIDString  } = useLocalSearchParams();
   const petID = parseFloat(typeof petIDString === 'string' ? petIDString : petIDString[0])
-  const isUpdating = !!petID;
+  // const isUpdating = !!petID;
   const { session } = useAuth();
   const router = useRouter();
-
-  // console.log({petIDString});
-  // console.log({petID});
-  // console.log({isUpdating});
-  
 
   const TodayStamp = dayjs().startOf('day');
   const storageBucket = session?.user.id + '/pets';
@@ -52,7 +47,6 @@ export default function Pet() {
   const { mutate: updatePetProfile } = useUpdatePetProfile();
   const { mutate: insertPet } = useInsertPet();
   const { mutate: deletePet } = useDeletePet();
-  // console.log('petProfile', {petProfile});
 
 
   const radioPetTypes: ButtonDataProps[] = useMemo(() => ([
@@ -110,14 +104,10 @@ export default function Pet() {
   const { control, handleSubmit, formState:{ isDirty, isSubmitSuccessful}, reset } = useForm({
     defaultValues: {
       name: petProfile?.name,
-      // type: petProfile?.type,
       color: petProfile?.color,
       breed: petProfile?.breed,
-      // age: petProfile?.age,
       gender: petProfile?.gender,
       weight: petProfile?.weight,
-      // spayed_neutered: petProfile?.spayed_neutered,
-      // pet_stays: petProfile?.pet_stays,
       dietary_needs: petProfile?.dietary_needs,
       feeding_food_brand: petProfile?.feeding_food_brand,
       personality: petProfile?.personality,
@@ -133,34 +123,26 @@ export default function Pet() {
   const handleUpdateAvatar = async (url: string) => {
     setPetPhotoUrl(url)
     
-    // Check if there is a record
-    // if(!isUpdating){
-    //   // no record yet - keep url in state
-    //   console.log('No record yet - url:', url);
-    //   setPetPhotoUrl(url)
-    //   return
-    // }
-    
     // Check that updating the profile is allowed
     if(!isDirty){
 
-    // check if previous image and remove from storage
-    if(petProfile?.photo_url){
-      // delete original 
-      const oldUrl = petProfile?.photo_url
-      const {error} = await supabase.storage.from('avatars').remove([oldUrl])      
-      if(error){
-        console.log('Error removing old pet photo - id:', oldUrl, {error});
-        Alert.alert(error.message)
+      // check if previous image and remove from storage
+      if(petProfile?.photo_url){
+        // delete original 
+        const oldUrl = petProfile?.photo_url
+        const {error} = await supabase.storage.from('avatars').remove([oldUrl])      
+        if(error){
+          console.log('Error removing old pet photo - id:', oldUrl, {error});
+          Alert.alert(error.message)
+        }
       }
-    }
 
-    // update value in pets profile
-    updatePhotoUrl({
-      pet_id: petID,
-      photo_url: url,
-      
-    })
+      // update value in pets profile
+      updatePhotoUrl({
+        pet_id: petID,
+        photo_url: url,
+        
+      })
     }
   };
 
@@ -170,35 +152,41 @@ export default function Pet() {
 
   const handlePetTypeChange = ( petType: any ) => {
     setPetType(petType)
-    isSpayed != null && petLocation ? setAllowSave(true) : setAllowSave(false)
+    setAllowSave(true)
+    // isSpayed != null && petLocation ? setAllowSave(true) : setAllowSave(false)
   }
 
   const handlePetSpayedChange = ( spayed: any ) => {
     setIsSpayed(spayed)
-    petType && petLocation ? setAllowSave(true) : setAllowSave(false)
+    setAllowSave(true)
+    // petType && petLocation ? setAllowSave(true) : setAllowSave(false)
   }
 
   const handlePetLocationChange = ( petLocation: Pet_Locaitons ) => {
     setPetLocation(petLocation)
-    petType && isSpayed != null ? setAllowSave(true) : setAllowSave(false)
+    setAllowSave(true)
+    // petType && isSpayed != null ? setAllowSave(true) : setAllowSave(false)
   }
 
   const handlePetGenderChange = ( petGender: string ) => {
     setPetGender(petGender)
-    petType && isSpayed != null ? setAllowSave(true) : setAllowSave(false)
+    setAllowSave(true)
+    // petType && isSpayed != null ? setAllowSave(true) : setAllowSave(false)
   }
 
   const handleSetAge = (ageInt: number) => {
     // get current date and set age to current date - ageInt in years
     setPetAgeInt(ageInt)
     const ageDate = TodayStamp.subtract(ageInt, 'year')
-    setPetAgeDate(ageDate.toString())    
-    petType && isSpayed != null ? setAllowSave(true) : setAllowSave(false)
+    setPetAgeDate(ageDate.toString())  
+    setAllowSave(true)
+     
+    // petType && isSpayed != null ? setAllowSave(true) : setAllowSave(false)
   }
 
   const handleSetPetWeight = (weight: number) => {
     setPetWeight(weight)
-    petType && isSpayed != null ? setAllowSave(true) : setAllowSave(false)
+    setAllowSave(true)
   }
 
   const calculatePetAge = (petDate: any) => {
@@ -207,101 +195,43 @@ export default function Pet() {
     return(ageInt)
   }
 
-
-
   const handleSavePetData = (data: any) => {
-
-    if(isUpdating){
-      console.log('updating');
-      
-      // Update pet profile
-      updatePetProfile(
-        {
-          name: data.name,
-          type: petType,
-          color: data.color,
-          breed: data.breed,
-          age: petAgeDate,
-          gender: petGender,
-          weight: petWeight,
-          spayed_neutered: isSpayed,
-          pet_stays: petLocation,
-          dietary_needs: data.dietary_needs,
-          feeding_food_brand: data.feeding_food_brand,
-          personality: data.personality,
-          medical_needs: data.medical_needs,
-          other_needs: data.other_needs,
-          notes: data.notes,
-          routine: data.routine,
-          special_needs: data.special_needs,
-          // photo_url: data.photo_url,
-          photo_url: petPhotoUrl,
-          pet_id: petID,
-        },
-        {
-          onSuccess: () =>{
-            // Reset all feilds ?
-
-            // Reset AllowSave
-            setAllowSave(false)
-
-            // move back to pet list?
-            // handleNavigateBack();
-          }
-        }
-      )
-    } else {
-      console.log('Inserting new pet');
-
-      // Create new record
-      insertPet(
-        {
-          name: data.name,
-          type: petType,
-          color: data.color,
-          breed: data.breed,
-          age: petAgeDate,
-          gender: petGender,
-          weight: petWeight,
-          spayed_neutered: isSpayed,
-          pet_stays: petLocation,
-          dietary_needs: data.dietary_needs,
-          feeding_food_brand: data.feeding_food_brand,
-          personality: data.personality,
-          medical_needs: data.medical_needs,
-          other_needs: data.other_needs,
-          notes: data.notes,
-          routine: data.routine,
-          special_needs: data.special_needs,
-          photo_url: petPhotoUrl,
-          owner_id: session?.user.id
-        },
-        {
-          onSuccess: () => {
-            // Reset all feilds ?
-            
-            // Reset AllowSave
-            setAllowSave(false)
-
-            // move back to pet list
-            handleNavigateBack();
-          }
-        }
-      )
-    }
-
+    setAllowSave(false)
+    
+    // Update pet profile
+    updatePetProfile(
+      {
+        name: data.name,
+        type: petType,
+        color: data.color,
+        breed: data.breed,
+        age: petAgeDate,
+        gender: petGender,
+        weight: petWeight,
+        spayed_neutered: isSpayed,
+        pet_stays: petLocation,
+        dietary_needs: data.dietary_needs,
+        feeding_food_brand: data.feeding_food_brand,
+        personality: data.personality,
+        medical_needs: data.medical_needs,
+        other_needs: data.other_needs,
+        notes: data.notes,
+        routine: data.routine,
+        special_needs: data.special_needs,
+        photo_url: petPhotoUrl,
+        pet_id: petID,
+      }
+    )
   }
 
   const onDelete = () => {
-    // RQ - delete pet
+    // delete pet
     deletePet({
       petID: petID,
       imagePath: petPhotoUrl || petProfile?.photo_url,
     },
     {
       onSuccess: () => {
-        // reset screen
-        // navigate back to pets
         router.navigate('/(client)/pets')
       }
     })
@@ -351,10 +281,11 @@ export default function Pet() {
     
   },[isFetched])
   
-  if(isLoading || isFetching){
+  // if(isLoading || isFetching){
+  if(isLoading){
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems:'center'}}>
-        {/* <ActivityIndicator size='large' color={Colors.brand[500]} /> */}
+        <ActivityIndicator size='large' color={Colors.brand[500]} />
       </View>
     )
   }
@@ -482,15 +413,36 @@ export default function Pet() {
           </View>
         </View>
 
+        <View style={[styles.smallRow, {justifyContent: 'space-between'}]}>
+
+          <View style={[styles.smallColumn, { maxWidth: '47%'}]}>
+            <Text style={[styles.label, {marginBottom: 6} ]}>What gender is your pet?</Text>
+            <Dropdown
+              placeholder='Gender...'
+              data={petGenderArray}
+              labelField='label'
+              valueField='value'
+              onChange={({value}) => handlePetGenderChange(value)}
+              value={petGender}
+              style={[styles.dropdown, { backgroundColor: colorScheme === 'light' ? Colors.brand[50] : Colors.brand[100] }]}
+              placeholderStyle={styles.placeholderStyle}
+              selectedTextStyle={styles.selectedTextStyle}
+              maxHeight={130}
+            />
+          </View>
 
 
-        <Text style={styles.label}>What color is your pet?</Text>
-        <ValidationInput
-          name='color'
-          placeholder='Black with white spots'
-          control={control}
-        />
-        
+          <View style={[styles.smallColumn, { maxWidth: '50%'}]}>
+            <Text style={styles.label}>What color is your pet?</Text>
+            <ValidationInput
+              name='color'
+              placeholder='Black with white spots'
+              control={control}
+            />
+          </View>
+        </View>
+
+
         <Text style={styles.label}>What breed is your pet?</Text>
         <ValidationInput
           name='breed'
@@ -499,9 +451,6 @@ export default function Pet() {
         />
         
 
-
-
-
         <Text style={styles.label}>How old is your pet?</Text>
         <CustomInput
           Placeholder='5'
@@ -509,20 +458,6 @@ export default function Pet() {
           RightText='years old'
           Value={petAgeInt?.toString()}
           OnChange={(value: number) => handleSetAge(value)}
-        />
-
-        <Text style={styles.label}>What gender is your pet?</Text>
-        <Dropdown
-          placeholder='Gender...'
-          data={petGenderArray}
-          labelField='label'
-          valueField='value'
-          onChange={({value}) => handlePetGenderChange(value)}
-          value={petGender}
-          style={[styles.dropdown, { backgroundColor: colorScheme === 'light' ? Colors.brand[50] : Colors.brand[100] }]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          maxHeight={130}
         />
 
         <Text style={styles.label}>About how much does your pet weigh?</Text>
@@ -600,8 +535,8 @@ export default function Pet() {
           <Button 
             Text='Delete' 
             BorderColor={Colors.red[300]} 
-            BackgroundColor={Colors.red[400]} 
-            TextColor={Colors.light.text} 
+            BackgroundColor={Colors.red[500]} 
+            TextColor='#000' 
             BoldText 
             onPress={confirmDelete}
           />
@@ -641,9 +576,10 @@ const styles = StyleSheet.create({
     color: Colors.brand[900],
     backgroundColor: Colors.brand[50], 
     borderWidth: 1,
+    borderColor: Colors.brand[700],
     borderRadius: 6,
     padding: 10,
-    height: 42,
+    height: 40,
   },
   placeholderStyle:{
     fontSize: 15,
@@ -659,8 +595,7 @@ const styles = StyleSheet.create({
   },
   deleteButton:{
     marginTop: 10,
-    marginBottom: 18,
-
+    marginBottom: 38,
   },
 })
 

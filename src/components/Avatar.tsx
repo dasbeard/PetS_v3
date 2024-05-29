@@ -133,6 +133,8 @@ const shadow = ({colorScheme}:{colorScheme?:string}) => StyleSheet.create({
     shadowOffset:  {height: 0.5, width: 0.5},
     shadowOpacity: 0.15,
     shadowRadius:  1,
+    backgroundColor: 'rgba(0,0,0,0)',
+
   }
 })
 
@@ -142,6 +144,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0)',
   },
   avatar: {
     borderWidth: 1,

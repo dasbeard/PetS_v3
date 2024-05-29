@@ -76,6 +76,7 @@ const styles = StyleSheet.create({
     color: Colors.brand[900],
     borderWidth: 1,
     borderRadius: 6,
+    borderColor: Colors.brand[700],
     padding: 10,
     // height: 38,
     minHeight: 40,

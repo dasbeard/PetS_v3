@@ -81,7 +81,7 @@ export default function Button ({
                 style={[
                   buttonStyles(Selected, colorScheme!, pressed).text, 
                   TextColor ? ({color: TextColor}) : (null),
-                  BoldText ? {fontWeight: '600'}: {fontWeight:'400'},
+                  BoldText ? {fontWeight: '600', textTransform: 'uppercase', letterSpacing: 1}: {fontWeight:'400'},
                 ]}              
               >
                 {Text}
@@ -109,7 +109,6 @@ const buttonStyles = (Selected?: boolean, colorScheme?: string, pressed?: boolea
   innerContainer:{
     borderRadius: 6,
     padding: 12,
-    // backgroundColor: Selected ? Colors.brand[800] : Colors.brand[500],
     backgroundColor: Selected ? (colorScheme === 'light' ? Colors.brand[800] : Colors.brand[200] ): ( colorScheme === 'light' ? Colors.brand[500] : Colors.brand[200]),
     borderWidth:1,
     marginVertical: 5,
@@ -119,8 +118,8 @@ const buttonStyles = (Selected?: boolean, colorScheme?: string, pressed?: boolea
     overflow: 'hidden',
     textAlign: 'center',
     fontSize: 15,
-    // color: Colors.dark.text,
-    color: (colorScheme === 'light' ? Colors.dark.text : Colors.light.text)
+    color: (colorScheme === 'light' ? Colors.dark.text : Colors.light.text),
+    letterSpacing: .6,
   },
   textContainer: {
     backgroundColor: 'rgba(0, 0, 0, 0)',

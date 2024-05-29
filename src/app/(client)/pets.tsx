@@ -35,7 +35,7 @@ export default function ClientPets() {
   const [ disableNewPetSave, setDisableNewPetSave ] = useState<boolean>(true)
 
   const handleSaveNewPet = () => {
-    console.log({newPetData});
+    // console.log({newPetData});
     
     // Check if photo was added and parse
     let PetPhotoUrl = null;
@@ -55,46 +55,14 @@ export default function ClientPets() {
     },{
       onSuccess:(data) =>{
         // close bottomSheet
-        // bottomSheetRef.current?.snapToIndex(0)
         bottomSheetRef.current?.close()
     
         // Navigate to pet screen
         router.navigate(`/(client)/(pets)/${data.id}`)
       }
     })
-
-
   }
  
-  const handleSavePet = async ()=>{
-    // move image to users pets folder
-
-    // Parse the fielname from the the photoUrl
-    // let newFileName;
-    // if(petPhotoUrl){
-    //   const position = petPhotoUrl.lastIndexOf("/");
-    //   newFileName = storageBucket + '/' + petPhotoUrl.substring(position+1)
-      
-    //   const { data, error } = await supabase.storage
-    //   .from(`avatars`)
-    //   .move(`${petPhotoUrl}`, `${newFileName}`)
-    // }  
-
-    // // Call mutate addPet to save data
-    // InsertPet({
-    //   name: petName,
-    //   type: petType,
-    //   spayed_neutered: isSpayed,
-    //   pet_stays: petLocation,
-    //   photo_url: newFileName,
-    //   owner_id: UserID
-    // })
-
-    // Close and reset bottomsheet and Navigate to pet handled in useEffect?
-  }
-
-
-
 
   const handleSheetChanges = useCallback((index: number) => {
     // reset form
@@ -104,11 +72,6 @@ export default function ClientPets() {
     }
   }, []);
 
-
-  // const handleSaveNewPet = () => {
-  //   console.log({newPetData});
-    
-  // }
 
   return (
     <View style={styles.rootContainer}>
