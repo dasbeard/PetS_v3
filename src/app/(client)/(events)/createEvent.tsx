@@ -103,11 +103,12 @@ export default function CreateEvent() {
     // }
   }
   const handleTimeSelection = (data: any) =>{   
-    if(howOften === 'once'){
-      setSelectedTime(data)
-    } else {
-      setSelectedTimes(data)
-    }
+    setSelectedTimes(data)
+    // if(howOften === 'once'){
+    //   setSelectedTime(data)
+    // } else {
+    //   setSelectedTimes(data)
+    // }
   }
   const handleDaysSelection = (data: any) =>{
     setSelectedDays(data)

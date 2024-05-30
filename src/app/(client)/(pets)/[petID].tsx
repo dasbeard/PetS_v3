@@ -40,14 +40,31 @@ export default function Pet() {
   const [ petAgeInt, setPetAgeInt ] = useState<number | null>(null)
   const [ petAgeDate, setPetAgeDate ] = useState<string | null>(null)
 
-  const { data: petProfile, error, isLoading, isFetched } = useGetPet(petID);
+  const { data: petProfile, error, isLoading, isFetched, isFetching } = useGetPet(petID);
   const { mutate: updatePhotoUrl } = useUpdatePetPhoto();
   const { mutate: updatePetProfile } = useUpdatePetProfile();
   const { mutate: deletePet } = useDeletePet();
-
-  // console.log({petProfile});
+  const { control, handleSubmit, formState:{ isDirty, isSubmitSuccessful}, reset } = useForm({
+    defaultValues: {
+      name: petProfile?.name ,
+      color: petProfile?.color,
+      breed: petProfile?.breed,
+      gender: petProfile?.gender,
+      weight: petProfile?.weight,
+      dietary_needs: petProfile?.dietary_needs,
+      feeding_food_brand: petProfile?.feeding_food_brand,
+      personality: petProfile?.personality,
+      // medical_needs: petProfile?.medical_needs,
+      // other_needs: petProfile?.other_needs,
+      notes: petProfile?.notes,
+      routine: petProfile?.routine,
+      special_needs: petProfile?.special_needs,
+      photo_url: petProfile?.photo_url,
+    }
+  });
   
 
+  //  Data Types for dropdowns and radios
   const radioPetTypes: ButtonDataProps[] = useMemo(() => ([
     {
       key: 'petType1',
@@ -100,25 +117,8 @@ export default function Pet() {
     },
   ]),[])
 
-  const { control, handleSubmit, formState:{ isDirty, isSubmitSuccessful}, reset } = useForm({
-    defaultValues: {
-      name: petProfile?.name ,
-      color: petProfile?.color,
-      breed: petProfile?.breed,
-      gender: petProfile?.gender,
-      weight: petProfile?.weight,
-      dietary_needs: petProfile?.dietary_needs,
-      feeding_food_brand: petProfile?.feeding_food_brand,
-      personality: petProfile?.personality,
-      // medical_needs: petProfile?.medical_needs,
-      // other_needs: petProfile?.other_needs,
-      notes: petProfile?.notes,
-      routine: petProfile?.routine,
-      special_needs: petProfile?.special_needs,
-      photo_url: petProfile?.photo_url,
-    }
-  });
  
+  // functions
   const handleUpdateAvatar = async (url: string) => {
     setPetPhotoUrl(url)
     
@@ -172,6 +172,11 @@ export default function Pet() {
     setAllowSave(true)
     // petType && isSpayed != null ? setAllowSave(true) : setAllowSave(false)
   }
+  
+  const handleSetPetWeight = (weight: number) => {
+    setPetWeight(weight)
+    setAllowSave(true)
+  }
 
   const handleSetAge = (ageInt: number) => {
     // get current date and set age to current date - ageInt in years
@@ -181,11 +186,6 @@ export default function Pet() {
     setAllowSave(true)
      
     // petType && isSpayed != null ? setAllowSave(true) : setAllowSave(false)
-  }
-
-  const handleSetPetWeight = (weight: number) => {
-    setPetWeight(weight)
-    setAllowSave(true)
   }
 
   const calculatePetAge = (petDate: any) => {
@@ -238,6 +238,7 @@ export default function Pet() {
   }
 
   const confirmDelete = () => {
+    // Only works on Mobile
     Alert.alert("Confirm", `Are you sure you want to delete ${petProfile?.name}?`,[
       {
         text: 'Cancel'
@@ -251,33 +252,46 @@ export default function Pet() {
 
   
   
-    useEffect(() => {
+  useEffect(() => {
     //  Set the default inputs for react-hook-form
     reset(petProfile) 
 
     // Set the values for the radio buttons and dropdown in state
-    if(petProfile?.type){
-      setPetType(petProfile?.type)
-    }
-    if(petProfile?.pet_stays){
-      setPetLocation(petProfile?.pet_stays)
-    }
-    if(petProfile?.spayed_neutered != null){
-      setIsSpayed(petProfile?.spayed_neutered)
-    }
-    if(petProfile?.gender){
-      setPetGender(petProfile?.gender)
-    }
-    if(petProfile?.weight){
-      setPetWeight(petProfile?.weight)
-    }
+    petProfile?.type ? setPetType(petProfile?.type) : setPetType(null)
+    petProfile?.pet_stays ? setPetLocation(petProfile?.pet_stays) :setPetLocation(null)
+    petProfile?.spayed_neutered != null ? setIsSpayed(petProfile?.spayed_neutered) : setIsSpayed(null)
+    petProfile?.gender ? setPetGender(petProfile?.gender) : setPetGender(null)
+    petProfile?.weight ? setPetWeight(petProfile?.weight) : setPetWeight(null)
+    petProfile?.photo_url ? setPetPhotoUrl(petProfile?.photo_url) : setPetPhotoUrl(null)
     if(petProfile?.age){
       const age = calculatePetAge(petProfile.age)
       setPetAgeInt(age)
+    } else { 
+      setPetAgeInt(null)
     }
-    if(petProfile?.photo_url){
-      setPetPhotoUrl(petProfile?.photo_url)
-    }
+
+    // if(petProfile?.type){
+    //   setPetType(petProfile?.type)
+    // }
+    // if(petProfile?.pet_stays){
+    //   setPetLocation(petProfile?.pet_stays)
+    // }
+    // if(petProfile?.spayed_neutered != null){
+    //   setIsSpayed(petProfile?.spayed_neutered)
+    // }
+    // if(petProfile?.gender){
+    //   setPetGender(petProfile?.gender)
+    // }
+    // if(petProfile?.weight){
+    //   setPetWeight(petProfile?.weight)
+    // }
+    // if(petProfile?.age){
+    //   const age = calculatePetAge(petProfile.age)
+    //   setPetAgeInt(age)
+    // }
+    // if(petProfile?.photo_url){
+    //   setPetPhotoUrl(petProfile?.photo_url)
+    // }
     
   },[isFetched])
   
