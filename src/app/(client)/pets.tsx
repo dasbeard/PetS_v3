@@ -1,16 +1,14 @@
-import { NativeModules, StyleSheet, View as RNView } from 'react-native'
-import { View, Text } from '@/components/Themed'
+import { StyleSheet } from 'react-native'
+import { View } from '@/components/Themed'
 import PetCard from '@/components/PetCard'
 import { useColorScheme } from '@/components/useColorScheme'
-import Colors from '@/constants/Colors';
 import { FlashList } from '@shopify/flash-list';
 import Button from '@/components/Buttons/StyledButton';
 import { useRouter } from 'expo-router';
 import { useGetUsersPetList, useQuickInsertPet } from '@/api/pets';
 import { useAuth } from '@/providers/AuthProvider';
-import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
-import { useCallback, useMemo, useRef, useState } from 'react';
-import AddPet from '@/components/AddPet';
+import BottomSheet from '@gorhom/bottom-sheet';
+import { useCallback, useRef, useState } from 'react';
 import AddPetBottomSheet from '@/components/AddPetBottomSheet';
 
 
@@ -34,10 +32,8 @@ export default function ClientPets() {
   const [ newPetData, setNewPetData ] = useState<NewPetProps | null>(null)
   const [ disableNewPetSave, setDisableNewPetSave ] = useState<boolean>(true)
 
-  const handleSaveNewPet = () => {
-    // console.log({newPetData});
-    
-    // Check if photo was added and parse
+  const handleSaveNewPet = () => {    
+    // Check if photo was added and parse so it can be moved
     let PetPhotoUrl = null;
     if(newPetData?.petPhotoUrl){
       const position = newPetData?.petPhotoUrl.lastIndexOf('/') + 1
@@ -80,7 +76,6 @@ export default function ClientPets() {
         data={PetList}
         renderItem={({ item }) => <PetCard PetData={item} /> }
         estimatedItemSize={145}
-        // ListFooterComponent={ <AddPetButton /> }
         ListFooterComponent={ () => (
           <View style={{paddingHorizontal: 12}}>
             <Button Text='Add A Pet' onPress={() => bottomSheetRef.current?.snapToIndex(0)} />
@@ -98,24 +93,6 @@ export default function ClientPets() {
         setSaveDisabled={setDisableNewPetSave}
         UserID={session?.user.id!}
       />
-
-      {/* <BottomSheet
-        ref={bottomSheetRef}
-        onChange={handleSheetChanges}
-        enablePanDownToClose
-        index={-1}
-        snapPoints={snapPoints}
-        backgroundStyle={{backgroundColor: colorScheme === 'light' ? Colors.light.background : Colors.dark.background}}
-        backdropComponent={renderBackdrop}
-        
-      >
-        <BottomSheetView style={styles.contentContainer}>
-          
-          <AddPet UserID={session?.user.id!} petName={petName} setPetName={setPetName}  ref={AddPetRef} />
-
-        </BottomSheetView>
-
-      </BottomSheet> */}
 
     </View>
   )

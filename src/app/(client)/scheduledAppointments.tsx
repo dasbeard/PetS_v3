@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-export default function ClientScheduledAppointments() {
+export default function ScheduledAppointments() {
   return (
     <View>
-      <Text>ClientScheduledAppointments</Text>
+      <Text>Client ScheduledAppointments</Text>
     </View>
   )
 }

@@ -57,7 +57,13 @@ export default function IconButton ({
             <Ionicons 
               name={Icon ? Icon : 'code'} 
               size={IconSize ? IconSize : 16} 
-              color={IconColor ? IconColor : (colorScheme === 'light' ? Colors.dark.text : Colors.light.text)} />
+              color=
+                { IconColor 
+                  ? IconColor 
+                  : (colorScheme === 'light' ? Colors.dark.text : Colors.light.text)
+                } 
+            
+            />
           </View>
 
         )}

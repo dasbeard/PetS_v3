@@ -1,4 +1,4 @@
-import { ActivityIndicator, Alert, Platform, Pressable, StyleSheet, TouchableOpacity } from 'react-native'
+import { ActivityIndicator, Alert, Platform, Pressable, StyleSheet } from 'react-native'
 import React, { useEffect, useState, useMemo } from 'react'
 import { KeyboardAwareScrollView } from '@pietile-native-kit/keyboard-aware-scrollview'
 import { useColorScheme } from '@/components/useColorScheme'
@@ -7,7 +7,7 @@ import { View, Text } from '@/components/Themed'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import Avatar from '@/components/Avatar'
 import { useAuth } from '@/providers/AuthProvider'
-import { set, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import ValidationInput from '@/components/ValidationInput'
 import { FontAwesome6 } from '@expo/vector-icons'
 import Button from '@/components/Buttons/StyledButton'
@@ -17,7 +17,6 @@ import RadioButton, { ButtonDataProps } from '@/components/Buttons/RadioButton'
 import CustomInput from '@/components/CustomInput'
 import { Dropdown } from 'react-native-element-dropdown'
 import dayjs, { Dayjs } from 'dayjs'
-import Spacer from '@/components/Spacer'
 
 export type Pet_Locaitons = "Indoor only" | "Outdoor only" | "Indoor and Outdoor"
 
@@ -25,7 +24,6 @@ export default function Pet() {
   const colorScheme = useColorScheme();
   const { petID: petIDString  } = useLocalSearchParams();
   const petID = parseFloat(typeof petIDString === 'string' ? petIDString : petIDString[0])
-  // const isUpdating = !!petID;
   const { session } = useAuth();
   const router = useRouter();
 
@@ -42,12 +40,13 @@ export default function Pet() {
   const [ petAgeInt, setPetAgeInt ] = useState<number | null>(null)
   const [ petAgeDate, setPetAgeDate ] = useState<string | null>(null)
 
-  const { data: petProfile, error, isLoading, isFetching, isFetched } = useGetPet(petID);
+  const { data: petProfile, error, isLoading, isFetched } = useGetPet(petID);
   const { mutate: updatePhotoUrl } = useUpdatePetPhoto();
   const { mutate: updatePetProfile } = useUpdatePetProfile();
-  const { mutate: insertPet } = useInsertPet();
   const { mutate: deletePet } = useDeletePet();
 
+  // console.log({petProfile});
+  
 
   const radioPetTypes: ButtonDataProps[] = useMemo(() => ([
     {
@@ -103,7 +102,7 @@ export default function Pet() {
 
   const { control, handleSubmit, formState:{ isDirty, isSubmitSuccessful}, reset } = useForm({
     defaultValues: {
-      name: petProfile?.name,
+      name: petProfile?.name ,
       color: petProfile?.color,
       breed: petProfile?.breed,
       gender: petProfile?.gender,
@@ -111,8 +110,8 @@ export default function Pet() {
       dietary_needs: petProfile?.dietary_needs,
       feeding_food_brand: petProfile?.feeding_food_brand,
       personality: petProfile?.personality,
-      medical_needs: petProfile?.medical_needs,
-      other_needs: petProfile?.other_needs,
+      // medical_needs: petProfile?.medical_needs,
+      // other_needs: petProfile?.other_needs,
       notes: petProfile?.notes,
       routine: petProfile?.routine,
       special_needs: petProfile?.special_needs,
@@ -213,8 +212,8 @@ export default function Pet() {
         dietary_needs: data.dietary_needs,
         feeding_food_brand: data.feeding_food_brand,
         personality: data.personality,
-        medical_needs: data.medical_needs,
-        other_needs: data.other_needs,
+        // medical_needs: data.medical_needs,
+        // other_needs: data.other_needs,
         notes: data.notes,
         routine: data.routine,
         special_needs: data.special_needs,
@@ -250,8 +249,9 @@ export default function Pet() {
       }
     ])  }
 
-
-  useEffect(() => {
+  
+  
+    useEffect(() => {
     //  Set the default inputs for react-hook-form
     reset(petProfile) 
 
@@ -281,7 +281,6 @@ export default function Pet() {
     
   },[isFetched])
   
-  // if(isLoading || isFetching){
   if(isLoading){
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems:'center'}}>
@@ -299,14 +298,6 @@ export default function Pet() {
   return (
     <>
       <Stack.Screen options={{ title: petProfile?.name || 'Pet Name' }} />
-      {/* <Text> Allow Save? { allowSave ? 'yes' : 'no' } :</Text>
-      <Text> Is Dirty? { isDirty ? 'yes' : 'no' } :</Text>
-      <Text> Spayed: { isSpayed ? 'Y' : 'N' } :</Text>
-      <Text> PetType: { petType } :</Text>
-      <Text> PetLocation: { petLocation } :</Text> 
-      <Text>{petID}</Text>
-      */}
-
 
       <View style={[headerStyles.container, {borderColor: colorScheme === 'light' ? 'rgba(0, 0, 0, 0.1)' : 'rgba(251, 251, 251, 0.1)'}]}>
        
@@ -503,14 +494,14 @@ export default function Pet() {
           NumOfLines={1.5}
         />
 
-        <Text style={styles.label}>Do they have any medical concerns/needs?</Text>
+        {/* <Text style={styles.label}>Do they have any medical concerns/needs?</Text>
         <ValidationInput
           name='medical_needs'
           placeholder=''
           control={control}
           MultiLine
           NumOfLines={1.5}
-        />
+        /> */}
 
         <Text style={styles.label}>Are there any other special needs we should be aware of?</Text>
         <ValidationInput

@@ -80,7 +80,11 @@ export default function Button ({
               <RootText 
                 style={[
                   buttonStyles(Selected, colorScheme!, pressed).text, 
-                  TextColor ? ({color: TextColor}) : (null),
+                  TextColor 
+                    ? ({color: TextColor}) 
+                    :  Disabled 
+                        ? ({color: colorScheme != 'light' ? Colors.dark.text : Colors.light.text})
+                        : ({color: colorScheme === 'light' ? Colors.dark.text : Colors.light.text}),
                   BoldText ? {fontWeight: '600', textTransform: 'uppercase', letterSpacing: 1}: {fontWeight:'400'},
                 ]}              
               >
@@ -109,7 +113,7 @@ const buttonStyles = (Selected?: boolean, colorScheme?: string, pressed?: boolea
   innerContainer:{
     borderRadius: 6,
     padding: 12,
-    backgroundColor: Selected ? (colorScheme === 'light' ? Colors.brand[800] : Colors.brand[200] ): ( colorScheme === 'light' ? Colors.brand[500] : Colors.brand[200]),
+    backgroundColor: Selected ? (colorScheme === 'light' ? Colors.brand[800] : Colors.brand[200] ): ( colorScheme === 'light' ? Colors.brand[500] : Colors.brand[400]),
     borderWidth:1,
     marginVertical: 5,
     alignSelf: 'center',
@@ -118,7 +122,7 @@ const buttonStyles = (Selected?: boolean, colorScheme?: string, pressed?: boolea
     overflow: 'hidden',
     textAlign: 'center',
     fontSize: 15,
-    color: (colorScheme === 'light' ? Colors.dark.text : Colors.light.text),
+    // color: (colorScheme === 'light' ? Colors.dark.text : Colors.light.text),
     letterSpacing: .6,
   },
   textContainer: {
@@ -132,7 +136,8 @@ const buttonStyles = (Selected?: boolean, colorScheme?: string, pressed?: boolea
   Selected:{
     opacity: pressed ? 0.5 : 1,
     elevation: pressed ? 0 : 1,
-    shadowColor: colorScheme === 'light' ? '#111' : '#222328',
+    shadowColor: colorScheme === 'light' ? Colors.light.shadow : Colors.dark.shadow,
+    // shadowColor: colorScheme === 'light' ? '#111' : '#222328',
     shadowOffset: {height: pressed ? 2 :.75, width: pressed ? 2 : 0.75},
     shadowOpacity: pressed ? 0.25 : .75,
     shadowRadius: pressed ? 2 : 1,

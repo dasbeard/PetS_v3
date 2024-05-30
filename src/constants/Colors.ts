@@ -40,7 +40,7 @@ export default {
     disabled: `hsl(${BGBase}, 3.5%, 70%)`,
     view: `hsl(${BGBase}, 4%, 94%)`,
     altText: 'hsl(0, 1%, 22%)',
-    border: `hsl(${Brand}, 20%, 90%)`,
+    border: `hsl(${Brand}, 70%, 50%)`,
     shadow: '#111'
   },
   dark: {
@@ -49,8 +49,8 @@ export default {
     view: `hsl(${Brand}, 3.5%, 18%)`,
     disabled: `hsl(${Brand}, 4%, 35%)`,
     altText: 'hsl(0, 1%, 30%)',
-    border: `hsl(${Brand}, 90%, 8%)`,
-    shadow: '#252525'
+    border: `hsl(${Brand}, 66%, 75%)`,
+    shadow: 'hsl(251, 40%, 25%)'
   },
 
   green: {

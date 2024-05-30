@@ -1,4 +1,4 @@
-import { View, Text } from "@/components/Themed"
+import { Text, CardView } from "@/components/Themed"
 import { Pressable, StyleSheet, Image, Platform } from "react-native"
 
 import { useColorScheme } from '@/components/useColorScheme';
@@ -60,18 +60,18 @@ export default function ServiceSelectionButton ( { service, onPress } :{service:
   return (
     <Pressable onPress={onPress} >
       {({ pressed }) => (
-        <View style={[styles.container, InteractiveStyles({pressed:pressed, colorScheme:colorScheme!}).Shadow]}>
+        <CardView style={[styles.container, InteractiveStyles({pressed:pressed, colorScheme:colorScheme!}).Shadow]}>
           <Image 
             source={ colorScheme === 'light' ? Icon?.light : Icon?.dark } 
             style={styles.image}
           />
           
-          <View style={styles.textContainer}>
+          <CardView style={styles.textContainer}>
             <Text style={styles.mainText}>{service}</Text>
             <Text style={styles.secondaryText}>Here are some details about the service</Text>
-          </View>
+          </CardView>
 
-        </View>
+        </CardView>
       )}
     </Pressable> 
   )
@@ -89,16 +89,16 @@ const styles = StyleSheet.create({
     padding: 12,
     alignItems: 'center',
     alignContent: 'space-between',
+    gap: 8,
   },
   image:{
     flex: 1,
-    height: 60,
-    width: 60,
+    height: 100,
+    width: 100,
     resizeMode: 'contain',
   },
   textContainer:{
-    flex: Platform.OS === 'web' ? 5 : 2,
-    backgroundColor: 'rgba(0,0,0,0)',
+    flex: 2,
     paddingHorizontal: 4,
   },
   mainText: {

@@ -122,7 +122,7 @@ export default function ClientStack() {
         {/* Hidden Screens */}
 
         <Drawer.Screen 
-          name='createEvent' 
+          name='createAppointment' 
           options={{ 
             drawerItemStyle: {display: 'none'}
           }} 
@@ -135,6 +135,12 @@ export default function ClientStack() {
         />
         <Drawer.Screen 
           name='(events)/[eventID]' 
+          options={{ 
+            drawerItemStyle: {display: 'none'}
+          }} 
+        />
+        <Drawer.Screen 
+          name='(events)/createEvent' 
           options={{ 
             drawerItemStyle: {display: 'none'}
           }} 

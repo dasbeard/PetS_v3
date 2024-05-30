@@ -104,6 +104,7 @@ export default function PhoneNumberComponent({
           Icon='trash-outline'
           BackgroundColor={Colors.red[500]} 
           onPress={confirmDelete}
+          IconColor='#fff'
         />
       </View>
 

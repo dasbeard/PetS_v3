@@ -33,7 +33,7 @@ export default function ClientHeader( {title}: any) {
         
         <View style={styles.right}>
           <View style={styles.linkContainer}>
-            <Link href={'/(client)/createEvent'} asChild>
+            <Link href={'/(client)/createAppointment'} asChild>
               <Pressable>
                 {({ pressed }) => (
                   <MaterialCommunityIcons 
