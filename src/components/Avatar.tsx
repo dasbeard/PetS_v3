@@ -25,7 +25,8 @@ export default function Avatar ({ url, size = 150, onUpload, StorageBucket }: Pr
   const colorScheme = useColorScheme();  
 
   useEffect(() => {  
-    if ( url === '' || !url) {
+    if ( url?.trim() === '' || !url) {
+      setAvatarUrl('')
       return
     } 
     

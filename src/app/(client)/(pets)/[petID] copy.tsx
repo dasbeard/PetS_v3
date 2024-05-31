@@ -1,46 +1,50 @@
-import { Alert, Platform, Pressable, StyleSheet } from 'react-native'
+import { ActivityIndicator, Alert, Platform, Pressable, StyleSheet } from 'react-native'
 import React, { useEffect, useState, useMemo } from 'react'
 import { KeyboardAwareScrollView } from '@pietile-native-kit/keyboard-aware-scrollview'
 import { useColorScheme } from '@/components/useColorScheme'
 import Colors from '@/constants/Colors'
 import { View, Text } from '@/components/Themed'
-import { Stack, useRouter } from 'expo-router'
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import Avatar from '@/components/Avatar'
+import { useAuth } from '@/providers/AuthProvider'
 import { useForm } from 'react-hook-form';
 import ValidationInput from '@/components/ValidationInput'
 import { FontAwesome6 } from '@expo/vector-icons'
 import Button from '@/components/Buttons/StyledButton'
-import { useDeletePet, useUpdatePetPhoto, useUpdatePetProfile } from '@/api/pets'
+import { useDeletePet, useGetPet, useInsertPet, useUpdatePetPhoto, useUpdatePetProfile } from '@/api/pets'
 import { supabase } from '@/util/supabase'
 import RadioButton, { ButtonDataProps } from '@/components/Buttons/RadioButton'
 import CustomInput from '@/components/CustomInput'
 import { Dropdown } from 'react-native-element-dropdown'
-import dayjs from 'dayjs'
-import { TablesInsert } from '@/database.types'
+import dayjs, { Dayjs } from 'dayjs'
 
 export type Pet_Locaitons = "Indoor only" | "Outdoor only" | "Indoor and Outdoor"
 
-export default function PetDetailsComponent({petProfile, UserID}: {petProfile: Partial<TablesInsert<'pets'>>, UserID: string}) {
+export default function Pet() {
   const colorScheme = useColorScheme();
+  const { petID: petIDString  } = useLocalSearchParams();
+  const petID = parseFloat(typeof petIDString === 'string' ? petIDString : petIDString[0])
+  const { session } = useAuth();
   const router = useRouter();
 
   const TodayStamp = dayjs().startOf('day');
-  const storageBucket = UserID+ '/pets';
+  const storageBucket = session?.user.id + '/pets';
 
-  const [ isSpayed, setIsSpayed ] = useState<boolean | null>(null);
-  const [ petType, setPetType ] = useState<string | null>(null);
-  const [ petLocation, setPetLocation ] = useState<Pet_Locaitons | null>(null);
-  const [ petGender, setPetGender ] = useState<string | null>(null);
-  const [ petWeight, setPetWeight ] = useState<number | null>(null);
-  const [ petPhotoUrl, setPetPhotoUrl ] = useState<string | null>(null);
-  const [ allowSave, setAllowSave ] = useState(false);
-  const [ petAgeInt, setPetAgeInt ] = useState<number | null>(null);
-  const [ petAgeDate, setPetAgeDate ] = useState<string | null>(null);
+  const [ isSpayed, setIsSpayed ] = useState<boolean | null>(null)
+  const [ petType, setPetType ] = useState<string | null>(null)
+  const [ petLocation, setPetLocation ] = useState<Pet_Locaitons | null>(null)
+  const [ petGender, setPetGender ] = useState<string | null>(null)
+  const [ petWeight, setPetWeight ] = useState<number | null>(null)
+  const [ petPhotoUrl, setPetPhotoUrl ] = useState<string | null>(null)
+  const [ allowSave, setAllowSave ] = useState(false)
+  const [ petAgeInt, setPetAgeInt ] = useState<number | null>(null)
+  const [ petAgeDate, setPetAgeDate ] = useState<string | null>(null)
 
+  const { data: petProfile, error, isLoading, isFetched, isFetching } = useGetPet(petID);
   const { mutate: updatePhotoUrl } = useUpdatePetPhoto();
   const { mutate: updatePetProfile } = useUpdatePetProfile();
   const { mutate: deletePet } = useDeletePet();
-  const { control, handleSubmit, getValues, formState:{ isDirty, isSubmitSuccessful}, reset } = useForm({
+  const { control, handleSubmit, formState:{ isDirty, isSubmitSuccessful}, reset } = useForm({
     defaultValues: {
       name: petProfile?.name ,
       color: petProfile?.color,
@@ -50,6 +54,8 @@ export default function PetDetailsComponent({petProfile, UserID}: {petProfile: P
       dietary_needs: petProfile?.dietary_needs,
       feeding_food_brand: petProfile?.feeding_food_brand,
       personality: petProfile?.personality,
+      // medical_needs: petProfile?.medical_needs,
+      // other_needs: petProfile?.other_needs,
       notes: petProfile?.notes,
       routine: petProfile?.routine,
       special_needs: petProfile?.special_needs,
@@ -98,7 +104,7 @@ export default function PetDetailsComponent({petProfile, UserID}: {petProfile: P
         label:'Indoor and Outdoor',
         value: 'Indoor and Outdoor',
       }
-  ]),[]);
+  ]),[])
 
   const petGenderArray = useMemo(() => ([
     {
@@ -109,7 +115,7 @@ export default function PetDetailsComponent({petProfile, UserID}: {petProfile: P
       label: 'Female',
       value: 'Female',
     },
-  ]),[]);
+  ]),[])
 
  
   // functions
@@ -132,7 +138,7 @@ export default function PetDetailsComponent({petProfile, UserID}: {petProfile: P
 
       // update value in pets profile
       updatePhotoUrl({
-        pet_id: petProfile.id,
+        pet_id: petID,
         photo_url: url,
         
       })
@@ -140,34 +146,7 @@ export default function PetDetailsComponent({petProfile, UserID}: {petProfile: P
   };
 
   const handleNavigateBack = () => {
-    if( allowSave || isDirty ) {
-      Alert.alert(`Save changes to ${petProfile?.name}?`, `Did you want to save your changes`,[
-        {
-          text: 'Save',
-          style: 'default',
-          onPress: save_NavigateBack
-        },
-        {
-          text: 'Cancel',
-          style: 'destructive',
-          onPress: resetForm_NavigateBack
-        }
-      ]) 
-    } else {
-      router.navigate('(client)/pets')
-    }
-  };
-
-  const save_NavigateBack = () => {
-    const data = getValues();
-    handleSavePetData(data);
-    resetForm_NavigateBack();
-  }
-
-  const resetForm_NavigateBack = () => {
-    reset(petProfile);
-    resetNonHookFormInputs();
-    router.navigate('(client)/pets');
+    router.navigate('(client)/pets')
   }
 
   const handleDataChange = ({ propName, newValue }: {propName: string, newValue: any })=>{
@@ -189,7 +168,7 @@ export default function PetDetailsComponent({petProfile, UserID}: {petProfile: P
         break;
     }
     setAllowSave(true)
-  };
+  }
 
   const handleSetAge = (ageInt: number) => {
     // get current date and set age to current date - ageInt in years
@@ -197,13 +176,13 @@ export default function PetDetailsComponent({petProfile, UserID}: {petProfile: P
     const ageDate = TodayStamp.subtract(ageInt, 'year')
     setPetAgeDate(ageDate.toString())  
     setAllowSave(true)     
-  };
+  }
 
   const calculatePetAge = (petDate: any) => {
     // Calculate and return age as int from date 
     const ageInt = TodayStamp.diff(petDate, 'years')
     return(ageInt)
-  };
+  }
 
   const handleSavePetData = (data: any) => {
     setAllowSave(false)
@@ -229,23 +208,24 @@ export default function PetDetailsComponent({petProfile, UserID}: {petProfile: P
         routine: data.routine,
         special_needs: data.special_needs,
         photo_url: petPhotoUrl,
-        pet_id: petProfile.id,
+        pet_id: petID,
       }
     )
-  };
+  }
 
   const onDelete = () => {
     // delete pet
     deletePet({
-      petID: petProfile.id,
+      petID: petID,
       imagePath: petPhotoUrl || petProfile?.photo_url,
     },
     {
       onSuccess: () => {
-        router.navigate('(client)/pets')
+        router.navigate('/(client)/pets')
       }
     })
-  };
+
+  }
 
   const confirmDelete = () => {
     // Only works on Mobile
@@ -258,11 +238,14 @@ export default function PetDetailsComponent({petProfile, UserID}: {petProfile: P
         style: 'destructive',
         onPress: onDelete
       }
-    ])  
-  };
+    ])  }
 
+  
+  
+  useEffect(() => {
+    //  Set the default inputs for react-hook-form
+    reset(petProfile) 
 
-  const resetNonHookFormInputs = () => {
     // Set the values for the radio buttons and dropdown in state
     petProfile?.type ? setPetType(petProfile?.type) : setPetType(null)
     petProfile?.pet_stays ? setPetLocation(petProfile?.pet_stays) :setPetLocation(null)
@@ -275,14 +258,44 @@ export default function PetDetailsComponent({petProfile, UserID}: {petProfile: P
       setPetAgeInt(age)
     } else { 
       setPetAgeInt(null)
-    } 
-    setAllowSave(false)
-  }
+    }
+
+    // if(petProfile?.type){
+    //   setPetType(petProfile?.type)
+    // }
+    // if(petProfile?.pet_stays){
+    //   setPetLocation(petProfile?.pet_stays)
+    // }
+    // if(petProfile?.spayed_neutered != null){
+    //   setIsSpayed(petProfile?.spayed_neutered)
+    // }
+    // if(petProfile?.gender){
+    //   setPetGender(petProfile?.gender)
+    // }
+    // if(petProfile?.weight){
+    //   setPetWeight(petProfile?.weight)
+    // }
+    // if(petProfile?.age){
+    //   const age = calculatePetAge(petProfile.age)
+    //   setPetAgeInt(age)
+    // }
+    // if(petProfile?.photo_url){
+    //   setPetPhotoUrl(petProfile?.photo_url)
+    // }
     
-  useEffect(() => {
-    // Set the values for the radio buttons and dropdown in state
-    resetNonHookFormInputs()   
-  },[])
+  },[isFetched])
+  
+  if(isLoading){
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems:'center'}}>
+        <ActivityIndicator size='large' color={Colors.brand[500]} />
+      </View>
+    )
+  }
+
+  if(error){
+    return <Text>Fail to fetch pet details</Text>
+  }
   
 
 
@@ -304,9 +317,8 @@ export default function PetDetailsComponent({petProfile, UserID}: {petProfile: P
 
         <View style={headerStyles.rightContainer}>
           <Button 
-            Text={'SAVE'} 
+            Text={'Update'} 
             onPress={handleSubmit(handleSavePetData)}  
-            ButtonWidth={80}
             Disabled={ !allowSave && !isDirty  }
           />
         </View>

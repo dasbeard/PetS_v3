@@ -66,6 +66,7 @@ export default function ClientPets() {
       setNewPetData(null)
       setDisableNewPetSave(true)
     }
+    
   }, []);
 
 

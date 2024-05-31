@@ -60,7 +60,7 @@ const AddPetBottomSheet = forwardRef<Ref, IncomingProps>(({petData, setPetData, 
     },
     {
       key: 'spayed2',
-      label:'No',
+      label:' No',
       value: false,
     },
   ]),[]);
@@ -142,10 +142,10 @@ const handlePetLocationChange = ( stays: Pet_Locaitons ) => {
       <Spacer Size={4} />
 
       <View style={styles.topContainer}> 
-        <View style={styles.avatarContainer}>
+        <View style={styles.leftContainer}>
           <Avatar 
-            size={110}
-            url={petData?.petPhotoUrl || ''}
+            size={125}
+            url={petData?.petPhotoUrl ? petData.petPhotoUrl : null}
             onUpload={(url:string) =>{
               setPetData({...petData, petPhotoUrl: url})
             }}
@@ -154,7 +154,7 @@ const handlePetLocationChange = ( stays: Pet_Locaitons ) => {
         </View>
 
   
-        <View style={styles.smallColumn}>
+        <View style={styles.rightContainer}>
           <View>
             <Text style={styles.label}>What is your pets name?</Text>
             <BottomSheetTextInput 
@@ -178,11 +178,12 @@ const handlePetLocationChange = ( stays: Pet_Locaitons ) => {
             })}
           </View>
         </View>
+
       </View>
 
       <View style={styles.bottomContainer}>
         
-        <View style={styles.smallColumn}>
+        <View style={styles.leftContainer}>
           <Text style={styles.label}>Spayed or Neutered?</Text>
           <View style={styles.radioInputContainer}>
             { radioSpayed.map((item) =>{
@@ -198,7 +199,7 @@ const handlePetLocationChange = ( stays: Pet_Locaitons ) => {
           </View>
         </View>
 
-        <View style={styles.smallColumn}>
+        <View style={styles.rightContainer}>
           <Text style={[styles.label, {marginBottom: 12} ]}>They primarily stay</Text>
           <Dropdown
             placeholder='My pet stays...'
@@ -221,6 +222,7 @@ const handlePetLocationChange = ( stays: Pet_Locaitons ) => {
       <View style={{ flex: 1}}>
         <Button Text='Add Pet' onPress={onSave} Disabled={saveDisabled} />
       </View>
+
       </BottomSheetView>
     </BottomSheet>
   )
@@ -247,12 +249,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
   },
-  bottomContainer:{
-    flexGrow: .5,
-    flexDirection: 'row',
-  },
-  avatarContainer:{
-    flex: .75,
+
+  leftContainer:{
+    flex: 0.8,
   },
   label:{
     marginTop: 7,
@@ -260,6 +259,9 @@ const styles = StyleSheet.create({
   },
   radioInputContainer:{
     flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    marginTop: 1,
+    marginRight: 20,
   },
   dropdown:{
     borderWidth: 1,
@@ -274,11 +276,20 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   smallRow:{
-    flex: 1,
+    // flex: 1,
+    flex: 0.85,
     flexDirection: 'row',
-    gap: 12,
+    // gap: 12,
+    justifyContent: 'space-evenly',
+    marginRight: 20,
   },
-  smallColumn:{
+  bottomContainer:{
+    flexGrow: .5,
+    flexDirection: 'row',
+    // borderWidth:1,
+    // borderColor: 'green',
+  },
+  rightContainer:{
     flex: 1,
   },
   textInputContainer:{
