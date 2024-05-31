@@ -102,12 +102,6 @@ export default function ClientPets() {
 const styles = StyleSheet.create({
   rootContainer:{
     flex: 1,
+    paddingVertical: 12,
   },
-  contentContainer: {
-    flex: 1,
-    paddingHorizontal: 12,
-    // alignItems: 'center',
-    // backgroundColor: 'red',
-  },
-
 })

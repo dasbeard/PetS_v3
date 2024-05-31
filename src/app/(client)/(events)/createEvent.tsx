@@ -1,5 +1,5 @@
-import { Pressable, ScrollView, StyleSheet } from 'react-native'
-import React, { useState } from 'react'
+import { StyleSheet } from 'react-native'
+import React, { useCallback, useRef, useState } from 'react'
 import { View, Text } from '@/components/Themed'
 import { Stack, useLocalSearchParams } from 'expo-router'
 
@@ -7,17 +7,30 @@ import BackHeader from '@/components/Headers/BackHeader'
 import MultiSelectButton, { MultiSelectButtonProps } from '@/components/Buttons/MultiSelectButton'
 import Button from '@/components/Buttons/StyledButton'
 import Spacer from '@/components/Spacer'
+import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet/BottomSheet'
+import DateSelectionBottomSheet from '@/components/DateSelectionBottomSheet'
+import { DateType } from 'react-native-ui-datepicker'
+import dayjs from 'dayjs';
+
+import localizedFormat from "dayjs/plugin/localizedFormat";
+dayjs.extend(localizedFormat)
+
 // import { KeyboardAwareScrollView } from '@pietile-native-kit/keyboard-aware-scrollview'
 
 export default function CreateEvent() {
   const { eventType } = useLocalSearchParams();
   const service = (typeof eventType === 'string' ? eventType : eventType[0]) 
 
+  const bottomSheetRef = useRef<BottomSheet>(null)
+
   const [ howOften, setHowOften ] = useState<string>('')
   const [ selectedDays, setSelectedDays ] = useState<string[]>([]);
   const [ selectedTimes, setSelectedTimes ] = useState<string[]>([]);
-  const [ selectedTime, setSelectedTime ] = useState<string>('');
+  const [ allowNext, setAllowNext ] = useState<boolean>(false)
+  const [ startDate, setStartDate ] = useState<DateType | undefined>();
   
+
+  // Button Props
   const DaysOfWeek:MultiSelectButtonProps[] =[
     {
       key: 'd0',
@@ -71,47 +84,51 @@ export default function CreateEvent() {
   const TimesOfDay: MultiSelectButtonProps[] =[
     {
       key:'todM',
-      label: 'Mornings',
+      label: 'Morning',
       value:'morning'
     },
     {
       key:'todA',
-      label: 'Afternoons',
+      label: 'Afternoon',
       value:'afternoon'
     },
     {
       key:'todE',
-      label: 'Evenings',
+      label: 'Evening',
       value:'evening'
     },
   ]
 
+  // data selection functions
   const handleOftenSelection = (data: any) =>{
     setHowOften(data)
-
-    // // Limits 'Once' to only one time of day - may use later
-    // if(data == 'once'){
-    //   if(selectedTimes.length ){
-    //     setSelectedTime(selectedTimes[selectedTimes.length -1])
-    //     setSelectedTimes([])
-    //   }
-    // } else {
-    //   if( selectedTime != '' ){
-    //     setSelectedTimes([selectedTime])
-    //     setSelectedTime('')
-    //   }
-    // }
+    
+    //  check if allowing to move on
   }
   const handleTimeSelection = (data: any) =>{   
     setSelectedTimes(data)
-    // if(howOften === 'once'){
-    //   setSelectedTime(data)
-    // } else {
-    //   setSelectedTimes(data)
-    // }
+    
+    //  check if allowing to move on
   }
   const handleDaysSelection = (data: any) =>{
     setSelectedDays(data)
+    
+    //  check if allowing to move on
+  }
+
+
+  //  BottomSheet functions
+  const handleSheetChanges = useCallback((index: number) => {
+    // console.log(startDate);
+    if(index === -1 ){
+      // Closed
+      // Set date data
+    }  
+  }, []);
+
+  const handleSetData = (data: any) => {
+    // format is needed to convert from array to string
+    setStartDate(dayjs(data).format())    
   }
 
 
@@ -155,35 +172,38 @@ export default function CreateEvent() {
             : (<Text style={styles.label}>When would day are you looking for?</Text>)
           }
 
-          <Button Text={howOften === 'weekly' ? 'Select a start date' : 'Select a date'} />
+          <Button 
+            Text={ startDate ? dayjs(startDate).format('LL') : howOften === 'weekly' ? 'Select a start date' : 'Select a date'} 
+            onPress={() => bottomSheetRef.current?.snapToIndex(0)} 
+          />
+
         </View>
 
         <View style={styles.container}>
           <Text style={styles.label}>What time of day?</Text>
-          
-          {/* {howOften === 'once'
-            ? <MultiSelectButton
-                ButtonData={TimesOfDay}
-                SingleSelection
-                SelectedValues={ selectedTime }
-                OnSelect={( data ) => handleTimeSelection(data)}
-              />
-            :  */}
-            <MultiSelectButton
-                ButtonData={TimesOfDay}
-                SelectedValues={ selectedTimes }
-                OnSelect={( data ) => handleTimeSelection(data)}
-              />
-          {/* } */}
-          
-
+          <MultiSelectButton
+            ButtonData={TimesOfDay}
+            SelectedValues={ selectedTimes }
+            OnSelect={( data ) => handleTimeSelection(data)}
+          />
         </View>
 
-        <Button Text='Next' />
+        <Button Text='Next' Disabled={!allowNext} />
         
         <Spacer Size={8}/>
 
       </View>
+
+      <DateSelectionBottomSheet
+        ref={bottomSheetRef}
+        Data={startDate}
+        SetData={handleSetData}
+        OnSave={() => bottomSheetRef.current?.close()}
+        SheetChanges={handleSheetChanges}
+        HeaderText={howOften === 'weekly' ? 'Select a starting date' : 'Select the date of service'}
+        Mode={'single'}
+      />
+
     </>
   )
 }

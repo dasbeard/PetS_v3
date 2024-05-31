@@ -9,14 +9,8 @@ export default function CreateAppointment() {
   const router = useRouter();
 
   const handleServiceSelection = (service: string) => {
-    console.log(service);
-    
-    // setEventType(service)
-    // router.push('/(client)/(events)/createEvent',)
-    router.push({ pathname: '/(client)/(events)/createEvent', params: {eventType: service} }); // Remove the braces in params
-
-    console.log('pressed');
-    
+    console.log('service selected', service);
+    router.push({ pathname: '/(client)/(events)/createEvent', params: {eventType: service} }); 
   }
 
   return (
