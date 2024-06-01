@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native'
-import React, { useCallback, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { View, Text } from '@/components/Themed'
 import { Stack, useLocalSearchParams } from 'expo-router'
 
@@ -10,28 +10,27 @@ import Spacer from '@/components/Spacer'
 import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet/BottomSheet'
 import DateSelectionBottomSheet from '@/components/DateSelectionBottomSheet'
 import { DateType } from 'react-native-ui-datepicker'
-import dayjs from 'dayjs';
 
+import dayjs from 'dayjs';
 import localizedFormat from "dayjs/plugin/localizedFormat";
 dayjs.extend(localizedFormat)
-
-// import { KeyboardAwareScrollView } from '@pietile-native-kit/keyboard-aware-scrollview'
 
 export default function CreateEvent() {
   const { eventType } = useLocalSearchParams();
   const service = (typeof eventType === 'string' ? eventType : eventType[0]) 
+  // const colorScheme = useColorScheme();
 
   const bottomSheetRef = useRef<BottomSheet>(null)
 
   const [ howOften, setHowOften ] = useState<string>('')
   const [ selectedDays, setSelectedDays ] = useState<string[]>([]);
+  const [ startDate, setStartDate ] = useState<DateType | undefined>();
   const [ selectedTimes, setSelectedTimes ] = useState<string[]>([]);
   const [ allowNext, setAllowNext ] = useState<boolean>(false)
-  const [ startDate, setStartDate ] = useState<DateType | undefined>();
   
 
   // Button Props
-  const DaysOfWeek:MultiSelectButtonProps[] =[
+  const DaysOfWeek:MultiSelectButtonProps[] = useMemo(() => ([
     {
       key: 'd0',
       label: 'S',
@@ -68,8 +67,8 @@ export default function CreateEvent() {
       label: 'S',
       value: 'saturday',
     },
-  ]
-  const OftenData: MultiSelectButtonProps[] =[
+  ]),[])
+  const OftenData: MultiSelectButtonProps[] = useMemo (() => ([
     {
       key: 'o1',
       label: 'Once',
@@ -80,8 +79,8 @@ export default function CreateEvent() {
       label: 'Weekly',
       value: 'weekly',
     },
-  ]
-  const TimesOfDay: MultiSelectButtonProps[] =[
+  ]),[])
+  const TimesOfDay: MultiSelectButtonProps[] = useMemo (() => ( [
     {
       key:'todM',
       label: 'Morning',
@@ -97,39 +96,57 @@ export default function CreateEvent() {
       label: 'Evening',
       value:'evening'
     },
-  ]
+  ]),[])
+
+  // console.log(' ----- component -----');
+  // console.log(howOften);
+  // console.log(selectedDays);
+  // console.log(startDate);
+  // console.log(selectedTimes);
+  
+  // console.log('All Next', allowNext);
+
+  // console.log(' ***** component *****');
 
   // data selection functions
-  const handleOftenSelection = (data: any) =>{
+  const handleOftenSelection = useCallback((data: any) =>{
     setHowOften(data)
-    
-    //  check if allowing to move on
-  }
-  const handleTimeSelection = (data: any) =>{   
-    setSelectedTimes(data)
-    
-    //  check if allowing to move on
-  }
-  const handleDaysSelection = (data: any) =>{
+  },[])
+
+  const handleTimeSelection = useCallback((data: any) =>{   
+    setSelectedTimes(data)     
+  },[])
+
+  const handleDaysSelection = useCallback( (data: any) =>{
     setSelectedDays(data)
-    
-    //  check if allowing to move on
-  }
+  },[])
 
 
   //  BottomSheet functions
-  const handleSheetChanges = useCallback((index: number) => {
-    // console.log(startDate);
-    if(index === -1 ){
-      // Closed
-      // Set date data
-    }  
-  }, []);
+  // const handleSheetChanges = useCallback((index: number) => {
+  //   // console.log(startDate);
+  //   if(index === -1 ){
+  //     // Closed
+  //     // Set date data
+  //   }  
+  // }, []);
 
-  const handleSetData = (data: any) => {
+  const handleSetData = useCallback( (data: any) => {
     // format is needed to convert from array to string
-    setStartDate(dayjs(data).format())    
+    setStartDate(dayjs(data).format())  
+  },[])
+
+  const handleCloseBottomSheet = () => {
+    bottomSheetRef.current?.close()
   }
+
+
+  useEffect(() => {
+    setHowOften('')
+    setSelectedDays([])
+    setStartDate(undefined)
+    setSelectedTimes([])
+  },[eventType])
 
 
   return (
@@ -148,7 +165,7 @@ export default function CreateEvent() {
           <MultiSelectButton
             ButtonData={ OftenData }
             SelectedValues={howOften}
-            OnSelect={ ( data ) => handleOftenSelection(data)}
+            OnSelect={ handleOftenSelection }
             SingleSelection
           />
         </View>
@@ -160,7 +177,7 @@ export default function CreateEvent() {
             <MultiSelectButton
               ButtonData={DaysOfWeek}
               SelectedValues={selectedDays}
-              OnSelect={( data) => handleDaysSelection(data)}
+              OnSelect={ handleDaysSelection }
             />
           </View>
           : <View/>
@@ -184,11 +201,18 @@ export default function CreateEvent() {
           <MultiSelectButton
             ButtonData={TimesOfDay}
             SelectedValues={ selectedTimes }
-            OnSelect={( data ) => handleTimeSelection(data)}
+            OnSelect={ handleTimeSelection }
           />
         </View>
 
-        <Button Text='Next' Disabled={!allowNext} />
+        {/* <Button Text='Next' Disabled={!allowNext} /> */}
+        <Button 
+          Text='Next' 
+          Disabled={ 
+            howOften === 'weekly' 
+            ? (startDate && selectedTimes.length && selectedDays.length ? false : true )
+            :( startDate && selectedTimes.length ? false : true)
+          } />
         
         <Spacer Size={8}/>
 
@@ -198,8 +222,8 @@ export default function CreateEvent() {
         ref={bottomSheetRef}
         Data={startDate}
         SetData={handleSetData}
-        OnSave={() => bottomSheetRef.current?.close()}
-        SheetChanges={handleSheetChanges}
+        OnButtonPress={handleCloseBottomSheet}
+        // SheetChanges={handleSheetChanges}
         HeaderText={howOften === 'weekly' ? 'Select a starting date' : 'Select the date of service'}
         Mode={'single'}
       />

@@ -1,8 +1,8 @@
+import { memo, useCallback } from 'react';
 import { Pressable, StyleSheet } from 'react-native'
 import { View, Text } from '../Themed'
-import Colors from '@/constants/Colors'
 import { useColorScheme } from '../useColorScheme';
-import { useState } from 'react';
+import Colors from '@/constants/Colors'
 import { InteractiveStyles } from '@/constants/Styles';
 
 
@@ -13,33 +13,31 @@ export type MultiSelectButtonProps = {
   disabled?: boolean
 }
 
-export default function MultiSelectButton(
-  {
-    ButtonData, 
-    SelectedValues, 
-    OnSelect,
-    SingleSelection=false,
-  }:{
-    ButtonData: MultiSelectButtonProps[], 
-    SelectedValues: string | string[], 
-    OnSelect: ( selectedValues: string | string[]) => void,
-    SingleSelection?: boolean,
-  }) 
-{
-  const colorScheme = useColorScheme();
+interface Props {
+  ButtonData: MultiSelectButtonProps[];
+  OnSelect: (selected: string | string[]) => void;
+  SelectedValues: string | string[];
+  SingleSelection?: boolean;
+}
 
-  const handleSelection = ( value: string ) => {
+function MultiSelectButton({ButtonData, SelectedValues, OnSelect, SingleSelection=false}: Props) {
+    
+  console.log('rendered MultiSelectButton ');
+
+  const colorScheme = useColorScheme();
+  
+  const handleSelection = ( item: MultiSelectButtonProps ) => {
     // Check if SingleSelection 
     if(SingleSelection){
-      OnSelect(value)
+      OnSelect(item.value)
     } else {
       if( typeof SelectedValues != 'string'){
       // check if adding or removing value from current array
         let updatedValues;
-        if (SelectedValues.includes(value)){
-          updatedValues = SelectedValues.filter( d => d !== value);
+        if (SelectedValues.includes(item.value)){
+          updatedValues = SelectedValues.filter( d => d !== item.value);
         } else {
-          updatedValues = [...SelectedValues, value];
+          updatedValues = [...SelectedValues, item.value];
         } 
         // return values to caller with new value appended or removed from array
         OnSelect(updatedValues);
@@ -47,6 +45,7 @@ export default function MultiSelectButton(
     }
   }
 
+  
 
   return (
     <View style={styles.rootContainer}>
@@ -60,7 +59,8 @@ export default function MultiSelectButton(
                 styles.btnContainer,
                 item.disabled ? {opacity: 0.7} : {opacity: 1},
               ]}
-              onPress={ () => handleSelection( item.value) }
+              // onPress={ () => handleSelection( item.value) }
+              onPress={ () => handleSelection(item) }
             >
               {({ pressed }) =>(
                 <View 
@@ -82,11 +82,7 @@ export default function MultiSelectButton(
             </Pressable>
           )
         })
-
       }
-
-
-
     </View>
   )
 }
@@ -118,3 +114,6 @@ const styles = StyleSheet.create({
   },
 
 })
+
+
+export default memo(MultiSelectButton);

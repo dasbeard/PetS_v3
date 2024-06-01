@@ -5,8 +5,9 @@ import { useColorScheme } from '../useColorScheme';
 import Colors from "@/constants/Colors";
 import { InteractiveStyles } from '@/constants/Styles';
 import { Ionicons } from '@expo/vector-icons';
+import { memo, useCallback } from 'react';
 
-export default function Button ({ 
+function Button ({ 
   Disabled=false, 
   Text='Click Me',
   onPress,
@@ -44,9 +45,9 @@ export default function Button ({
   
   const colorScheme = useColorScheme();
 
-  const defaultFunction = () => {
+  const defaultFunction = useCallback(() => {
     console.log('Button Clicked');
-  }
+  },[])
   
   return (
     <Pressable 
@@ -144,3 +145,6 @@ const buttonStyles = (Selected?: boolean, colorScheme?: string, pressed?: boolea
   },
 
 })
+
+
+export default memo(Button)

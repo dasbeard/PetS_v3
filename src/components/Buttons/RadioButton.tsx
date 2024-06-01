@@ -2,6 +2,7 @@ import { StyleSheet, TouchableOpacity } from 'react-native'
 import { View, Text } from '../Themed'
 import Colors from '@/constants/Colors'
 import { useColorScheme } from '../useColorScheme';
+import { memo } from 'react';
 
 
 export type ButtonDataProps = {
@@ -10,12 +11,11 @@ export type ButtonDataProps = {
   value: string | boolean,
 }
 
-export default function RadioButton(
+function RadioButton(
   {
     ButtonData, 
     SelectedValue, 
     OnPress,
-    // OnPress = () => null
   }:{
     ButtonData: ButtonDataProps, 
     SelectedValue: string | boolean | null, 
@@ -89,3 +89,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
 })
+
+
+
+export default memo(RadioButton)

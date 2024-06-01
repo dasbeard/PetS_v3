@@ -107,7 +107,7 @@ const AddPet = forwardRef<RNView, AddPetProps>(({UserID, petName, setPetName }, 
     }
   },[])
 
-  const handlePetNameChange = (name: string) => {
+  const handlePetNameChange = useCallback((name: string) => {
 
     setPetName(name)
     
@@ -120,7 +120,7 @@ const AddPet = forwardRef<RNView, AddPetProps>(({UserID, petName, setPetName }, 
     // if((isSpayed != null) && (petType != null) && (petLocation != null)){
     //   setDisableSave(false)
     // }
-  }
+  },[])
 
   const handleSavePet = async ()=>{
 
