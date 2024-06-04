@@ -2,17 +2,31 @@ import { StyleSheet } from 'react-native'
 import { View, Text } from '@/components/Themed'
 import Button from '@/components/Buttons/StyledButton';
 import MultiSelectButton, { MultiSelectButtonProps } from '@/components/Buttons/MultiSelectButton';
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Spacer from '@/components/Spacer';
+import { useGetUsersPetList } from '@/api/pets';
+import { useAuth } from '@/providers/AuthProvider';
 
+import BottomSheet from '@gorhom/bottom-sheet';
+import PetSelectionBottomSheet from '@/components/BottomSheets/PetSelectionBottomSheet';
+// import PetSelection, { PetDetailProps } from '@/components/Buttons/PetSelection';
 
 export default function ClientDashboard() {
   const [ selectedValues, setSelectedValues ] = useState<string[]>([]);
   const [ selectedValues2, setSelectedValues2 ] = useState<string[]>([]);
   const [ count, setCount ] = useState(0)
   
-  console.log('App render', count);
+  
 
+  const { session } = useAuth();
+  const { data: PetList, error, isLoading } = useGetUsersPetList(session!.user.id);
+
+  const [ petListState, setPetListState ] = useState<number[]>([]);
+
+
+  const bottomSheetRef = useRef<BottomSheet>(null)
+
+  console.log('App render', count);
 
   const sampleData:MultiSelectButtonProps[] = [
     {
@@ -99,9 +113,15 @@ export default function ClientDashboard() {
   },[])
 
   const handleSelection = useCallback((data: any) => {
-    console.log('returned value: ', data);
+    console.log('returned vvalue: ', data);
     setSelectedValues(data)
   },[])
+
+  const handlePetSelection = useCallback((data: any) => {
+    console.log('returned value: ', data);
+    setPetListState(data)
+  },[])
+
 
 
    return (
@@ -109,9 +129,30 @@ export default function ClientDashboard() {
 
       <Text>Client Dashboard</Text>
 
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'stretch', gap: 16}}>
+      {/* <PetSelection 
+        PetData={PetList as PetDetailProps[]}
+        SelectedValues={petListState}  
+        OnSelect={handlePetSelection}
+      /> */}
+
+
+      </View>
+
+
+      <Button Text='Open Sheet' onPress={() => bottomSheetRef.current?.expand() } />
+
       <Button Text='ReRender' onPress={() => setCount(count + 1)} />
 
+      <PetSelectionBottomSheet 
+        ref={bottomSheetRef}
+        PetData={PetList as any}
+        OnSelect={handlePetSelection}
+        SelectedValues={petListState}
+      />
 
+
+    {/* 
       <MultiSelectButton 
         ButtonData={memoedSampleData} 
         OnSelect={ handleSelection }
@@ -124,7 +165,7 @@ export default function ClientDashboard() {
         ButtonData={memoedSampleData} 
         OnSelect={ handleSelection2 }
         SelectedValues={selectedValues2} 
-      />
+      /> */}
 
      </View>
    );

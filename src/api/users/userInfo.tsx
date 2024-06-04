@@ -23,6 +23,26 @@ export const useGetProfile = (id:string) => {
   })
 };
 
+
+export const useSimpleUserData = (id: string) => {
+  return useQuery({
+    queryKey: ['simpleUserData', id],
+    queryFn: async () => {
+      const { data, error } = await supabase.
+        from('users')
+        .select('id, first_name, last_name, addresses(id)')
+        .eq('id', id)
+        .single();
+      
+      if( error ) {
+        console.log('Error getting SimpleUserData', {error});
+        throw new Error(error.message)
+      }
+      return data;
+    }
+  })
+}
+
 export const useUpdateUserContact = () => {
   const queryClient = useQueryClient();
 
@@ -115,6 +135,7 @@ export const useCreateUsersAddress = () => {
       await supabase.from('users').update({address_id: successData.id}).eq('id', data.userId).select().single()
       //  update profile query
       await queryClient.invalidateQueries({queryKey: ['userProfile', data.id]})
+      await queryClient.invalidateQueries({queryKey: ['simpleUserData', data.id]})
     },
     onError(error) {
       console.log('Error: ', error);
@@ -143,6 +164,7 @@ export const useUpdateUsersAddress = () => {
     },
     async onSuccess(_, data) {
       await queryClient.invalidateQueries({queryKey: ['userProfile', data.userId]})
+      await queryClient.invalidateQueries({queryKey: ['simpleUserData', data.userId]})
     },
     onError(error) {
       console.log('Error: ', error);
@@ -267,7 +289,6 @@ export const useUpdateUserPhoneNumber = () => {
     }
   })
 };
-
 
 export const useDeleteUserPhoneNumber = () => {
   const queryClient = useQueryClient();

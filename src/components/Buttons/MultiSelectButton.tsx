@@ -22,7 +22,7 @@ interface Props {
 
 function MultiSelectButton({ButtonData, SelectedValues, OnSelect, SingleSelection=false}: Props) {
     
-  console.log('rendered MultiSelectButton ');
+  // console.log('rendered MultiSelectButton ');
 
   const colorScheme = useColorScheme();
   

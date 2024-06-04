@@ -145,6 +145,12 @@ export default function ClientStack() {
             drawerItemStyle: {display: 'none'}
           }} 
         />
+        <Drawer.Screen 
+          name='(events)/confirmEvent' 
+          options={{ 
+            drawerItemStyle: {display: 'none'}
+          }} 
+        />
 
         <Drawer.Screen 
           name='(pets)/[petID]' 

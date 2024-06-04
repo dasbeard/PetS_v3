@@ -11,8 +11,6 @@ import BottomSheet from '@gorhom/bottom-sheet';
 import { useCallback, useRef, useState } from 'react';
 import AddPetBottomSheet from '@/components/AddPetBottomSheet';
 
-
-
 export interface NewPetProps {
   petName?:string;
   petType?:string | null;
@@ -32,7 +30,7 @@ export default function ClientPets() {
   const [ newPetData, setNewPetData ] = useState<NewPetProps | null>(null)
   const [ disableNewPetSave, setDisableNewPetSave ] = useState<boolean>(true)
 
-  const handleSaveNewPet = () => {    
+  const handleSaveNewPet = useCallback( () => {    
     // Check if photo was added and parse so it can be moved
     let PetPhotoUrl = null;
     if(newPetData?.petPhotoUrl){
@@ -57,8 +55,7 @@ export default function ClientPets() {
         router.navigate(`/(client)/(pets)/${data.id}`)
       }
     })
-  }
- 
+  },[])
 
   const handleSheetChanges = useCallback((index: number) => {
     // reset form
@@ -68,7 +65,6 @@ export default function ClientPets() {
     }
     
   }, []);
-
 
   return (
     <View style={styles.rootContainer}>

@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native'
 import { Text, View } from './Themed';
-import React, { forwardRef, useCallback, useMemo, useState } from 'react'
+import React, { forwardRef, memo, useCallback, useMemo, useState } from 'react'
 import BottomSheet, { BottomSheetBackdrop, BottomSheetView, useBottomSheet } from '@gorhom/bottom-sheet'
 import { useColorScheme } from './useColorScheme';
 import Colors from '@/constants/Colors';
@@ -48,6 +48,9 @@ const DateSelectionBottomSheet = forwardRef<Ref, DateSelectionProps>(({Data, Set
         SetData(params);
       }
   },[mode]);
+
+  console.log('bottomSheet render');
+  
 
   return (
     <BottomSheet
@@ -102,8 +105,6 @@ const styles = StyleSheet.create({
   container:{
     flex: 1,
     paddingHorizontal: 12,
-    // backgroundColor: 'green',
-
   },
   header:{
     height: 45,
@@ -119,20 +120,12 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: 'rgba(0,0,0,0)',
 
-    // flexDirection: 'row',
-    // gap: 8,
   },
   bottomContainer:{
     flexGrow: 1,
-    // flexDirection: 'row',
-    // justifyContent: 'center',
-    // alignItems: 'center',
     backgroundColor: 'rgba(0,0,0,0)',
-
-    // borderWidth:1,
-    // borderColor: 'green',
   },
 })
 
 
-export default DateSelectionBottomSheet;
+export default memo(DateSelectionBottomSheet);

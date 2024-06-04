@@ -24,7 +24,7 @@ interface IncomingProps {
 type Ref = BottomSheet;
 
 const AddPetBottomSheet = forwardRef<Ref, IncomingProps>(({petData, setPetData, onSave, SheetChanges, saveDisabled, setSaveDisabled, UserID}, ref) => {
-  
+
   const colorScheme = useColorScheme();
   const snapPoints = useMemo(() => ['65%'], [])
   const renderBackdrop = useCallback(
@@ -120,7 +120,7 @@ const handlePetLocationChange = ( stays: Pet_Locaitons ) => {
     setSaveDisabled(false)
   }
 }
-// 
+
 
   return (
     <BottomSheet
@@ -172,6 +172,7 @@ const handlePetLocationChange = ( stays: Pet_Locaitons ) => {
                   ButtonData={item}
                   key={item.key}
                   OnPress={() => handlePetTypeSelected(item.value)}
+                  // OnPress={handlePetTypeSelected}
                   SelectedValue={petData?.petType || null}
                 />
               )
@@ -304,4 +305,4 @@ const styles = StyleSheet.create({
 })
 
 
-export default AddPetBottomSheet;
+export default memo(AddPetBottomSheet);

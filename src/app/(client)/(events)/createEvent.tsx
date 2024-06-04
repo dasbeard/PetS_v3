@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { View, Text } from '@/components/Themed'
-import { Stack, useLocalSearchParams } from 'expo-router'
+import { Stack, useLocalSearchParams, useNavigation, useRouter } from 'expo-router'
 
 import BackHeader from '@/components/Headers/BackHeader'
 import MultiSelectButton, { MultiSelectButtonProps } from '@/components/Buttons/MultiSelectButton'
@@ -13,21 +13,45 @@ import { DateType } from 'react-native-ui-datepicker'
 
 import dayjs from 'dayjs';
 import localizedFormat from "dayjs/plugin/localizedFormat";
+import { useCreateOneEvent } from '@/api/events'
+import { useAuth } from '@/providers/AuthProvider'
+import PetSelectionBottomSheet, { PetDetailProps } from '@/components/BottomSheets/PetSelectionBottomSheet'
+import { useGetUsersPetList } from '@/api/pets'
+import { useSimpleUserData } from '@/api/users/userInfo'
+import ConfirmEvent from './confirmEvent'
 dayjs.extend(localizedFormat)
+
+export interface NewEventProps {
+  client_id: string,
+  event_type: string,
+  event_date: string,
+  event_time: string[],
+  location_id?: number,
+  pet_ids: number[],
+}
 
 export default function CreateEvent() {
   const { eventType } = useLocalSearchParams();
+  const { session } = useAuth();
   const service = (typeof eventType === 'string' ? eventType : eventType[0]) 
-  // const colorScheme = useColorScheme();
+  const router = useRouter();
+  const nav = useNavigation();
 
-  const bottomSheetRef = useRef<BottomSheet>(null)
+  const { data: UserData, error: UserDataError, isLoading: UserDataIsLoading } = useSimpleUserData(session!.user.id);
+  const { data: PetsList, error: PetsListError, isLoading: PetsListIsLoading } = useGetUsersPetList(session!.user.id);
+  const { mutate: createOneEvent } = useCreateOneEvent();
+
+  const dateBottomSheetRef = useRef<BottomSheet>(null)
+  const petsBottomSheetRef = useRef<BottomSheet>(null)
 
   const [ howOften, setHowOften ] = useState<string>('')
   const [ selectedDays, setSelectedDays ] = useState<string[]>([]);
   const [ startDate, setStartDate ] = useState<DateType | undefined>();
   const [ selectedTimes, setSelectedTimes ] = useState<string[]>([]);
-  const [ allowNext, setAllowNext ] = useState<boolean>(false)
+  const [ selectedPets, setSelectedPets ] = useState<number[]>([])
   
+  const [ showConfirm, setShowConfirm ] = useState<boolean>(false)
+  const [ eventData, setEventData ] = useState<NewEventProps>();
 
   // Button Props
   const DaysOfWeek:MultiSelectButtonProps[] = useMemo(() => ([
@@ -98,15 +122,6 @@ export default function CreateEvent() {
     },
   ]),[])
 
-  // console.log(' ----- component -----');
-  // console.log(howOften);
-  // console.log(selectedDays);
-  // console.log(startDate);
-  // console.log(selectedTimes);
-  
-  // console.log('All Next', allowNext);
-
-  // console.log(' ***** component *****');
 
   // data selection functions
   const handleOftenSelection = useCallback((data: any) =>{
@@ -123,27 +138,70 @@ export default function CreateEvent() {
 
 
   //  BottomSheet functions
-  // const handleSheetChanges = useCallback((index: number) => {
-  //   // console.log(startDate);
-  //   if(index === -1 ){
-  //     // Closed
-  //     // Set date data
-  //   }  
-  // }, []);
-
   const handleSetData = useCallback( (data: any) => {
     // format is needed to convert from array to string
     setStartDate(dayjs(data).format())  
   },[])
 
-  const handleCloseBottomSheet = () => {
-    bottomSheetRef.current?.close()
+  const handleCloseBottomSheet = useCallback( () => {
+    dateBottomSheetRef.current?.close()
+  },[])
+
+  // console.log(UserData?.addresses?.id);
+  
+
+const confirmEvent = () => {
+  
+  const EventData: NewEventProps = {
+      client_id: session?.user.id!,
+      event_type: service,
+      event_date: dayjs(startDate).format('MM/DD/YYYY'),
+      event_time: selectedTimes,
+      location_id: UserData?.addresses?.id,
+      pet_ids: selectedPets
+    } 
+    
+    setEventData(EventData)
+
+  setShowConfirm(true)
+
+}
+
+const handleCancelEvent = () => {
+  setShowConfirm(false)
+}
+
+  const handleSaveEvent = () => {
+    createOneEvent({
+      client_id: session?.user.id!,
+      event_type: service,
+      event_date: dayjs(startDate).format('MM/DD/YYYY'),
+      event_time: selectedTimes,
+      location_id: UserData?.addresses?.id,
+      pet_ids: selectedPets
+    },{
+      async onSuccess(){
+        // go to dashboard
+        setShowConfirm(false)
+        console.log('Event created - Go To Dashboard?');
+        nav.canGoBack() // Not sure if this is working - ned to test more
+        router.push('/(client)/dashboard')
+      }
+    })
+
   }
+
+
+
+  const handlePetSelection = useCallback(( data: number[]) => {
+    setSelectedPets(data)
+  },[])
 
 
   useEffect(() => {
     setHowOften('')
     setSelectedDays([])
+    setSelectedPets([])
     setStartDate(undefined)
     setSelectedTimes([])
   },[eventType])
@@ -152,6 +210,12 @@ export default function CreateEvent() {
   return (
     <>
       <Stack.Screen options={{ title: 'Schedule Appointment' }} />
+      
+      { showConfirm 
+      ? <ConfirmEvent EventData={eventData as NewEventProps} OnCancel={handleCancelEvent} OnSave={handleSaveEvent} /> 
+      :
+      
+      <>
       <BackHeader BackTo='/(client)/createAppointment' />
 
       <View style={styles.rootContainer}>
@@ -191,7 +255,7 @@ export default function CreateEvent() {
 
           <Button 
             Text={ startDate ? dayjs(startDate).format('LL') : howOften === 'weekly' ? 'Select a start date' : 'Select a date'} 
-            onPress={() => bottomSheetRef.current?.snapToIndex(0)} 
+            onPress={() => dateBottomSheetRef.current?.snapToIndex(0)} 
           />
 
         </View>
@@ -207,25 +271,45 @@ export default function CreateEvent() {
 
         {/* <Button Text='Next' Disabled={!allowNext} /> */}
         <Button 
+          Text='Pets' 
+          onPress={() => petsBottomSheetRef.current?.expand()}
+        />
+        
+        <Spacer Size={8}/>
+
+        <Button 
           Text='Next' 
           Disabled={ 
             howOften === 'weekly' 
-            ? (startDate && selectedTimes.length && selectedDays.length ? false : true )
-            :( startDate && selectedTimes.length ? false : true)
-          } />
+            ? (startDate && selectedTimes.length && selectedDays.length && selectedPets.length ? false : true )
+            :( startDate && selectedTimes.length && selectedPets.length ? false : true)
+          } 
+          onPress={confirmEvent}
+          />
         
         <Spacer Size={8}/>
 
       </View>
+      
+      </>
+      }
+
 
       <DateSelectionBottomSheet
-        ref={bottomSheetRef}
+        ref={dateBottomSheetRef}
         Data={startDate}
         SetData={handleSetData}
         OnButtonPress={handleCloseBottomSheet}
         // SheetChanges={handleSheetChanges}
         HeaderText={howOften === 'weekly' ? 'Select a starting date' : 'Select the date of service'}
         Mode={'single'}
+      />
+
+      <PetSelectionBottomSheet 
+        ref={petsBottomSheetRef}
+        PetData={PetsList as PetDetailProps[]}
+        OnSelect={handlePetSelection}
+        SelectedValues={selectedPets}
       />
 
     </>

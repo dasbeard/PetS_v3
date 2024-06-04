@@ -1,7 +1,8 @@
 const Brand = '251'
 const BrandAlt = '338'
 const BGBase = '240'
-const green = '132'
+// const green = '132'
+const green = '124'
 const orange = '47'
 const red = '0'
 const blue = '220'
@@ -62,11 +63,11 @@ export default {
   },
   
   orange: {
-    100: `hsl(${orange}, 80%, 90%)`,
-    300: `hsl(${orange}, 80%, 70%)`,
-    500: `hsl(${orange}, 80%, 50%)`,
-    700: `hsl(${orange}, 80%, 30%)`,
-    900: `hsl(${orange}, 80%, 10%)`,
+    100: `hsl(${orange}, 70%, 90%)`,
+    300: `hsl(${orange}, 70%, 70%)`,
+    500: `hsl(${orange}, 70%, 50%)`,
+    700: `hsl(${orange}, 70%, 30%)`,
+    900: `hsl(${orange}, 70%, 10%)`,
   },
   red: {
     100: `hsl(${red}, 80%, 90%)`,
