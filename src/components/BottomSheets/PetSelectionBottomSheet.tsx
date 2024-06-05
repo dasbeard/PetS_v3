@@ -40,17 +40,7 @@ const PetSelectionBottomSheet = forwardRef<Ref, PetSelectionProps>(({PetData, Se
     />
   ),[])
   
-  // const handleOnSelect = useCallback(( id: number) => {
-  //   if(SelectedValues){
-  //     if( SelectedValues.includes(id) ) {
-  //       // remove ID from list
-  //       OnSelect(SelectedValues.filter( i => i !== id))
-  //     } else {
-  //       // append to array
-  //       OnSelect([...SelectedValues, id])
-  //     }
-  //   }
-  // },[SelectedValues]) 
+
   const handleOnSelect = ( id: number) => {
     if(SelectedValues){
       if( SelectedValues.includes(id) ) {
@@ -65,38 +55,38 @@ const PetSelectionBottomSheet = forwardRef<Ref, PetSelectionProps>(({PetData, Se
   
 
 
-  const PetSelectionCard = useCallback(({pet, selected, onSelection}: any) =>{
-    return (
-      <Pressable 
-        key={pet.id} 
-        style={styles.buttonContainer}
-        onPress={ () => onSelection(pet.id) }
-      >
-        {({ pressed }) => (
-          <>
-            <Feather
-              name={ selected ? 'check-square' : 'square'}
-              // name={  'square'}
-              size={28}
-              color={ Colors.light.text }
-              style={styles.selected}
-            />
+  // const PetSelectionCard = useCallback(({pet, selected, onSelection}: any) =>{
+  //   return (
+  //     <Pressable 
+  //       key={pet.id} 
+  //       style={styles.buttonContainer}
+  //       onPress={ () => onSelection(pet.id) }
+  //     >
+  //       {({ pressed }) => (
+  //         <>
+  //           <Feather
+  //             name={ selected ? 'check-square' : 'square'}
+  //             // name={  'square'}
+  //             size={28}
+  //             color={ Colors.light.text }
+  //             style={styles.selected}
+  //           />
   
-            <View style={styles.container}>
-              <View style={styles.imageContainer}>
-                <RemoteImage
-                  path={pet.photo_url} 
-                  style={styles.image}
-                />
-              </View>
+  //           <View style={styles.container}>
+  //             <View style={styles.imageContainer}>
+  //               <RemoteImage
+  //                 path={pet.photo_url} 
+  //                 style={styles.image}
+  //               />
+  //             </View>
     
-              <Text style={styles.petName}>{pet.name}</Text>
-            </View>
-          </>
-        )}
-      </Pressable>
-    )
-  },[]);
+  //             <Text style={styles.petName}>{pet.name}</Text>
+  //           </View>
+  //         </>
+  //       )}
+  //     </Pressable>
+  //   )
+  // },[]);
 
 
 
@@ -120,6 +110,7 @@ const PetSelectionBottomSheet = forwardRef<Ref, PetSelectionProps>(({PetData, Se
           data={PetData}
           renderItem={({ item }) => (
             <PetSelection
+              key={item.id}
               PetData={item}
               Selected={ SelectedValues?.includes(item.id) }
               OnSelect={handleOnSelect}

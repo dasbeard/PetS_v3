@@ -106,7 +106,7 @@ export type Database = {
           created_at: string
           employee_id: string | null
           event_date: string | null
-          event_time: string[] | null
+          event_time: string | null
           event_type: string | null
           id: number
           important_notes: string | null
@@ -114,7 +114,6 @@ export type Database = {
           manager_viewed_at: string | null
           notes: string | null
           pet_ids: number[] | null
-          photo_public_urls: string[] | null
           photo_urls: string[] | null
           updated_at: string | null
         }
@@ -126,7 +125,7 @@ export type Database = {
           created_at?: string
           employee_id?: string | null
           event_date?: string | null
-          event_time?: string[] | null
+          event_time?: string | null
           event_type?: string | null
           id?: number
           important_notes?: string | null
@@ -134,7 +133,6 @@ export type Database = {
           manager_viewed_at?: string | null
           notes?: string | null
           pet_ids?: number[] | null
-          photo_public_urls?: string[] | null
           photo_urls?: string[] | null
           updated_at?: string | null
         }
@@ -146,7 +144,7 @@ export type Database = {
           created_at?: string
           employee_id?: string | null
           event_date?: string | null
-          event_time?: string[] | null
+          event_time?: string | null
           event_type?: string | null
           id?: number
           important_notes?: string | null
@@ -154,7 +152,6 @@ export type Database = {
           manager_viewed_at?: string | null
           notes?: string | null
           pet_ids?: number[] | null
-          photo_public_urls?: string[] | null
           photo_urls?: string[] | null
           updated_at?: string | null
         }

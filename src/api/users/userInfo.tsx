@@ -1,6 +1,6 @@
 import { supabase } from '@/util/supabase';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Tables, TablesInsert, TablesUpdate } from '@/database.types'
+import { TablesUpdate } from '@/database.types'
 
 export const useGetProfile = (id:string) => {
   return useQuery({

@@ -18,7 +18,9 @@ import { useAuth } from '@/providers/AuthProvider'
 import PetSelectionBottomSheet, { PetDetailProps } from '@/components/BottomSheets/PetSelectionBottomSheet'
 import { useGetUsersPetList } from '@/api/pets'
 import { useSimpleUserData } from '@/api/users/userInfo'
-import ConfirmEvent from './confirmEvent'
+import ConfirmEvent from '@/components/confirmEvent'
+import LoadingComponent from '@/components/LoadingComponent'
+
 dayjs.extend(localizedFormat)
 
 export interface NewEventProps {
@@ -28,6 +30,7 @@ export interface NewEventProps {
   event_time: string[],
   location_id?: number,
   pet_ids: number[],
+  petData: PetDetailProps[];
 }
 
 export default function CreateEvent() {
@@ -51,6 +54,7 @@ export default function CreateEvent() {
   const [ selectedPets, setSelectedPets ] = useState<number[]>([])
   
   const [ showConfirm, setShowConfirm ] = useState<boolean>(false)
+  const [ savingEvent, setSavingEvent ] = useState<boolean>(false)
   const [ eventData, setEventData ] = useState<NewEventProps>();
 
   // Button Props
@@ -147,72 +151,129 @@ export default function CreateEvent() {
     dateBottomSheetRef.current?.close()
   },[])
 
-  // console.log(UserData?.addresses?.id);
-  
 
-const confirmEvent = () => {
-  
-  const EventData: NewEventProps = {
-      client_id: session?.user.id!,
-      event_type: service,
-      event_date: dayjs(startDate).format('MM/DD/YYYY'),
-      event_time: selectedTimes,
-      location_id: UserData?.addresses?.id,
-      pet_ids: selectedPets
-    } 
-    
-    setEventData(EventData)
 
-  setShowConfirm(true)
+  const confirmEvent = () => {
 
-}
+    const EventData: NewEventProps = {
+        client_id: session?.user.id!,
+        event_type: service,
+        event_date: dayjs(startDate).format('MM/DD/YYYY'),
+        event_time: selectedTimes,
+        location_id: UserData?.addresses?.id,
+        pet_ids: selectedPets,
+        petData: PetsList as PetDetailProps[]
+      } 
+      
+      setEventData(EventData)
 
-const handleCancelEvent = () => {
-  setShowConfirm(false)
-}
-
-  const handleSaveEvent = () => {
-    createOneEvent({
-      client_id: session?.user.id!,
-      event_type: service,
-      event_date: dayjs(startDate).format('MM/DD/YYYY'),
-      event_time: selectedTimes,
-      location_id: UserData?.addresses?.id,
-      pet_ids: selectedPets
-    },{
-      async onSuccess(){
-        // go to dashboard
-        setShowConfirm(false)
-        console.log('Event created - Go To Dashboard?');
-        nav.canGoBack() // Not sure if this is working - ned to test more
-        router.push('/(client)/dashboard')
-      }
-    })
+    setShowConfirm(true)
 
   }
 
+  const handleCancelEvent = () => {
+    setShowConfirm(false)
+  }
+
+  const handleSaveEvent = () => {
+    setSavingEvent(true)
+    if(selectedTimes.length > 0){
+      selectedTimes.map((t, idx, arr) => {
+        if( idx + 1 === arr.length ){
+          createOneEvent({
+            client_id: session?.user.id!,
+            event_type: service,
+            event_date: dayjs(startDate).format('MM/DD/YYYY'),
+            event_time: t,
+            location_id: UserData?.addresses?.id,
+            pet_ids: selectedPets
+          },{
+            async onSuccess() {
+              // go to dashboard
+              resetInputs()
+              setSavingEvent(false)
+              setShowConfirm(false)
+              // console.log('Event created - Go To Dashboard?');
+              nav.canGoBack() // Not sure if this is working - ned to test more
+              router.push('/(client)/dashboard')
+            }
+          })
+        } else {
+          createOneEvent({
+            client_id: session?.user.id!,
+            event_type: service,
+            event_date: dayjs(startDate).format('MM/DD/YYYY'),
+            event_time: t,
+            location_id: UserData?.addresses?.id,
+            pet_ids: selectedPets
+          })
+        }
+      })
+    } else {
+      createOneEvent({
+        client_id: session?.user.id!,
+        event_type: service,
+        event_date: dayjs(startDate).format('MM/DD/YYYY'),
+        event_time: selectedTimes[0],
+        location_id: UserData?.addresses?.id,
+        pet_ids: selectedPets
+      },{
+        async onSuccess(){
+          // go to dashboard
+          resetInputs()
+          setSavingEvent(false)
+          setShowConfirm(false)
+          // console.log('Event created - Go To Dashboard?');
+          nav.canGoBack() // Not sure if this is working - ned to test more
+          router.push('/(client)/dashboard')
+        }
+      })
+    }
+  
+  }
 
 
   const handlePetSelection = useCallback(( data: number[]) => {
     setSelectedPets(data)
   },[])
 
-
-  useEffect(() => {
+  const resetInputs = () => {
     setHowOften('')
     setSelectedDays([])
     setSelectedPets([])
     setStartDate(undefined)
     setSelectedTimes([])
+  }
+
+  useEffect(() => {
+    resetInputs()
+    // setHowOften('')
+    // setSelectedDays([])
+    // setSelectedPets([])
+    // setStartDate(undefined)
+    // setSelectedTimes([])
   },[eventType])
 
+
+  if(UserDataError || PetsListError ) {
+    return (<Text>Something went wrong</Text>)
+  }
+
+  if(UserDataIsLoading || PetsListIsLoading){
+    return <LoadingComponent />
+  }
 
   return (
     <>
       <Stack.Screen options={{ title: 'Schedule Appointment' }} />
       
       { showConfirm 
-      ? <ConfirmEvent EventData={eventData as NewEventProps} OnCancel={handleCancelEvent} OnSave={handleSaveEvent} /> 
+      ? <ConfirmEvent 
+          EventData={eventData as NewEventProps} 
+          OnCancel={handleCancelEvent} 
+          OnSave={handleSaveEvent} 
+          Saving={savingEvent}
+        /> 
       :
       
       <>
@@ -278,7 +339,7 @@ const handleCancelEvent = () => {
         <Spacer Size={8}/>
 
         <Button 
-          Text='Next' 
+          Text='Confirm' 
           Disabled={ 
             howOften === 'weekly' 
             ? (startDate && selectedTimes.length && selectedDays.length && selectedPets.length ? false : true )

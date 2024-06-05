@@ -1,41 +1,47 @@
 import { Pressable, StyleSheet, View } from 'react-native'
-import React, { memo, useCallback } from 'react'
+import React, { memo } from 'react'
 import RemoteImage from '../RemoteImage'
 import { Text } from '../Themed'
 import { Feather } from '@expo/vector-icons'
 import { useColorScheme } from '../useColorScheme'
 import Colors from '@/constants/Colors'
-import { InteractiveStyles } from '@/constants/Styles'
-import { PetDetailProps } from '../BottomSheets/PetSelection'
+import { PetDetailProps } from '../BottomSheets/PetSelectionBottomSheet'
 
 interface PetSelectionProps {
   PetData: PetDetailProps;
-  Selected?: boolean ;
+  Selected?: boolean;
   OnSelect: (selected: number) => void;
+  Disabled?: boolean;
 }
 
-function PetSelection({PetData, Selected, OnSelect}: PetSelectionProps  ) {
+function PetSelection({PetData, Selected, OnSelect, Disabled}: PetSelectionProps  ) {
   const colorScheme = useColorScheme();
 
   const handleSelection = () => {
     OnSelect(PetData.id)
   }
 
+  // console.log('PetSelection', {PetData});
+  
+
   return (
     <Pressable 
       key={PetData.id} 
       style={styles.buttonContainer}
+      
+
       onPress={ handleSelection }
     >
       {({ pressed }) => (
         <>
+        { !Disabled &&
           <Feather
             name={ Selected ? 'check-square' : 'square'}
             size={28}
             color={ Colors.light.text }
             style={styles.selected}
           />
-
+        }
           <View style={styles.container}>
             <View 
               style={[

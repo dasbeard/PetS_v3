@@ -4,56 +4,59 @@ import { Pressable, StyleSheet, Image, Platform } from "react-native"
 import { useColorScheme } from '@/components/useColorScheme';
 import { InteractiveStyles } from "@/constants/Styles";
 
+export const allImagesArray = [
+  {
+    id: 'cat',
+    light: require('@assets/icons/Cat_Icon.png'),
+    dark: require('@assets/icons/Cat_Icon_Alt.png'),
+  },
+  {
+    id:'dog',
+    light: require('@assets/icons/Dog_Icon.png'),
+    dark: require('@assets/icons/Dog_Icon_Alt.png'),
+  },
+  {
+    id:'boarding',
+    light: require('@assets/icons/Boarding_Icon.png'),
+    dark: require('@assets/icons/Boarding_Icon_Alt.png'),
+  },
+  {
+    id:'clock',
+    light: require('@assets/icons/Clock_Icon.png'),
+    dark: require('@assets/icons/Clock_Icon_Alt.png'),
+  },
+  {
+    id:'dogwalk',
+    light: require('@assets/icons/Dog_Walk_Icon.png'),
+    dark: require('@assets/icons/Dog_Walk_Icon_Alt.png'),
+  },
+  {
+    id:'medication',
+    light: require('@assets/icons/Medication_Icon.png'),
+    dark: require('@assets/icons/Medication_Icon_Alt.png'),
+  },
+  {
+    id:'paws',
+    light: require('@assets/icons/Paws_Icon.png'),
+    dark: require('@assets/icons/Paws_Icon_Alt.png'),
+  },
+  {
+    id:'petlocation',
+    light: require('@assets/icons/Pet_Location_Icon.png'),
+    dark: require('@assets/icons/Pet_Location_Icon_Alt.png'),
+  },
+  {
+    id:'homevisit',
+    light: require('@assets/icons/Pet_Food_Icon.png'),
+    dark: require('@assets/icons/Pet_Food_Icon_Alt.png'),
+  },
+];
+
+
 export default function ServiceSelectionButton ( { service, onPress } :{service: string, onPress?: any } ) {
   const colorScheme = useColorScheme(); 
 
-  const allImagesArray = [
-    {
-      id: 'cat',
-      light: require('@assets/icons/Cat_Icon.png'),
-      dark: require('@assets/icons/Cat_Icon_Alt.png'),
-    },
-    {
-      id:'dog',
-      light: require('@assets/icons/Dog_Icon.png'),
-      dark: require('@assets/icons/Dog_Icon_Alt.png'),
-    },
-    {
-      id:'boarding',
-      light: require('@assets/icons/Boarding_Icon.png'),
-      dark: require('@assets/icons/Boarding_Icon_Alt.png'),
-    },
-    {
-      id:'clock',
-      light: require('@assets/icons/Clock_Icon.png'),
-      dark: require('@assets/icons/Clock_Icon_Alt.png'),
-    },
-    {
-      id:'dogwalk',
-      light: require('@assets/icons/Dog_Walk_Icon.png'),
-      dark: require('@assets/icons/Dog_Walk_Icon_Alt.png'),
-    },
-    {
-      id:'medication',
-      light: require('@assets/icons/Medication_Icon.png'),
-      dark: require('@assets/icons/Medication_Icon_Alt.png'),
-    },
-    {
-      id:'paws',
-      light: require('@assets/icons/Paws_Icon.png'),
-      dark: require('@assets/icons/Paws_Icon_Alt.png'),
-    },
-    {
-      id:'petlocation',
-      light: require('@assets/icons/Pet_Location_Icon.png'),
-      dark: require('@assets/icons/Pet_Location_Icon_Alt.png'),
-    },
-    {
-      id:'homevisit',
-      light: require('@assets/icons/Pet_Food_Icon.png'),
-      dark: require('@assets/icons/Pet_Food_Icon_Alt.png'),
-    },
-  ];
+
 
   let Icon = allImagesArray.find(ob => ob.id === service.replace(' ','').toLowerCase() )
 
